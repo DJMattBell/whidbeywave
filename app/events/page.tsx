@@ -108,6 +108,14 @@ export default async function EventsPage() {
               + Submit Your Event
             </Link>
             <ShareButton title="What's On Whidbey Island — WhidbeyWave" />
+            <Link
+              href="/events/print"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-parchment-50/10 hover:bg-parchment-50/20 text-parchment-200 hover:text-parchment-50 border border-parchment-50/20 transition-colors text-sm font-medium"
+            >
+              🖨️ Print This Week
+            </Link>
           </div>
         </div>
       </div>
