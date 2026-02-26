@@ -43,6 +43,8 @@ export default function ContactPage() {
     }
   }
 
+  const preferPhone = form.topic === 'phone';
+
   return (
     <>
       {/* Header */}
@@ -56,6 +58,25 @@ export default function ContactPage() {
         </div>
       </div>
 
+      {/* Mobile phone callout — above the form, phones only */}
+      <div className="md:hidden bg-amber-50 border-b border-amber-200 px-4 py-5">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">📞</span>
+          <div>
+            <p className="text-stone-700 text-base leading-snug mb-1">
+              Prefer to call or text? Reach Matthew at
+            </p>
+            <a
+              href="tel:+13609269101"
+              className="inline-flex items-center min-h-[48px] text-forest-700 font-bold text-xl hover:text-forest-900 transition-colors"
+            >
+              (360) 926-9101
+            </a>
+            <p className="text-stone-500 text-sm mt-0.5">Happy to help.</p>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
         {/*
           Mobile: form comes first (order-first), sidebar below.
@@ -66,7 +87,17 @@ export default function ContactPage() {
           {/* Contact form — first on mobile */}
           <div className="lg:col-span-2 order-first lg:order-last">
             <div className="bg-parchment-50 rounded-2xl shadow-warm-md border border-parchment-200 p-8">
-              <h2 className="text-2xl text-stone-900 mb-6 font-semibold">Drop us a note</h2>
+              <h2 className="text-2xl text-stone-900 mb-1 font-semibold">Send us a message</h2>
+              <p className="text-stone-500 text-base mb-6 leading-relaxed">
+                Or call/text Matthew at{' '}
+                <a
+                  href="tel:+13609269101"
+                  className="text-forest-600 hover:text-forest-800 font-medium transition-colors"
+                >
+                  (360) 926-9101
+                </a>{' '}
+                if that&apos;s easier.
+              </p>
 
               {status === 'success' ? (
                 <div className="text-center py-12">
@@ -134,56 +165,72 @@ export default function ContactPage() {
                       <option value="advertising">Working Together</option>
                       <option value="feedback">Website Feedback</option>
                       <option value="general">Just Saying Hello</option>
+                      <option value="phone">I&apos;d rather call</option>
                     </select>
                   </div>
 
-                  <div>
-                    <label htmlFor="contact-phone" className="block text-base font-medium text-stone-700 mb-2">
-                      Phone <span className="text-stone-400 font-normal">(optional)</span>
-                    </label>
-                    <input
-                      id="contact-phone"
-                      type="tel"
-                      value={form.phone}
-                      onChange={e => set('phone', e.target.value)}
-                      placeholder="(360) 555-0100"
-                      className={inputCls}
-                      autoComplete="tel"
-                    />
-                  </div>
+                  {preferPhone ? (
+                    <div className="rounded-xl bg-amber-50 border border-amber-200 px-5 py-5 text-stone-700 text-base leading-relaxed">
+                      No problem! Give Matthew a call or text at{' '}
+                      <a
+                        href="tel:+13609269101"
+                        className="text-forest-700 font-bold hover:text-forest-900 transition-colors"
+                      >
+                        (360) 926-9101
+                      </a>{' '}
+                      — he&apos;s usually available during island hours.
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <label htmlFor="contact-phone" className="block text-base font-medium text-stone-700 mb-2">
+                          Phone <span className="text-stone-400 font-normal">(optional)</span>
+                        </label>
+                        <input
+                          id="contact-phone"
+                          type="tel"
+                          value={form.phone}
+                          onChange={e => set('phone', e.target.value)}
+                          placeholder="(360) 555-0100"
+                          className={inputCls}
+                          autoComplete="tel"
+                        />
+                      </div>
 
-                  <div>
-                    <label htmlFor="contact-message" className="block text-base font-medium text-stone-700 mb-2">
-                      Your message <span className="text-red-400" aria-hidden="true">*</span>
-                    </label>
-                    <textarea
-                      id="contact-message"
-                      required
-                      rows={6}
-                      value={form.message}
-                      onChange={e => set('message', e.target.value)}
-                      placeholder="Tell us what's on your mind. Event details, listing info, story tips, or just a hello — we're glad you stopped by…"
-                      className={inputCls + ' resize-none'}
-                    />
-                  </div>
+                      <div>
+                        <label htmlFor="contact-message" className="block text-base font-medium text-stone-700 mb-2">
+                          Your message <span className="text-red-400" aria-hidden="true">*</span>
+                        </label>
+                        <textarea
+                          id="contact-message"
+                          required
+                          rows={6}
+                          value={form.message}
+                          onChange={e => set('message', e.target.value)}
+                          placeholder="Tell us what's on your mind. Event details, listing info, story tips, or just a hello — we're glad you stopped by…"
+                          className={inputCls + ' resize-none'}
+                        />
+                      </div>
 
-                  {/* Honeypot */}
-                  <div className="hidden" aria-hidden="true">
-                    <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" />
-                  </div>
+                      {/* Honeypot */}
+                      <div className="hidden" aria-hidden="true">
+                        <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" />
+                      </div>
 
-                  {status === 'error' && (
-                    <p className="text-red-500 text-base" role="alert">{errorMsg}</p>
+                      {status === 'error' && (
+                        <p className="text-red-500 text-base" role="alert">{errorMsg}</p>
+                      )}
+
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <button type="submit" disabled={status === 'loading'} className="btn-primary py-3 text-base disabled:opacity-60">
+                          {status === 'loading' ? 'Sending…' : 'Send It Along →'}
+                        </button>
+                        <p className="text-sm text-stone-400 leading-relaxed">
+                          We&apos;ll get back to you — usually within a day or two. No spam, ever.
+                        </p>
+                      </div>
+                    </>
                   )}
-
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <button type="submit" disabled={status === 'loading'} className="btn-primary py-3 text-base disabled:opacity-60">
-                      {status === 'loading' ? 'Sending…' : 'Send It Along →'}
-                    </button>
-                    <p className="text-sm text-stone-400 leading-relaxed">
-                      We&apos;ll get back to you — usually within a day or two. No spam, ever.
-                    </p>
-                  </div>
                 </form>
               )}
             </div>
@@ -205,6 +252,21 @@ export default function ContactPage() {
               <p className="text-stone-600 leading-relaxed text-base">
                 We&apos;re a small, island-run operation. We read every message and usually get back to you within a day or two.
               </p>
+            </div>
+
+            {/* Phone card — first in sidebar */}
+            <div className="rounded-xl p-4 border bg-parchment-50 border-parchment-200 flex gap-3">
+              <span className="text-2xl shrink-0" aria-hidden="true">📞</span>
+              <div>
+                <p className="text-stone-800 text-base font-semibold mb-0.5">Call or Text</p>
+                <a
+                  href="tel:+13609269101"
+                  className="text-forest-600 hover:text-forest-800 text-base font-medium transition-colors"
+                >
+                  (360) 926-9101
+                </a>
+                <p className="text-stone-400 text-sm mt-0.5">Whidbey Island DJ Collective</p>
+              </div>
             </div>
 
             {[
@@ -241,20 +303,6 @@ export default function ContactPage() {
                 </div>
               </div>
             ))}
-
-            <div className="rounded-xl p-4 border bg-parchment-50 border-parchment-200 flex gap-3">
-              <span className="text-2xl shrink-0" aria-hidden="true">📞</span>
-              <div>
-                <p className="text-stone-800 text-base font-semibold mb-0.5">Call or Text</p>
-                <a
-                  href="tel:+13609269101"
-                  className="text-forest-600 hover:text-forest-800 text-base font-medium transition-colors"
-                >
-                  (360) 926-9101
-                </a>
-                <p className="text-stone-400 text-sm mt-0.5">Whidbey Island DJ Collective</p>
-              </div>
-            </div>
 
             <div className="pt-2">
               <p className="text-base text-stone-500 leading-relaxed">
