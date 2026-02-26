@@ -58,8 +58,36 @@ export default function HomePage() {
         </svg>
       </section>
 
-      {/* ── Quick-links strip ────────────────────────────────────────────── */}
-      <section className="bg-parchment-50 border-b border-parchment-200">
+      {/* ── Mobile quick-access grid (phones only) ──────────────────────── */}
+      <section className="md:hidden bg-parchment-50 border-b border-parchment-200 px-4 py-6">
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { emoji: '📅', label: "What's On",      desc: 'Events happening on the island',      href: '/events'      },
+            { emoji: '🚢', label: 'Ferry Status',   desc: 'Is the ferry running?',               href: '/ferry'       },
+            { emoji: '📰', label: 'Island News',    desc: 'Stories from around Whidbey',         href: '/news'        },
+            { emoji: '🛒', label: 'Buy & Sell',     desc: 'Things for sale from neighbors',      href: '/marketplace' },
+            { emoji: '💬', label: 'Ask a Question', desc: 'Get answers from locals',             href: '/forum'       },
+            { emoji: '📬', label: 'Newsletter',     desc: 'Weekly island updates by email',      href: '/newsletter'  },
+          ].map(({ emoji, label, desc, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center justify-center gap-2 min-h-[90px] p-4 rounded-2xl
+                         bg-parchment-50 border-2 border-forest-200
+                         hover:bg-forest-50 hover:border-forest-400
+                         active:bg-forest-100
+                         transition-all duration-150 text-center"
+            >
+              <span className="text-4xl leading-none" aria-hidden="true">{emoji}</span>
+              <span className="text-lg font-semibold text-forest-800 leading-tight">{label}</span>
+              <span className="text-[15px] text-stone-500 leading-snug">{desc}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Quick-links strip (desktop only) ────────────────────────────── */}
+      <section className="hidden md:block bg-parchment-50 border-b border-parchment-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { emoji: '📅', label: "What's Going On", href: '/events',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
