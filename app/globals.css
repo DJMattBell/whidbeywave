@@ -38,6 +38,29 @@
   }
 }
 
+/* Large text mode (mobile accessibility toggle) */
+html.text-large {
+  font-size: 20px;
+}
+html.text-large .text-sm {
+  font-size: 17px !important;
+  line-height: 1.6;
+}
+html.text-large .text-xs {
+  font-size: 15px !important;
+}
+html.text-large input,
+html.text-large select,
+html.text-large textarea {
+  font-size: 18px !important;
+}
+html.text-large .btn-primary,
+html.text-large .btn-secondary {
+  font-size: 18px !important;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
 @layer components {
   .btn-primary {
     @apply inline-flex items-center gap-2 px-6 py-3 text-base

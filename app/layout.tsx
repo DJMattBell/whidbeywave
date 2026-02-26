@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/components/AuthProvider';
 import InstallPrompt from '@/components/InstallPrompt';
+import TextSizeToggle from '@/components/TextSizeToggle';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -65,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <a
@@ -79,6 +80,7 @@ export default function RootLayout({
           <Footer />
           <InstallPrompt />
         </AuthProvider>
+        <TextSizeToggle />
         <Analytics />
         <SpeedInsights />
       </body>
