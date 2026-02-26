@@ -16,11 +16,12 @@ const NEWSLETTER_TAGS = [
 ];
 
 export default function NewsletterPage() {
-  const [firstName, setFirstName] = useState('');
-  const [email, setEmail]         = useState('');
-  const [tags, setTags]           = useState<string[]>([]);
-  const [frequency, setFrequency] = useState<'weekly' | 'immediate'>('weekly');
-  const [status, setStatus]       = useState<'idle' | 'loading' | 'success' | 'duplicate' | 'error'>('idle');
+  const [firstName, setFirstName]         = useState('');
+  const [email, setEmail]                 = useState('');
+  const [tags, setTags]                   = useState<string[]>([]);
+  const [frequency, setFrequency]         = useState<'weekly' | 'immediate'>('weekly');
+  const [weekendDigest, setWeekendDigest] = useState(true);
+  const [status, setStatus]               = useState<'idle' | 'loading' | 'success' | 'duplicate' | 'error'>('idle');
 
   function toggleTag(tag: string) {
     setTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
@@ -38,11 +39,12 @@ export default function NewsletterPage() {
     }
 
     const { error } = await supabase.from('newsletter_subscribers').insert({
-      first_name: firstName.trim(),
-      email: email.trim().toLowerCase(),
+      first_name:     firstName.trim(),
+      email:          email.trim().toLowerCase(),
       tags,
       frequency,
-      confirmed: true,
+      confirmed:      true,
+      weekend_digest: weekendDigest,
     });
 
     if (error) {
@@ -220,6 +222,23 @@ export default function NewsletterPage() {
                       ))}
                     </div>
                   </fieldset>
+
+                  {/* Weekend digest opt-in */}
+                  <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <input
+                      id="nl-weekend"
+                      type="checkbox"
+                      checked={weekendDigest}
+                      onChange={e => setWeekendDigest(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded border-amber-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
+                    />
+                    <label htmlFor="nl-weekend" className="text-sm text-stone-700 leading-snug cursor-pointer select-none">
+                      <span className="font-semibold">📅 This Weekend digest</span>
+                      <span className="text-stone-500 font-normal"> (Thursdays)</span>
+                      <br />
+                      <span className="text-stone-400 text-xs">A short email every Thursday with what&apos;s happening that Friday–Sunday.</span>
+                    </label>
+                  </div>
 
                   <button
                     type="submit"

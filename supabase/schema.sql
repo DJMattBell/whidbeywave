@@ -5,13 +5,18 @@
 
 -- ── Newsletter Subscribers ───────────────────────────────────
 create table if not exists newsletter_subscribers (
-  id         uuid default gen_random_uuid() primary key,
-  name       text not null,
-  email      text not null unique,
-  zip_code   text,
-  tags       text[] default '{}',
-  created_at timestamptz default now()
+  id             uuid default gen_random_uuid() primary key,
+  name           text not null,
+  email          text not null unique,
+  zip_code       text,
+  tags           text[] default '{}',
+  weekend_digest boolean default false,
+  created_at     timestamptz default now()
 );
+
+-- Add weekend_digest to existing installations
+ALTER TABLE newsletter_subscribers
+  ADD COLUMN IF NOT EXISTS weekend_digest boolean DEFAULT false;
 
 -- ── Forum Posts ──────────────────────────────────────────────
 create table if not exists forum_posts (
