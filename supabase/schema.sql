@@ -77,12 +77,32 @@ create trigger trg_update_rec_stats
   after insert on reviews
   for each row execute function update_recommendation_stats();
 
+-- ── Event Submissions ────────────────────────────────────
+create table if not exists event_submissions (
+  id              uuid default gen_random_uuid() primary key,
+  title           text not null,
+  date            date not null,
+  time            text,
+  location        text,
+  town            text,
+  category        text,
+  tags            text[] default '{}',
+  description     text,
+  status          text not null default 'pending'
+                    check (status in ('pending', 'approved', 'rejected')),
+  submitter_name  text,
+  submitter_email text,
+  reviewed_at     timestamptz,
+  created_at      timestamptz default now()
+);
+
 -- ── Row Level Security ───────────────────────────────────────
 alter table newsletter_subscribers enable row level security;
 alter table forum_posts            enable row level security;
 alter table forum_replies          enable row level security;
 alter table recommendations        enable row level security;
 alter table reviews                enable row level security;
+alter table event_submissions      enable row level security;
 
 -- Public can read everything
 create policy "public read"   on newsletter_subscribers for select using (true);
@@ -97,6 +117,12 @@ create policy "public insert" on forum_posts            for insert with check (t
 create policy "public insert" on forum_replies          for insert with check (true);
 create policy "public insert" on recommendations        for insert with check (true);
 create policy "public insert" on reviews               for insert with check (true);
+
+-- Event submissions: public can read approved; public can submit (pending)
+create policy "public read approved events" on event_submissions
+  for select using (status = 'approved');
+create policy "public submit event" on event_submissions
+  for insert with check (status = 'pending');
 
 -- ── Seed: Sample Recommendations ────────────────────────────
 insert into recommendations (name, category, description, town, avg_rating, review_count) values
