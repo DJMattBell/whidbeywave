@@ -178,12 +178,12 @@ export default function AdminEventsPage() {
           </h1>
         </div>
         <p className="text-stone-500 text-sm">Signed in as {user.email}</p>
-        <div className="mt-3 flex gap-4 text-sm">
-          <span className="text-stone-400 font-medium">Event Submissions</span>
+        <div className="mt-3 flex gap-4 text-sm flex-wrap">
+          <span className="text-stone-400 font-medium">Events</span>
           <span className="text-stone-300">|</span>
-          <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">
-            Marketplace Listings →
-          </Link>
+          <Link href="/admin/news"     className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">Marketplace →</Link>
         </div>
       </div>
 
