@@ -6,18 +6,28 @@ import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 
-const links = [
+const mainLinks = [
   { href: '/',        label: 'Home' },
   { href: '/about',   label: 'About' },
   { href: '/events',  label: "What's Going On" },
   { href: '/news',    label: 'Island News' },
-  { href: '/contact', label: 'Say Hello' },
+];
+
+const contactLink = { href: '/contact', label: 'Say Hello' };
+
+const visitLinks = [
+  { href: '/visit',                 label: '🗺️ Visitor Guide' },
+  { href: '/visit/this-weekend',    label: '📅 This Weekend' },
+  { href: '/visit/restaurants',     label: '🍽️ Restaurants' },
+  { href: '/visit/farmers-markets', label: '🥕 Farmers Markets' },
+  { href: '/visit/ferry-guide',     label: '🚢 Getting Here' },
 ];
 
 const searchLink = { href: '/search', label: 'Search' };
 
 const baseCommunityLinks = [
   { href: '/ferry',           label: '🚢 Ferry Status' },
+  { href: '/tides',           label: '🌊 Tides' },
   { href: '/forum',           label: 'Ask the Island' },
   { href: '/recommendations', label: 'Local Picks' },
   { href: '/marketplace',     label: 'Buy & Sell' },
@@ -27,9 +37,12 @@ const baseCommunityLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const [visitOpen, setVisitOpen] = useState(false);
+  const [authOpen, setAuthOpen]   = useState(false);
   const { user, signOut } = useAuth();
+
+  const visitActive = pathname.startsWith('/visit');
 
   const communityLinks = [
     ...baseCommunityLinks,
@@ -56,7 +69,7 @@ export default function Navbar() {
 
               {/* Desktop nav */}
               <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-                {links.map(({ href, label }) => {
+                {mainLinks.map(({ href, label }) => {
                   const active = pathname === href;
                   return (
                     <Link
@@ -73,6 +86,76 @@ export default function Navbar() {
                     </Link>
                   );
                 })}
+
+                {/* Visit Whidbey dropdown */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setVisitOpen(true)}
+                  onMouseLeave={() => setVisitOpen(false)}
+                >
+                  <button
+                    onClick={() => setVisitOpen(v => !v)}
+                    aria-expanded={visitOpen}
+                    aria-haspopup="listbox"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
+                      visitActive
+                        ? 'bg-forest-500 text-parchment-50'
+                        : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
+                    }`}
+                  >
+                    <span>🗺️</span>
+                    <span>Visit Whidbey</span>
+                    <svg
+                      className={`w-3 h-3 transition-transform shrink-0 ${visitOpen ? 'rotate-180' : ''}`}
+                      viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.75"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4 4-4" />
+                    </svg>
+                  </button>
+
+                  {visitOpen && (
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden min-w-[210px] z-50">
+                      {visitLinks.map(({ href, label }) => {
+                        const active = href === '/visit'
+                          ? pathname === '/visit'
+                          : pathname.startsWith(href);
+                        return (
+                          <Link
+                            key={href}
+                            href={href}
+                            onClick={() => setVisitOpen(false)}
+                            className={`flex items-center px-4 py-2.5 text-sm font-medium transition-colors ${
+                              active
+                                ? 'bg-forest-50 text-forest-700'
+                                : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
+                            }`}
+                          >
+                            {label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Contact */}
+                {(() => {
+                  const active = pathname === contactLink.href;
+                  return (
+                    <Link
+                      href={contactLink.href}
+                      aria-current={active ? 'page' : undefined}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        active
+                          ? 'bg-forest-500 text-parchment-50'
+                          : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
+                      }`}
+                    >
+                      {contactLink.label}
+                    </Link>
+                  );
+                })()}
               </nav>
 
               {/* Search icon — desktop */}
@@ -145,7 +228,7 @@ export default function Navbar() {
             {/* Mobile menu */}
             {menuOpen && (
               <nav id="mobile-menu" className="md:hidden pb-4 border-t border-parchment-200 pt-3 flex flex-col gap-1">
-                {links.map(({ href, label }) => {
+                {[...mainLinks, contactLink].map(({ href, label }) => {
                   const active = pathname === href;
                   return (
                     <Link
@@ -178,6 +261,36 @@ export default function Navbar() {
                   </svg>
                   Search
                 </Link>
+
+                {/* Visit Whidbey — flat indented sub-links */}
+                <div className="mt-1 border-t border-parchment-200 pt-2">
+                  <p className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
+                    visitActive ? 'text-forest-700' : 'text-stone-400'
+                  }`}>
+                    🗺️ Visit Whidbey
+                  </p>
+                  {visitLinks.map(({ href, label }) => {
+                    const active = href === '/visit'
+                      ? pathname === '/visit'
+                      : pathname.startsWith(href);
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setMenuOpen(false)}
+                        aria-current={active ? 'page' : undefined}
+                        className={`block pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          active
+                            ? 'bg-forest-500 text-parchment-50'
+                            : 'text-stone-600 hover:bg-parchment-200 hover:text-forest-600'
+                        }`}
+                      >
+                        {label}
+                      </Link>
+                    );
+                  })}
+                </div>
+
                 <div className="px-4 pt-3 pb-1 text-xs font-semibold text-stone-400 uppercase tracking-wider">
                   Community
                 </div>

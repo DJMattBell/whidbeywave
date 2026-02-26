@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { events, newsPosts, listings, formatShortDate, categoryColors } from '@/lib/data';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
+import TodayWidget from '@/components/TodayWidget';
 
 export default function HomePage() {
   const upcomingEvents  = events.slice(0, 3);
@@ -77,6 +78,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ── Today at a Glance ───────────────────────────────────────────── */}
+      <TodayWidget />
 
       {/* ── Weather & Tide ──────────────────────────────────────────────── */}
       <WeatherTideWidget />

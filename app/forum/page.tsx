@@ -7,8 +7,20 @@ import LocalBadge from '@/components/LocalBadge';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
 
 export const metadata: Metadata = {
-  title: 'Ask the Island — Forum',
-  description: 'Ask questions of Whidbey Island locals. Get answers from neighbors who know the island.',
+  title: 'Ask the Island — Whidbey Island Community Forum',
+  description: 'Ask questions of Whidbey Island locals. Get answers from neighbors who know the island — recommendations, events, local life, and more.',
+  openGraph: {
+    title: 'Ask the Island — Whidbey Island Community Forum',
+    description: 'Ask questions of Whidbey Island locals. Get answers from neighbors who know the island.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ask the Island — Whidbey Island Community Forum',
+    description: 'Ask questions of Whidbey Island locals.',
+    images: ['/og-default.png'],
+  },
 };
 
 export const revalidate = 60;

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { EVENT_TAGS, categoryColors } from '@/lib/data';
 import type { Event, EventTag } from '@/lib/data';
 import EventRsvpButton from '@/components/EventRsvpButton';
+import ShareButton from '@/components/ShareButton';
 
 const TAG_ICONS: Record<EventTag, string> = {
   'Kids Event':   '🧒',
@@ -138,7 +139,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
                 <p className="text-stone-600 leading-relaxed mb-4">{event.description}</p>
 
-                {/* Tags + RSVP */}
+                {/* Tags + RSVP + Share */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200">
                   <div className="flex flex-wrap gap-1.5">
                     {event.tags.map((tag) => (
@@ -157,7 +158,13 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                       </button>
                     ))}
                   </div>
-                  <EventRsvpButton eventId={event.id} />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <ShareButton
+                      title={`${event.title} — WhidbeyWave`}
+                      text={`${event.emoji} ${event.title} · ${event.time} · ${event.location}`}
+                    />
+                    <EventRsvpButton eventId={event.id} />
+                  </div>
                 </div>
               </div>
             </article>

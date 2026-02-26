@@ -4,19 +4,23 @@ import { useState } from 'react';
 
 type Props = {
   title: string;
-  url?: string;
+  url?: string;   // absolute URL or root-relative path (e.g. "/news#slug")
+  text?: string;  // custom share text for native share sheet
 };
 
-export default function ShareButton({ title, url }: Props) {
+export default function ShareButton({ title, url, text }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const shareUrl = url ?? (typeof window !== 'undefined' ? window.location.href : '');
+    // Resolve relative paths against the current origin
+    const shareUrl = url
+      ? (url.startsWith('/') ? window.location.origin + url : url)
+      : window.location.href;
 
     // Use native share sheet on mobile if available
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title, url: shareUrl });
+        await navigator.share({ title, text, url: shareUrl });
         return;
       } catch {
         // User cancelled or share failed — fall through to clipboard
@@ -27,7 +31,7 @@ export default function ShareButton({ title, url }: Props) {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       // Clipboard not available
     }
@@ -42,11 +46,13 @@ export default function ShareButton({ title, url }: Props) {
       {copied ? (
         <>
           <span aria-hidden="true">✓</span>
-          <span>Link copied!</span>
+          <span>Copied!</span>
         </>
       ) : (
         <>
-          <span aria-hidden="true">↗</span>
+          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM5 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM11 10.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM7.5 7l1.5-.75M9 9.75 7.5 9" />
+          </svg>
           <span>Share</span>
         </>
       )}

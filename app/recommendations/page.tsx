@@ -4,9 +4,8 @@ import { useEffect, useState } from 'react';
 import { supabase, isConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import ShareButton from '@/components/ShareButton';
 import type { Recommendation, Review } from '@/lib/db-types';
-
-const WHIDBEY_ZIPS = ['98239', '98249', '98250', '98253', '98260', '98277', '98278'];
 
 const CATEGORIES = [
   'All',
@@ -140,12 +139,6 @@ export default function RecommendationsPage() {
     const f = reviewForms[recId];
     if (!f || !f.rating || !f.body.trim() || !f.zip.trim() || !user) return;
 
-    // Validate Whidbey zipcode
-    if (!WHIDBEY_ZIPS.includes(f.zip.trim())) {
-      updateReviewForm(recId, { zipError: 'Reviews require a valid Whidbey Island zip code (98239, 98249, 98250, 98253, 98260, 98277, or 98278).' });
-      return;
-    }
-
     updateReviewForm(recId, { status: 'loading', zipError: '' });
 
     if (!isConfigured) {
@@ -154,28 +147,44 @@ export default function RecommendationsPage() {
       return;
     }
 
-    const displayName = user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'Anonymous';
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      updateReviewForm(recId, { status: 'error' });
+      return;
+    }
 
-    const { error } = await supabase.from('reviews').insert({
-      recommendation_id: recId,
-      rating: f.rating,
-      body: f.body.trim(),
-      author_id: user.id,
-      author_name: displayName,
-      zipcode: f.zip.trim(),
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        recommendationId: recId,
+        rating: f.rating,
+        body:   f.body.trim(),
+        zip:    f.zip.trim(),
+      }),
     });
 
-    if (error) {
-      updateReviewForm(recId, { status: 'error' });
-    } else {
-      updateReviewForm(recId, { status: 'success' });
-      const [reviewsRes, recRes] = await Promise.all([
-        supabase.from('reviews').select('*').eq('recommendation_id', recId).order('created_at', { ascending: false }),
-        supabase.from('recommendations').select('*').eq('id', recId).single(),
-      ]);
-      if (reviewsRes.data) setReviewsData(prev => ({ ...prev, [recId]: reviewsRes.data! }));
-      if (recRes.data) setRecs(prev => prev.map(r => r.id === recId ? (recRes.data as unknown as Recommendation) : r));
+    const json = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 422) {
+        updateReviewForm(recId, { status: 'idle', zipError: json.error });
+      } else {
+        updateReviewForm(recId, { status: 'error' });
+      }
+      return;
     }
+
+    updateReviewForm(recId, { status: 'success' });
+    const [reviewsRes, recRes] = await Promise.all([
+      supabase.from('reviews').select('*').eq('recommendation_id', recId).order('created_at', { ascending: false }),
+      supabase.from('recommendations').select('*').eq('id', recId).single(),
+    ]);
+    if (reviewsRes.data) setReviewsData(prev => ({ ...prev, [recId]: reviewsRes.data! }));
+    if (recRes.data) setRecs(prev => prev.map(r => r.id === recId ? (recRes.data as unknown as Recommendation) : r));
   }
 
   async function submitAddRec(e: React.FormEvent) {
@@ -382,11 +391,15 @@ export default function RecommendationsPage() {
                     )}
                   </div>
 
-                  <div className="border-t border-parchment-200 px-5 py-3 flex gap-3">
+                  <div className="border-t border-parchment-200 px-5 py-3 flex items-center justify-between gap-3">
                     <button onClick={() => toggleReviews(rec.id)}
                       className="text-xs font-medium text-forest-600 hover:text-forest-800 transition-colors">
                       {revOpen ? '▲ Hide reviews' : `▼ ${rec.review_count > 0 ? 'Read reviews' : 'Be first to review'}`}
                     </button>
+                    <ShareButton
+                      title={`${rec.name} — WhidbeyWave Local Picks`}
+                      text={`Check out ${rec.name}${rec.town ? ` in ${rec.town}` : ''} — recommended on WhidbeyWave`}
+                    />
                   </div>
 
                   {/* Reviews panel */}

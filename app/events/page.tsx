@@ -1,17 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { cache } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { events as fallbackEvents, categoryColors } from '@/lib/data';
 import type { Event } from '@/lib/data';
 import EventsFilter from '@/components/EventsFilter';
 import ShareButton from '@/components/ShareButton';
-
-export const metadata: Metadata = {
-  title: "What's On — Events Calendar",
-  description:
-    "Find out what's happening on Whidbey Island — festivals, markets, outdoor adventures, arts, live music, and more. Your local Whidbey Island events calendar.",
-  keywords: ['Whidbey Island events', 'Oak Harbor events', 'Langley WA events', 'Coupeville events calendar'],
-};
 
 export const revalidate = 300; // re-fetch every 5 minutes
 
@@ -59,8 +53,38 @@ async function getApprovedEvents(): Promise<Event[]> {
   }));
 }
 
+// Cache deduplicates between generateMetadata and the page component
+const getCachedEvents = cache(getApprovedEvents);
+
+export async function generateMetadata(): Promise<Metadata> {
+  const allEvents = await getCachedEvents();
+  const upcoming  = allEvents.filter(e => new Date(e.date + 'T23:59:59') >= new Date());
+
+  let description =
+    "Find out what's happening on Whidbey Island — festivals, markets, outdoor adventures, arts, live music, and more.";
+  if (upcoming.length > 0) {
+    const count    = upcoming.length;
+    const nameList = upcoming.slice(0, 2).map(e => e.title).join(' and ');
+    description    = `${count} upcoming event${count !== 1 ? 's' : ''} on Whidbey Island — including ${nameList}.`;
+  }
+
+  const title = "What's On Whidbey Island This Weekend — WhidbeyWave";
+  return {
+    title,
+    description,
+    keywords: ['Whidbey Island events', 'Oak Harbor events', 'Langley WA events', 'Coupeville events calendar'],
+    openGraph: {
+      title,
+      description,
+      siteName: 'WhidbeyWave',
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ['/og-default.png'] },
+  };
+}
+
 export default async function EventsPage() {
-  const events = await getApprovedEvents();
+  const events   = await getCachedEvents();
   const upcoming = events.filter(e => new Date(e.date + 'T23:59:59') >= new Date());
   const past     = events.filter(e => new Date(e.date + 'T23:59:59') <  new Date());
 
@@ -83,7 +107,7 @@ export default async function EventsPage() {
             <Link href="/submit-event" className="inline-block bg-amber-400 hover:bg-amber-500 text-stone-900 font-semibold px-6 py-2.5 rounded-xl transition-colors shadow-warm text-sm">
               + Submit Your Event
             </Link>
-            <ShareButton title="Whidbey Island Events — WhidbeyWave" />
+            <ShareButton title="What's On Whidbey Island — WhidbeyWave" />
           </div>
         </div>
       </div>

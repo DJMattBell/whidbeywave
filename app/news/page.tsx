@@ -2,12 +2,28 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { newsPosts, formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import NewsCommentSection from '@/components/NewsCommentSection';
+import ShareButton from '@/components/ShareButton';
+
+const latest = newsPosts[0];
 
 export const metadata: Metadata = {
-  title: 'Island News',
-  description:
-    'Stay up to date with the latest from Whidbey Island — local stories on community, nature, arts, transportation, and island life.',
+  title: 'Whidbey Island News — WhidbeyWave',
+  description: latest
+    ? `${latest.title} — ${latest.excerpt.slice(0, 120)}…`
+    : 'Stay up to date with the latest from Whidbey Island — local stories on community, nature, arts, transportation, and island life.',
   keywords: ['Whidbey Island news', 'Oak Harbor news', 'Langley news', 'Coupeville WA news', 'Whidbey community'],
+  openGraph: {
+    title: 'Whidbey Island News — WhidbeyWave',
+    description: latest ? latest.excerpt : 'Local stories from Whidbey Island.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Whidbey Island News — WhidbeyWave',
+    description: latest ? latest.excerpt : 'Local stories from Whidbey Island.',
+    images: ['/og-default.png'],
+  },
 };
 
 function ArticleBody({ body }: { body: string }) {
@@ -68,6 +84,13 @@ export default function NewsPage() {
             </p>
             <p className="text-stone-600 leading-relaxed text-base mb-6">{featured.excerpt}</p>
             <ArticleBody body={featured.body} />
+            <div className="mt-5 pt-4 border-t border-parchment-200">
+              <ShareButton
+                title={`${featured.title} — WhidbeyWave`}
+                url={`/news#${featured.slug}`}
+                text={featured.excerpt}
+              />
+            </div>
             <NewsCommentSection slug={featured.slug} />
           </div>
         </article>
@@ -100,6 +123,13 @@ export default function NewsPage() {
                 </p>
                 <p className="text-stone-600 text-base mb-4 leading-relaxed">{post.excerpt}</p>
                 <ArticleBody body={post.body} />
+                <div className="mt-5 pt-4 border-t border-parchment-200">
+                  <ShareButton
+                    title={`${post.title} — WhidbeyWave`}
+                    url={`/news#${post.slug}`}
+                    text={post.excerpt}
+                  />
+                </div>
                 <NewsCommentSection slug={post.slug} />
               </div>
             </article>

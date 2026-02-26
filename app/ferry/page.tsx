@@ -1,14 +1,41 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { cache } from 'react';
 import { fetchFerryPageData } from '@/lib/ferry';
 import type { RouteStatus, Departure } from '@/lib/ferry';
-
-export const metadata: Metadata = {
-  title: 'Ferry Status',
-  description: 'Live Mukilteo/Clinton and Port Townsend/Coupeville ferry status, departure times, and terminal cameras.',
-};
+import ShareButton from '@/components/ShareButton';
 
 export const revalidate = 300; // 5 minutes
+
+const getCachedFerry = cache(fetchFerryPageData);
+
+function statusLabel(s: RouteStatus) {
+  return s === 'cancelled' ? 'Cancelled' : s === 'delays' ? 'Delays' : 'On Schedule';
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ferry = await getCachedFerry();
+  const parts: string[] = [];
+  if (ferry.mukilteoCliton) parts.push(`Mukilteo/Clinton: ${statusLabel(ferry.mukilteoCliton.status)}`);
+  if (ferry.ptCoupeville)   parts.push(`PT/Coupeville: ${statusLabel(ferry.ptCoupeville.status)}`);
+
+  const description = parts.length > 0
+    ? parts.join(' · ')
+    : 'Live Mukilteo/Clinton and Port Townsend/Coupeville ferry status, departure times, and terminal cameras.';
+
+  const title = 'Whidbey Island Ferry Status — Live Updates — WhidbeyWave';
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: 'WhidbeyWave',
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ['/og-default.png'] },
+  };
+}
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 
@@ -99,7 +126,7 @@ const CAMERAS = [
 // ── Page ───────────────────────────────────────────────────────────────────
 
 export default async function FerryPage() {
-  const ferry = await fetchFerryPageData();
+  const ferry = await getCachedFerry();
 
   return (
     <>
@@ -121,6 +148,9 @@ export default async function FerryPage() {
               Last checked: {ferry.lastUpdated}
             </p>
           )}
+          <div className="mt-5">
+            <ShareButton title="Whidbey Island Ferry Status — WhidbeyWave" />
+          </div>
         </div>
       </div>
 
