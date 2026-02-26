@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 
@@ -149,6 +150,13 @@ export default function AdminEventsPage() {
           </h1>
         </div>
         <p className="text-stone-500 text-sm">Signed in as {user.email}</p>
+        <div className="mt-3 flex gap-4 text-sm">
+          <span className="text-stone-400 font-medium">Event Submissions</span>
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">
+            Marketplace Listings →
+          </Link>
+        </div>
       </div>
 
       {/* Filter tabs */}
