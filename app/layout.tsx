@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/components/AuthProvider';
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: {
@@ -64,6 +65,7 @@ export default function RootLayout({
           <Footer />
         </AuthProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
