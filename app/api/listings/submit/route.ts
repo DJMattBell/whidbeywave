@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -14,6 +15,45 @@ export async function POST(request: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) {
       return NextResponse.json({ error: 'Server not configured' }, { status: 500 });
+    }
+
+    // Save to Supabase (non-fatal if DB is down)
+    let insertedId: string | null = null;
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+      if (supabaseUrl && serviceRoleKey) {
+        const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+        const { data, error } = await supabase
+          .from('marketplace_listings')
+          .insert({
+            title: title.trim(),
+            price: price || 'Contact for price',
+            category: category || 'General',
+            location: location || 'Whidbey Island',
+            description: description.trim(),
+            seller_name: name.trim(),
+            seller_email: email.trim(),
+            emoji: '🏷️',
+            status: 'pending',
+          })
+          .select('id')
+          .single();
+
+        if (error) {
+          if (error.message?.includes('does not exist') || error.code === '42P01') {
+            console.error('ERROR: marketplace_listings table not found. Run the SQL migration in Supabase first.');
+          } else {
+            console.error('Supabase insert error:', error);
+          }
+        } else {
+          insertedId = data?.id ?? null;
+        }
+      }
+    } catch (dbErr) {
+      console.error('Supabase insert error:', dbErr);
     }
 
     // Email admin
@@ -37,6 +77,7 @@ export async function POST(request: NextRequest) {
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Location</td><td style="padding:8px 0;">${location || 'Not specified'}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Description</td><td style="padding:8px 0;white-space:pre-wrap;">${description.trim()}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Seller</td><td style="padding:8px 0;">${name.trim()} &lt;${email.trim()}&gt;${phone ? ` · ${phone}` : ''}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Submission ID</td><td style="padding:8px 0;">${insertedId ?? 'See Supabase'}</td></tr>
             </table>
             <p style="font-size:13px;color:#a8a29e;margin-top:24px;">
               Reply to this email to contact the seller directly.<br/>
