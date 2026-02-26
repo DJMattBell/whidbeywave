@@ -14,35 +14,35 @@ export default function HomePage() {
       {/* ── Hero ────────────────────────────────────────────────────────── */}
       <section className="relative bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100 overflow-hidden">
         {/* Soft atmospheric blobs */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="hidden sm:block absolute inset-0 pointer-events-none" aria-hidden="true">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-forest-600 opacity-20 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-sound-700 opacity-20 blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-800 opacity-10 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-28 md:py-40 text-center">
-          <div className="inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-8 border border-parchment-50/20">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-40 text-center">
+          <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-8 border border-parchment-50/20">
             <span>🌊</span>
             <span className="text-parchment-200">Whidbey Island, Washington</span>
           </div>
 
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6 text-parchment-50"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6 text-parchment-50"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             WhidbeyWave
           </h1>
 
-          <p className="text-xl md:text-2xl text-parchment-50 font-light max-w-lg mx-auto mb-5 tracking-wide">
+          <p className="text-lg md:text-2xl text-parchment-50 font-light max-w-lg mx-auto mb-3 tracking-wide">
             What&apos;s Happening &nbsp;·&nbsp; From the Island &nbsp;·&nbsp; Things for Sale
           </p>
 
-          <p className="text-base md:text-lg text-parchment-200 max-w-xl mx-auto mb-12 leading-relaxed">
+          <p className="hidden sm:block text-base md:text-lg text-parchment-200 max-w-xl mx-auto mb-12 leading-relaxed">
             Everything you need to know about what&apos;s going on around Whidbey —
             written for neighbors, by neighbors.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8 md:mb-12">
             <Link href="/events" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 shadow-warm-lg">
               See What&apos;s On
             </Link>
