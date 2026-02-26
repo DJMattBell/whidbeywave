@@ -68,10 +68,10 @@ export default function NewsletterPage() {
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-amber-800 text-parchment-100 py-16">
+      <div className="bg-gradient-to-br from-forest-800 to-amber-800 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">📬 Weekly Digest</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
             The WhidbeyWave Weekly
           </h1>
           <p className="text-parchment-300 text-lg max-w-2xl mx-auto leading-relaxed">

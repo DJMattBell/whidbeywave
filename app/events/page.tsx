@@ -91,11 +91,11 @@ export default async function EventsPage() {
   return (
     <>
       {/* Page header */}
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-16">
+      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
           <h1
-            className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50"
+            className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             What&apos;s Happening on Whidbey

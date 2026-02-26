@@ -349,8 +349,7 @@ export default function Navbar() {
 
         {/* Community strip — mobile (always visible, horizontal scroll) */}
         <div className="md:hidden bg-forest-50 border-b border-parchment-200 overflow-x-auto">
-          <nav className="flex items-center gap-1 px-4 h-14 w-max min-w-full" aria-label="Community navigation">
-            <span className="text-sm font-semibold text-forest-600 mr-1 shrink-0" aria-hidden="true">🌿</span>
+          <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full" aria-label="Community navigation">
             {communityLinks.map(({ href, label }, i) => {
               const active = pathname === href || pathname.startsWith(href + '/');
               return (
@@ -359,7 +358,7 @@ export default function Navbar() {
                   <Link
                     href={href}
                     aria-current={active ? 'page' : undefined}
-                    className={`px-3 py-3 rounded-md text-base font-medium transition-colors whitespace-nowrap ${
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                       active
                         ? 'bg-forest-500 text-parchment-50'
                         : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'

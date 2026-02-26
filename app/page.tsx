@@ -77,20 +77,20 @@ export default async function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-800 opacity-10 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-40 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-40 text-center">
           <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-8 border border-parchment-50/20">
             <span>🌊</span>
             <span className="text-parchment-200">Whidbey Island, Washington</span>
           </div>
 
           <h1
-            className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6 text-parchment-50"
+            className="text-3xl sm:text-5xl md:text-7xl font-bold leading-tight mb-3 md:mb-6 text-parchment-50"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             WhidbeyWave
           </h1>
 
-          <p className="text-lg md:text-2xl text-parchment-50 font-light max-w-lg mx-auto mb-3 tracking-wide">
+          <p className="text-lg md:text-2xl text-parchment-50 font-light max-w-lg mx-auto mb-2 md:mb-3 tracking-wide">
             What&apos;s Happening &nbsp;·&nbsp; From the Island &nbsp;·&nbsp; Things for Sale
           </p>
 
@@ -99,7 +99,7 @@ export default async function HomePage() {
             written for neighbors, by neighbors.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8 md:mb-12">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4 md:mb-12">
             <Link href="/events" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 shadow-warm-lg">
               See What&apos;s On
             </Link>
@@ -115,29 +115,24 @@ export default async function HomePage() {
         </svg>
       </section>
 
-      {/* ── Mobile quick-access grid (phones only) ──────────────────────── */}
-      <section className="md:hidden bg-parchment-50 border-b border-parchment-200 px-4 py-6">
-        <div className="grid grid-cols-2 gap-3">
+      {/* ── Mobile quick-access strip (phones only) ─────────────────────── */}
+      <section className="md:hidden bg-parchment-50 border-b border-parchment-200">
+        <div className="flex overflow-x-auto gap-3 px-4 py-4 scrollbar-none">
           {[
-            { emoji: '📅', label: "What's On",      desc: 'Events happening on the island',      href: '/events'      },
-            { emoji: '🚢', label: 'Ferry Status',   desc: 'Is the ferry running?',               href: '/ferry'       },
-            { emoji: '📰', label: 'Island News',    desc: 'Stories from around Whidbey',         href: '/news'        },
-            { emoji: '🛒', label: 'Buy & Sell',     desc: 'Things for sale from neighbors',      href: '/marketplace' },
-            { emoji: '💬', label: 'Ask a Question', desc: 'Get answers from locals',             href: '/forum'       },
-            { emoji: '📬', label: 'Newsletter',     desc: 'Weekly island updates by email',      href: '/newsletter'  },
-          ].map(({ emoji, label, desc, href }) => (
+            { emoji: '📅', label: "What's On",   href: '/events'      },
+            { emoji: '📰', label: 'Island News',  href: '/news'        },
+            { emoji: '🛒', label: 'Buy & Sell',   href: '/marketplace' },
+            { emoji: '🤝', label: 'Barter',       href: '/barter'      },
+            { emoji: '🚢', label: 'Ferry',         href: '/ferry'       },
+            { emoji: '🌊', label: 'Tides',         href: '/tides'       },
+          ].map(({ emoji, label, href }) => (
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center justify-center gap-2 min-h-[90px] p-4 rounded-2xl
-                         bg-parchment-50 border-2 border-forest-200
-                         hover:bg-forest-50 hover:border-forest-400
-                         active:bg-forest-100
-                         transition-all duration-150 text-center"
+              className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-2xl bg-parchment-100 border border-parchment-200 hover:bg-forest-50 hover:border-forest-300 transition-colors min-w-[80px] text-center"
             >
-              <span className="text-4xl leading-none" aria-hidden="true">{emoji}</span>
-              <span className="text-lg font-semibold text-forest-800 leading-tight">{label}</span>
-              <span className="text-[15px] text-stone-500 leading-snug">{desc}</span>
+              <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
+              <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
             </Link>
           ))}
         </div>

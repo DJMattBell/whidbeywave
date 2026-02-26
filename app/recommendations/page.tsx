@@ -221,10 +221,10 @@ export default function RecommendationsPage() {
   return (
     <>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
-      <div className="bg-gradient-to-br from-amber-800 to-forest-800 text-parchment-100 py-16">
+      <div className="bg-gradient-to-br from-amber-800 to-forest-800 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">⭐ Community</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50"
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             Island Recommendations
           </h1>

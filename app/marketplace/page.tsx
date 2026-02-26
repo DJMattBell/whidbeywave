@@ -4,6 +4,7 @@ import { categoryColors } from '@/lib/data';
 import { createServerClient } from '@/lib/supabase';
 import MarketplaceSearch from '@/components/MarketplaceSearch';
 import MarketplaceLocationFilter from '@/components/MarketplaceLocationFilter';
+import MarketplaceContactButton from '@/components/MarketplaceContactButton';
 
 export const revalidate = 300;
 
@@ -55,10 +56,10 @@ export default async function MarketplacePage({
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-amber-700 via-forest-700 to-sound-800 text-parchment-100 py-16">
+      <div className="bg-gradient-to-br from-amber-700 via-forest-700 to-sound-800 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-amber-200 font-medium mb-2 tracking-wide uppercase text-sm">🛒 Things for Sale</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
             Island Marketplace
           </h1>
           <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
@@ -194,12 +195,11 @@ export default async function MarketplacePage({
                     <span><span aria-hidden="true">📍</span> {listing.location}</span>
                   </div>
 
-                  <Link
-                    href="/contact"
-                    className="mt-4 w-full py-2.5 rounded-xl bg-forest-50 text-forest-700 font-semibold text-sm hover:bg-forest-100 transition-colors border border-forest-200 text-center"
-                  >
-                    Get in Touch
-                  </Link>
+                  <MarketplaceContactButton
+                    listingId={listing.id}
+                    listingTitle={listing.title}
+                    sellerName={listing.seller_name}
+                  />
                 </div>
               </article>
             ))}
