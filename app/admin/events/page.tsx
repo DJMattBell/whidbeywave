@@ -49,6 +49,11 @@ export default function AdminEventsPage() {
   const [acting, setActing]     = useState<Record<string, boolean>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
+  // Newsletter tools
+  const [nlStatus, setNlStatus]     = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [subCount, setSubCount]     = useState<number | null>(null);
+  const [countLoading, setCountLoading] = useState(false);
+
   const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
   const loadSubmissions = useCallback(async () => {
@@ -72,6 +77,29 @@ export default function AdminEventsPage() {
   useEffect(() => {
     if (isAdmin) loadSubmissions();
   }, [isAdmin, loadSubmissions]);
+
+  async function sendTestDigest() {
+    setNlStatus('sending');
+    try {
+      const res = await fetch('/api/newsletter/send-digest?test=true');
+      const data = await res.json();
+      setNlStatus(data.ok ? 'sent' : 'error');
+    } catch {
+      setNlStatus('error');
+    }
+  }
+
+  async function loadSubCount() {
+    setCountLoading(true);
+    try {
+      const res  = await fetch('/api/newsletter/count');
+      const data = await res.json();
+      setSubCount(data.count ?? 0);
+    } catch {
+      setSubCount(null);
+    }
+    setCountLoading(false);
+  }
 
   async function moderate(id: string, action: 'approved' | 'rejected') {
     setActing(p => ({ ...p, [id]: true }));
@@ -180,6 +208,41 @@ export default function AdminEventsPage() {
           className="ml-auto px-3 py-1.5 rounded-full text-xs text-stone-400 border border-parchment-300 hover:border-stone-400 transition-colors">
           {fetching ? 'Refreshing…' : '↻ Refresh'}
         </button>
+      </div>
+
+      {/* Newsletter Tools */}
+      <div className="mb-10 bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6">
+        <h2 className="text-lg font-semibold text-stone-800 mb-4"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          📬 Newsletter Tools
+        </h2>
+        <div className="flex flex-wrap gap-3 items-center">
+          <button
+            onClick={sendTestDigest}
+            disabled={nlStatus === 'sending'}
+            className="btn-primary py-2 px-5 text-sm disabled:opacity-60"
+          >
+            {nlStatus === 'sending' ? 'Sending…' : '▷ Send Test Digest Now'}
+          </button>
+          <button
+            onClick={loadSubCount}
+            disabled={countLoading}
+            className="px-5 py-2 rounded-xl text-sm font-medium bg-white text-stone-600 border border-parchment-300 hover:border-forest-400 transition-colors disabled:opacity-60"
+          >
+            {countLoading ? 'Loading…' : '👥 View Subscriber Count'}
+          </button>
+          {nlStatus === 'sent' && (
+            <span className="text-sm text-forest-700 font-medium">✓ Test digest sent to admin email</span>
+          )}
+          {nlStatus === 'error' && (
+            <span className="text-sm text-red-600 font-medium">✕ Failed — check server logs</span>
+          )}
+          {subCount !== null && (
+            <span className="text-sm text-stone-600 font-medium">
+              <strong className="text-stone-900">{subCount}</strong> confirmed subscriber{subCount !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Submissions list */}

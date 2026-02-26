@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase, isConfigured } from '@/lib/supabase';
+import { isConfigured } from '@/lib/supabase';
 import { events, newsPosts } from '@/lib/data';
 
 const NEWSLETTER_TAGS = [
@@ -38,33 +38,24 @@ export default function NewsletterPage() {
       return;
     }
 
-    const { error } = await supabase.from('newsletter_subscribers').insert({
-      first_name:     firstName.trim(),
-      email:          email.trim().toLowerCase(),
-      tags,
-      frequency,
-      confirmed:      true,
-      weekend_digest: weekendDigest,
+    const res = await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: firstName.trim(),
+        email:     email.trim().toLowerCase(),
+        tags,
+        frequency,
+        weekendDigest,
+      }),
     });
 
-    if (error) {
-      if (error.code === '23505') {
-        setStatus('duplicate');
-        return;
-      }
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      if (data.error === 'duplicate') { setStatus('duplicate'); return; }
       setStatus('error');
       return;
-    }
-
-    // Send welcome email via Resend (non-fatal)
-    try {
-      await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName: firstName.trim(), email: email.trim().toLowerCase(), tags, frequency }),
-      });
-    } catch {
-      // Subscriber is saved; email is best-effort
     }
 
     setStatus('success');
@@ -107,10 +98,10 @@ export default function NewsletterPage() {
 
               {status === 'success' ? (
                 <div className="text-center py-10">
-                  <div className="text-6xl mb-4" aria-hidden="true">🌿</div>
-                  <h3 className="text-xl font-bold text-forest-700 mb-2">You&apos;re on the list.</h3>
+                  <div className="text-6xl mb-4" aria-hidden="true">📬</div>
+                  <h3 className="text-xl font-bold text-forest-700 mb-2">Check your inbox, {firstName}.</h3>
                   <p className="text-stone-500 text-base leading-relaxed">
-                    Welcome to the neighborhood, {firstName}. Check your inbox — we sent you a welcome email with details on what to expect.
+                    We sent a confirmation link to <strong>{email}</strong>. Click it to complete your signup — then you&rsquo;re on the list.
                   </p>
                 </div>
               ) : (
