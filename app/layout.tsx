@@ -1,10 +1,18 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/components/AuthProvider';
+import InstallPrompt from '@/components/InstallPrompt';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#2d5016',
+};
 
 export const metadata: Metadata = {
   title: {
@@ -43,6 +51,12 @@ export const metadata: Metadata = {
     images: ['/og-default.png'],
   },
   metadataBase: new URL('https://whidbeywave.com'),
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'WhidbeyWave',
+  },
 };
 
 export default function RootLayout({
@@ -63,6 +77,7 @@ export default function RootLayout({
           <Navbar />
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />
+          <InstallPrompt />
         </AuthProvider>
         <Analytics />
         <SpeedInsights />
