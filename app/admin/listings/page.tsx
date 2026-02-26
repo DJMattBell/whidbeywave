@@ -147,6 +147,8 @@ export default function AdminListingsPage() {
           <Link href="/admin/news"   className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
           <span className="text-stone-300">|</span>
           <span className="text-stone-400 font-medium">Marketplace</span>
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/feedback" className="text-forest-600 hover:text-forest-800 font-medium">Feedback →</Link>
         </div>
       </div>
 

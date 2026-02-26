@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { AuthProvider } from '@/components/AuthProvider';
 import InstallPrompt from '@/components/InstallPrompt';
 import TextSizeToggle from '@/components/TextSizeToggle';
+import FeedbackButton from '@/components/FeedbackButton';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -81,6 +82,7 @@ export default function RootLayout({
           <InstallPrompt />
         </AuthProvider>
         <TextSizeToggle />
+        <FeedbackButton />
         <Analytics />
         <SpeedInsights />
       </body>

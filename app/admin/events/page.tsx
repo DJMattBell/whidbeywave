@@ -183,7 +183,9 @@ export default function AdminEventsPage() {
           <span className="text-stone-300">|</span>
           <Link href="/admin/news"     className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
           <span className="text-stone-300">|</span>
-          <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">Marketplace →</Link>
+          <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">Marketplace</Link>
+          <span className="text-stone-300">|</span>
+          <Link href="/admin/feedback" className="text-forest-600 hover:text-forest-800 font-medium">Feedback →</Link>
         </div>
       </div>
 
