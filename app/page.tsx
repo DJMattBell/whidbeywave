@@ -1,12 +1,69 @@
 import Link from 'next/link';
-import { events, newsPosts, listings, formatShortDate, categoryColors } from '@/lib/data';
+import { newsPosts, listings, formatShortDate, categoryColors } from '@/lib/data';
+import { createServerClient } from '@/lib/supabase';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
 import TodayWidget from '@/components/TodayWidget';
 
-export default function HomePage() {
-  const upcomingEvents  = events.slice(0, 3);
-  const latestNews      = newsPosts.slice(0, 2);
+export const revalidate = 300; // 5 minutes
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  'Nature & Wildlife':     '🌿',
+  'Arts & Culture':        '🎨',
+  'Farmers Market':        '🥕',
+  'Music & Performance':   '🎵',
+  'Outdoors & Recreation': '🌲',
+  'Film & Media':          '🎬',
+  'Community & Social':    '🤝',
+  'Classes & Workshops':   '📚',
+  'Food & Drink':          '🍽️',
+  'Sports & Fitness':      '🏃',
+};
+
+export default async function HomePage() {
+  const supabase = createServerClient();
+
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+
+  const { data: eventsData } = await supabase
+    .from('event_submissions')
+    .select('id, title, date, time, town, category, description, tags')
+    .eq('status', 'approved')
+    .gte('date', today)
+    .order('date', { ascending: true })
+    .limit(3);
+
+  const upcomingEvents = eventsData ?? [];
+
+  const { data: newsData } = await supabase
+    .from('news_posts')
+    .select('id, title, excerpt, category, published_at, read_minutes, slug, emoji')
+    .eq('published', true)
+    .order('published_at', { ascending: false })
+    .limit(2);
+
+  const latestNews: Array<{
+    id: string | number;
+    title: string;
+    excerpt: string;
+    category: string;
+    publishedAt: string;
+    readMinutes: number;
+    slug: string;
+    emoji: string;
+  }> = (newsData && newsData.length > 0)
+    ? newsData.map((p) => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt,
+        category: p.category,
+        publishedAt: p.published_at,
+        readMinutes: p.read_minutes,
+        slug: p.slug,
+        emoji: p.emoji ?? '📰',
+      }))
+    : newsPosts.slice(0, 2);
+
   const featuredListings = listings.slice(0, 3);
 
   return (
@@ -128,30 +185,37 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {upcomingEvents.map((event) => (
-            <div key={event.id} className="card group">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-sound-500" />
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                    {event.category}
-                  </span>
-                  <span className="text-2xl">{event.emoji}</span>
+        {upcomingEvents.length === 0 ? (
+          <div className="card p-10 text-center">
+            <p className="text-stone-500 text-lg mb-4">Nothing on the calendar yet — check back soon or submit an event!</p>
+            <Link href="/submit-event" className="btn-secondary">Submit an Event →</Link>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-6">
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="card group">
+                <div className="h-1.5 bg-gradient-to-r from-forest-400 to-sound-500" />
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
+                      {event.category}
+                    </span>
+                    <span className="text-2xl">{CATEGORY_EMOJI[event.category] ?? '📅'}</span>
+                  </div>
+                  <h3
+                    className="text-lg text-stone-900 mb-2 group-hover:text-forest-600 transition-colors"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                  >
+                    {event.title}
+                  </h3>
+                  <p className="text-[15px] text-stone-500 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
+                  <p className="text-[15px] text-stone-500 mb-4">📍 {event.town}</p>
+                  <p className="text-base text-stone-600 line-clamp-2">{event.description}</p>
                 </div>
-                <h3
-                  className="text-lg text-stone-900 mb-2 group-hover:text-forest-600 transition-colors"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-                >
-                  {event.title}
-                </h3>
-                <p className="text-[15px] text-stone-500 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
-                <p className="text-[15px] text-stone-500 mb-4">📍 {event.town}</p>
-                <p className="text-base text-stone-600 line-clamp-2">{event.description}</p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-6 sm:hidden">
           <Link href="/events" className="btn-secondary">See all events</Link>
