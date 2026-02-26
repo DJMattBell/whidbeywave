@@ -213,7 +213,7 @@ export default function Navbar() {
                 )}
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="p-2 rounded-lg text-stone-600 hover:bg-parchment-200 transition-colors min-w-[44px] min-h-[44px] flex flex-col items-center justify-center gap-1"
+                  className="p-2 rounded-lg text-stone-600 hover:bg-parchment-200 transition-colors min-w-[52px] min-h-[52px] flex flex-col items-center justify-center gap-1"
                   aria-label={menuOpen ? 'Close menu' : 'Open menu'}
                   aria-expanded={menuOpen}
                   aria-controls="mobile-menu"
@@ -236,7 +236,7 @@ export default function Navbar() {
                       href={href}
                       onClick={() => setMenuOpen(false)}
                       aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      className={`px-4 py-4 rounded-lg text-base font-medium transition-colors ${
                         active
                           ? 'bg-forest-500 text-parchment-50'
                           : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
@@ -250,7 +250,7 @@ export default function Navbar() {
                   href={searchLink.href}
                   onClick={() => setMenuOpen(false)}
                   aria-current={pathname === searchLink.href ? 'page' : undefined}
-                  className={`px-4 py-3 rounded-lg text-base font-medium transition-colors flex items-center gap-2 ${
+                  className={`px-4 py-4 rounded-lg text-base font-medium transition-colors flex items-center gap-2 ${
                     pathname === searchLink.href
                       ? 'bg-forest-500 text-parchment-50'
                       : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
@@ -279,7 +279,7 @@ export default function Navbar() {
                         href={href}
                         onClick={() => setMenuOpen(false)}
                         aria-current={active ? 'page' : undefined}
-                        className={`block pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        className={`block pl-8 pr-4 py-3 rounded-lg text-base font-medium transition-colors ${
                           active
                             ? 'bg-forest-500 text-parchment-50'
                             : 'text-stone-600 hover:bg-parchment-200 hover:text-forest-600'
@@ -302,7 +302,7 @@ export default function Navbar() {
                       href={href}
                       onClick={() => setMenuOpen(false)}
                       aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                      className={`px-4 py-4 rounded-lg text-base font-medium transition-colors ${
                         active
                           ? 'bg-forest-500 text-parchment-50'
                           : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
@@ -349,8 +349,8 @@ export default function Navbar() {
 
         {/* Community strip — mobile (always visible, horizontal scroll) */}
         <div className="md:hidden bg-forest-50 border-b border-parchment-200 overflow-x-auto">
-          <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full" aria-label="Community navigation">
-            <span className="text-xs font-semibold text-forest-600 mr-1 shrink-0" aria-hidden="true">🌿</span>
+          <nav className="flex items-center gap-1 px-4 h-14 w-max min-w-full" aria-label="Community navigation">
+            <span className="text-sm font-semibold text-forest-600 mr-1 shrink-0" aria-hidden="true">🌿</span>
             {communityLinks.map(({ href, label }, i) => {
               const active = pathname === href || pathname.startsWith(href + '/');
               return (
@@ -359,7 +359,7 @@ export default function Navbar() {
                   <Link
                     href={href}
                     aria-current={active ? 'page' : undefined}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                    className={`px-3 py-3 rounded-md text-base font-medium transition-colors whitespace-nowrap ${
                       active
                         ? 'bg-forest-500 text-parchment-50'
                         : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'

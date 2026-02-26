@@ -86,7 +86,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="contact-name" className="block text-sm font-medium text-stone-700 mb-1.5">
+                      <label htmlFor="contact-name" className="block text-base font-medium text-stone-700 mb-2">
                         Your Name <span className="text-red-400" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -101,7 +101,7 @@ export default function ContactPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="contact-email" className="block text-sm font-medium text-stone-700 mb-1.5">
+                      <label htmlFor="contact-email" className="block text-base font-medium text-stone-700 mb-2">
                         Email <span className="text-red-400" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -118,7 +118,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="contact-topic" className="block text-sm font-medium text-stone-700 mb-1.5">
+                    <label htmlFor="contact-topic" className="block text-base font-medium text-stone-700 mb-2">
                       What&apos;s this about?
                     </label>
                     <select
@@ -138,7 +138,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="contact-phone" className="block text-sm font-medium text-stone-700 mb-1.5">
+                    <label htmlFor="contact-phone" className="block text-base font-medium text-stone-700 mb-2">
                       Phone <span className="text-stone-400 font-normal">(optional)</span>
                     </label>
                     <input
@@ -153,7 +153,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="contact-message" className="block text-sm font-medium text-stone-700 mb-1.5">
+                    <label htmlFor="contact-message" className="block text-base font-medium text-stone-700 mb-2">
                       Your message <span className="text-red-400" aria-hidden="true">*</span>
                     </label>
                     <textarea

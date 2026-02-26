@@ -77,7 +77,7 @@ export default function NewsPage() {
             <h2 className="text-2xl md:text-3xl text-stone-900 mb-3 group-hover:text-forest-600 transition-colors leading-tight font-semibold">
               {featured.title}
             </h2>
-            <p className="text-sm text-stone-400 mb-4">
+            <p className="text-[15px] text-stone-400 mb-4">
               By {featured.author} &nbsp;·&nbsp;{' '}
               <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time>
               &nbsp;·&nbsp; {featured.readMinutes} min read
@@ -116,7 +116,7 @@ export default function NewsPage() {
                 <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
                   {post.title}
                 </h2>
-                <p className="text-sm text-stone-400 mb-3">
+                <p className="text-[15px] text-stone-400 mb-3">
                   By {post.author} &nbsp;·&nbsp;{' '}
                   <time dateTime={post.publishedAt}>{formatShortDate(post.publishedAt)}</time>
                   &nbsp;·&nbsp; {post.readMinutes} min read

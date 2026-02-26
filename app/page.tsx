@@ -117,9 +117,9 @@ export default function HomePage() {
                 >
                   {event.title}
                 </h3>
-                <p className="text-sm text-stone-500 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
-                <p className="text-sm text-stone-500 mb-4">📍 {event.town}</p>
-                <p className="text-sm text-stone-600 line-clamp-2">{event.description}</p>
+                <p className="text-[15px] text-stone-500 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
+                <p className="text-[15px] text-stone-500 mb-4">📍 {event.town}</p>
+                <p className="text-base text-stone-600 line-clamp-2">{event.description}</p>
               </div>
             </div>
           ))}
@@ -158,10 +158,10 @@ export default function HomePage() {
                     >
                       {post.title}
                     </h3>
-                    <p className="text-sm text-stone-400 mb-2">
+                    <p className="text-[15px] text-stone-400 mb-2">
                       {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
                     </p>
-                    <p className="text-sm text-stone-600">{post.excerpt}</p>
+                    <p className="text-base text-stone-600">{post.excerpt}</p>
                   </div>
                 </div>
               </Link>
@@ -199,7 +199,7 @@ export default function HomePage() {
                   {listing.title}
                 </h3>
                 <p className="text-forest-600 font-bold text-lg mb-1">{listing.price}</p>
-                <p className="text-sm text-stone-500">📍 {listing.location}</p>
+                <p className="text-[15px] text-stone-500">📍 {listing.location}</p>
               </div>
             </div>
           ))}

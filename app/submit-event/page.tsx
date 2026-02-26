@@ -31,8 +31,8 @@ const TOWNS = [
   'Other',
 ];
 
-const inputCls = 'w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
-const labelCls = 'block text-sm font-medium text-stone-700 mb-1.5';
+const inputCls = 'w-full px-4 py-3.5 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
+const labelCls = 'block text-base font-medium text-stone-700 mb-2';
 
 export default function SubmitEventPage() {
   const [form, setForm] = useState({

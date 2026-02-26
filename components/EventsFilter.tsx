@@ -132,7 +132,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   <span>{event.title}</span>
                 </h2>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-stone-500 mb-3">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-500 mb-3">
                   <span>🕐 {event.time}</span>
                   <span>📍 {event.location}</span>
                 </div>
