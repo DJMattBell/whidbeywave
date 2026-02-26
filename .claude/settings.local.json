@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/usr/bin/curl:*)",
+      "Bash(open:*)",
+      "Bash(source /Users/papa/.nvm/nvm.sh && cd \"/Users/papa/Documents/News Hub Project\" && npm install @supabase/supabase-js 2>&1)",
+      "Bash(pkill:*)",
+      "Bash(source:*)",
+      "Bash(tail:*)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npm run build 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npm run lint 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npx next lint --dir . 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && node_modules/.bin/next lint 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && node -e \"const c = require\\('eslint-config-next'\\); console.log\\(JSON.stringify\\(Object.keys\\(c.default || c\\), null, 2\\)\\)\" 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && node_modules/.bin/eslint app/ components/ lib/ --ext .ts,.tsx 2>&1 | head -80)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && curl \"https://www.wsdot.wa.gov/ferries/api/schedule/rest/825d541b-0134-49ee-a177-73f24d695ad7/alerts\")",
+      "Bash(curl -s \"http://www.wsdot.wa.gov/Ferries/API/Schedule/rest/help\" 2>&1 | grep -oP 'href=\"[^\"]*\"' | head -40)",
+      "Bash(curl -s \"http://www.wsdot.wa.gov/Ferries/API/Schedule/rest/help\" 2>&1 | grep -o 'href=\"[^\"]*\"' | head -40)",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/help\" 2>&1 | head -100)",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/alerts?apiaccesscode=825d541b-0134-49ee-a177-73f24d695ad7\" 2>&1 | head -100)",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/routes/2026-02-25?apiaccesscode=825d541b-0134-49ee-a177-73f24d695ad7\" | python3 -c \"\nimport json, sys\nroutes = json.load\\(sys.stdin\\)\nfor r in routes:\n    name = r.get\\('RouteAbbrev',''\\) + ' / ' + r.get\\('RouteName',''\\)\n    if any\\(k in name.lower\\(\\) for k in ['mukilteo','clinton','townsend','coupeville']\\):\n        print\\(r['RouteID'], name\\)\n\")",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/routes/2026-02-25?apiaccesscode=825d541b-0134-49ee-a177-73f24d695ad7\" | python3 -c \"\nimport json, sys\ndata = sys.stdin.read\\(\\)\nroutes = json.loads\\(data\\)\nprint\\(json.dumps\\(routes[0], indent=2\\)\\)\nprint\\('Total routes:', len\\(routes\\)\\)\n\")",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/routes/2026-02-25?apiaccesscode=825d541b-0134-49ee-a177-73f24d695ad7\" | python3 -c \"\nimport json, sys\nroutes = json.load\\(sys.stdin\\)\nfor r in routes:\n    print\\(r['RouteID'], r['RouteAbbrev'], r['Description']\\)\n\")",
+      "Bash(curl -s \"https://www.wsdot.wa.gov/Ferries/API/Schedule/rest/alerts?apiaccesscode=825d541b-0134-49ee-a177-73f24d695ad7\" | python3 -c \"\nimport json, sys\nalerts = json.load\\(sys.stdin\\)\nwhidbey_routes = {7, 8}\nfor a in alerts:\n    affected = set\\(a.get\\('AffectedRouteIDs', []\\)\\)\n    if affected & whidbey_routes or a.get\\('AllRoutesFlag'\\):\n        routes_hit = affected & whidbey_routes\n        print\\('---'\\)\n        print\\('Title:', a['AlertFullTitle']\\)\n        print\\('Routes hit:', routes_hit if routes_hit else 'ALL ROUTES'\\)\n        print\\('AllRoutes:', a.get\\('AllRoutesFlag'\\)\\)\n        print\\('RouteAlert:', a.get\\('RouteAlertText'\\)\\)\n\")",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npm run build 2>&1 | tail -30)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npm run build 2>&1 | grep -E \"error|Error|warn|FerryAlerts|page\" | head -20)",
+      "Bash(rm -rf \"/Users/papa/Documents/News Hub Project/.next\" && cd \"/Users/papa/Documents/News Hub Project\" && source ~/.nvm/nvm.sh && npm run build 2>&1)",
+      "Bash(cd \"/Users/papa/Documents/News Hub Project\" && git init && git add -A && git status)",
+      "Bash(rm \"/Users/papa/Documents/News Hub Project/.git/index.lock\" && cd \"/Users/papa/Documents/News Hub Project\" && git add -A && git status)"
+    ]
+  }
+}
