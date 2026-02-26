@@ -1,19 +1,17 @@
 'use client';
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function TextSizeToggle() {
   const [large, setLarge] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Apply saved preference after mount to avoid hydration mismatch
   useEffect(() => {
-    const saved = localStorage.getItem('text-size');
-    if (saved === 'large') {
-      document.documentElement.classList.add('text-large');
-      setLarge(true);
-    }
     setMounted(true);
+    const saved = localStorage.getItem('whidbey-text-size');
+    if (saved === 'large') {
+      setLarge(true);
+      document.documentElement.classList.add('text-large');
+    }
   }, []);
 
   function toggle() {
@@ -21,37 +19,38 @@ export default function TextSizeToggle() {
     setLarge(next);
     if (next) {
       document.documentElement.classList.add('text-large');
-      localStorage.setItem('text-size', 'large');
+      localStorage.setItem('whidbey-text-size', 'large');
     } else {
       document.documentElement.classList.remove('text-large');
-      localStorage.setItem('text-size', 'normal');
+      localStorage.setItem('whidbey-text-size', 'normal');
     }
   }
 
-  // Don't render until mounted (avoids SSR/client mismatch)
   if (!mounted) return null;
 
   return (
-    <div className="md:hidden fixed bottom-24 right-4 z-40 flex flex-col items-center gap-1">
-      <button
-        onClick={toggle}
-        aria-pressed={large}
-        aria-label={large ? 'Switch to normal text size' : 'Increase text size'}
-        className={`w-[52px] h-[52px] rounded-full flex items-center justify-center shadow-lg transition-colors duration-200 ${
-          large
-            ? 'bg-amber-400 text-stone-900'
-            : 'bg-forest-600 text-parchment-50'
-        }`}
+    <button
+      onClick={toggle}
+      title="Text size"
+      aria-label={large ? 'Reset text size' : 'Increase text size'}
+      className={`md:hidden fixed bottom-6 right-4 z-40 w-[52px] h-[52px] rounded-full shadow-warm-md flex items-center justify-center transition-colors duration-200 ${
+        large ? 'bg-amber-500 text-white' : 'bg-forest-700 text-parchment-50'
+      }`}
+    >
+      <span
+        className={`font-bold leading-none ${large ? 'text-xl' : 'text-base'}`}
+        aria-hidden="true"
       >
-        {large ? (
-          <span className="text-xl font-bold leading-none">A✓</span>
-        ) : (
-          <span className="text-base font-bold leading-none">A</span>
-        )}
-      </button>
-      <span className="sr-only">
-        {large ? 'Large text is on' : 'Increase text size'}
+        A
       </span>
-    </div>
+      {large && (
+        <span
+          className="absolute -top-0.5 -right-0.5 text-[10px] bg-white text-amber-500 rounded-full w-4 h-4 flex items-center justify-center font-bold"
+          aria-hidden="true"
+        >
+          ✓
+        </span>
+      )}
+    </button>
   );
 }
