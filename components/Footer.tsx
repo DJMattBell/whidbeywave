@@ -51,6 +51,7 @@ export default function Footer() {
               <li><Link href="/recommendations" className="hover:text-parchment-100 transition-colors">Local Picks</Link></li>
               <li><Link href="/newsletter"      className="hover:text-parchment-100 transition-colors">Newsletter</Link></li>
               <li><Link href="/contact"         className="hover:text-parchment-100 transition-colors">Say Hello</Link></li>
+              <li><Link href="/how-it-works"   className="hover:text-parchment-100 transition-colors">How It Works</Link></li>
             </ul>
           </div>
 
