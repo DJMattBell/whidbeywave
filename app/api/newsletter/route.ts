@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { randomUUID } from 'crypto';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -21,15 +22,18 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    const confirmationToken = randomUUID();
+
     const { error: insertError } = await supabase
       .from('newsletter_subscribers')
       .insert({
-        first_name:     firstName.trim(),
-        email:          normalEmail,
-        tags:           tags ?? [],
-        frequency:      frequency ?? 'weekly',
-        confirmed:      false,
-        weekend_digest: weekendDigest ?? false,
+        first_name:          firstName.trim(),
+        email:               normalEmail,
+        tags:                tags ?? [],
+        frequency:           frequency ?? 'weekly',
+        confirmed:           false,
+        weekend_digest:      weekendDigest ?? false,
+        confirmation_token:  confirmationToken,
       });
 
     if (insertError) {
@@ -40,9 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 
-    // Generate confirmation token: base64url(email|timestamp)
-    const token      = Buffer.from(`${normalEmail}|${Date.now()}`).toString('base64url');
-    const confirmUrl = `${SITE_URL}/api/newsletter/confirm?token=${token}`;
+    const confirmUrl = `${SITE_URL}/api/newsletter/confirm?token=${confirmationToken}`;
 
     // Send confirmation email
     const { error: emailError } = await resend.emails.send({

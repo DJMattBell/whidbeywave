@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -47,24 +48,24 @@ export async function POST(request: NextRequest) {
                 </tr>
                 <tr>
                   <td style="padding:32px;">
-                    <h1 style="font-size:20px;color:#1c3d2c;margin:0 0 16px;">New message from ${name.trim()}</h1>
+                    <h1 style="font-size:20px;color:#1c3d2c;margin:0 0 16px;">New message from ${escapeHtml(name.trim())}</h1>
                     <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#44403c;margin-bottom:24px;">
                       <tr>
                         <td style="padding:8px 0;color:#888;width:120px;vertical-align:top;">Topic</td>
-                        <td style="padding:8px 0;font-weight:bold;">${topicLabel}</td>
+                        <td style="padding:8px 0;font-weight:bold;">${escapeHtml(topicLabel)}</td>
                       </tr>
                       <tr>
                         <td style="padding:8px 0;color:#888;vertical-align:top;">From</td>
-                        <td style="padding:8px 0;">${name.trim()} &lt;${email.trim()}&gt;</td>
+                        <td style="padding:8px 0;">${escapeHtml(name.trim())} &lt;${escapeHtml(email.trim())}&gt;</td>
                       </tr>
-                      ${phone ? `<tr><td style="padding:8px 0;color:#888;vertical-align:top;">Phone</td><td style="padding:8px 0;">${phone}</td></tr>` : ''}
+                      ${phone ? `<tr><td style="padding:8px 0;color:#888;vertical-align:top;">Phone</td><td style="padding:8px 0;">${escapeHtml(phone)}</td></tr>` : ''}
                       <tr>
                         <td style="padding:8px 0;color:#888;vertical-align:top;">Message</td>
-                        <td style="padding:8px 0;white-space:pre-wrap;">${message.trim()}</td>
+                        <td style="padding:8px 0;white-space:pre-wrap;">${escapeHtml(message.trim())}</td>
                       </tr>
                     </table>
                     <p style="font-size:13px;color:#a8a29e;margin-top:24px;">
-                      Hit reply to respond directly to ${name.trim()}.
+                      Hit reply to respond directly to ${escapeHtml(name.trim())}.
                       WhidbeyWave · Whidbey Island, WA
                     </p>
                   </td>

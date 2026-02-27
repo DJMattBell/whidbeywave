@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
     body:        body.trim(),
     author_id:   user.id,
     author_name: displayName,
-    zip_code:    user.user_metadata?.zip_code ?? null,
   });
 
   if (insertError) {

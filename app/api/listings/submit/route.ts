@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -71,12 +72,12 @@ export async function POST(request: NextRequest) {
           <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
             <h2 style="color:#1c3d2c;margin:0 0 16px;font-size:20px;">New Marketplace Listing</h2>
             <table style="width:100%;border-collapse:collapse;font-size:14px;color:#44403c;">
-              <tr><td style="padding:8px 0;color:#888;width:120px;vertical-align:top;">Item</td><td style="padding:8px 0;font-weight:bold;">${title.trim()}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Price</td><td style="padding:8px 0;">${price || 'Not specified'}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Category</td><td style="padding:8px 0;">${category || 'Not specified'}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Location</td><td style="padding:8px 0;">${location || 'Not specified'}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Description</td><td style="padding:8px 0;white-space:pre-wrap;">${description.trim()}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Seller</td><td style="padding:8px 0;">${name.trim()} &lt;${email.trim()}&gt;${phone ? ` · ${phone}` : ''}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;width:120px;vertical-align:top;">Item</td><td style="padding:8px 0;font-weight:bold;">${escapeHtml(title.trim())}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Price</td><td style="padding:8px 0;">${escapeHtml(price || 'Not specified')}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Category</td><td style="padding:8px 0;">${escapeHtml(category || 'Not specified')}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Location</td><td style="padding:8px 0;">${escapeHtml(location || 'Not specified')}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Description</td><td style="padding:8px 0;white-space:pre-wrap;">${escapeHtml(description.trim())}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Seller</td><td style="padding:8px 0;">${escapeHtml(name.trim())} &lt;${escapeHtml(email.trim())}&gt;${phone ? ` · ${escapeHtml(phone)}` : ''}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Submission ID</td><td style="padding:8px 0;">${insertedId ?? 'See Supabase'}</td></tr>
             </table>
             <p style="font-size:13px;color:#a8a29e;margin-top:24px;">
@@ -101,9 +102,9 @@ export async function POST(request: NextRequest) {
               <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
             </div>
             <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks, ${name.trim()}!</h2>
+              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks, ${escapeHtml(name.trim())}!</h2>
               <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">
-                We received your marketplace listing for <strong>${title.trim()}</strong>.
+                We received your marketplace listing for <strong>${escapeHtml(title.trim())}</strong>.
                 We'll review it and get it added to the site — usually within a day or two.
                 We'll be in touch if we have any questions.
               </p>

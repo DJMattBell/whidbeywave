@@ -80,6 +80,7 @@ export default function AdminNewsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isAdmin) loadPosts();
   }, [isAdmin, loadPosts]);
 

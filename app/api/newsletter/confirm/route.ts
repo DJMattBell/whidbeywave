@@ -12,19 +12,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const decoded = Buffer.from(token, 'base64url').toString('utf-8');
-    const [email, tsStr] = decoded.split('|');
-
-    if (!email) {
-      return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
-    }
-
-    // Reject tokens older than 7 days
-    const ts = parseInt(tsStr ?? '0', 10);
-    if (ts && Date.now() - ts > 7 * 24 * 60 * 60 * 1000) {
-      return NextResponse.redirect(new URL('/newsletter?error=expired', SITE_URL));
-    }
-
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -33,23 +20,23 @@ export async function GET(request: NextRequest) {
     const { data: sub, error: fetchError } = await supabase
       .from('newsletter_subscribers')
       .select('id, first_name, email, confirmed')
-      .eq('email', email.toLowerCase())
+      .eq('confirmation_token', token)
       .single();
 
     if (fetchError || !sub) {
-      return NextResponse.redirect(new URL('/newsletter?error=not-found', SITE_URL));
+      return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
     }
 
     await supabase
       .from('newsletter_subscribers')
-      .update({ confirmed: true })
-      .eq('email', email.toLowerCase());
+      .update({ confirmed: true, confirmation_token: null })
+      .eq('id', sub.id);
 
     // Send welcome email (non-fatal)
     try {
       await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
-        to: email,
+        to: sub.email,
         subject: `You're in, ${sub.first_name} — welcome to the WhidbeyWave Weekly 🌊`,
         html: `
           <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">

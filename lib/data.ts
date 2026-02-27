@@ -226,15 +226,33 @@ export function formatShortDate(dateStr: string) {
 }
 
 export const categoryColors: Record<string, string> = {
+  // Short names used by static fallback data
   Nature:         'bg-green-100 text-green-800',
   Arts:           'bg-purple-100 text-purple-800',
   Market:         'bg-yellow-100 text-yellow-800',
   Film:           'bg-pink-100 text-pink-800',
   Outdoors:       'bg-teal-100 text-teal-800',
   Transportation: 'bg-blue-100 text-blue-800',
-  'Arts & Culture': 'bg-purple-100 text-purple-800',
   Agriculture:    'bg-lime-100 text-lime-800',
+  // Long names used by event submission form and stored in DB
+  'Nature & Wildlife':     'bg-green-100 text-green-800',
+  'Arts & Culture':        'bg-purple-100 text-purple-800',
+  'Farmers Market':        'bg-yellow-100 text-yellow-800',
+  'Music & Performance':   'bg-fuchsia-100 text-fuchsia-800',
+  'Outdoors & Recreation': 'bg-teal-100 text-teal-800',
+  'Film & Media':          'bg-pink-100 text-pink-800',
+  'Community & Social':    'bg-sky-100 text-sky-800',
+  'Classes & Workshops':   'bg-indigo-100 text-indigo-800',
+  'Food & Drink':          'bg-orange-100 text-orange-800',
+  'Sports & Fitness':      'bg-lime-100 text-lime-800',
+  Other:                   'bg-stone-100 text-stone-600',
+  // Marketplace categories
   'Sporting Goods': 'bg-orange-100 text-orange-800',
   'Arts & Crafts':  'bg-pink-100 text-pink-800',
   'Food & Farm':    'bg-green-100 text-green-800',
+  // News post categories
+  Community: 'bg-sky-100 text-sky-800',
+  Events:    'bg-amber-100 text-amber-800',
+  Business:  'bg-stone-100 text-stone-700',
+  Health:    'bg-rose-100 text-rose-800',
 };

@@ -9,6 +9,7 @@ export default function FeedbackButton() {
   const [currentPage, setCurrentPage] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(window.location.pathname);
   }, []);
 
@@ -106,7 +107,7 @@ export default function FeedbackButton() {
             <div className="flex flex-col items-center justify-center h-full text-center py-10">
               <div className="text-5xl mb-4">🌿</div>
               <p className="text-lg font-semibold text-forest-700">Thanks!</p>
-              <p className="text-stone-500 text-sm mt-1">We'll take a look.</p>
+              <p className="text-stone-500 text-sm mt-1">We&apos;ll take a look.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">

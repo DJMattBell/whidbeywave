@@ -31,13 +31,13 @@ export async function POST(request: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-    // Email submitter on approval
+    // Email submitter on approval (non-fatal — DB update already succeeded)
     if (action === 'approved' && submission.submitter_email) {
       const eventDate = new Date(submission.date + 'T12:00:00').toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
       });
 
-      await resend.emails.send({
+      try { await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
         to: submission.submitter_email,
         subject: `Your event "${submission.title}" is live on WhidbeyWave 🌊`,
@@ -90,7 +90,9 @@ export async function POST(request: NextRequest) {
           </body>
           </html>
         `,
-      });
+      }); } catch (emailErr) {
+        console.error('Approval email failed (non-fatal):', emailErr);
+      }
     }
 
     return NextResponse.json({ ok: true, status: action });

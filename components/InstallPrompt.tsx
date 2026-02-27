@@ -42,7 +42,7 @@ export default function InstallPrompt() {
       window.removeEventListener('beforeinstallprompt', onBIP);
       if (timer) clearTimeout(timer);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Second-page trigger for Android ───────────────────────────────────
   useEffect(() => {
@@ -54,6 +54,7 @@ export default function InstallPrompt() {
     const count = parseInt(sessionStorage.getItem('pwa-nav') || '0', 10) + 1;
     sessionStorage.setItem('pwa-nav', String(count));
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (count >= 2 && deferred) setBanner('android');
   }, [pathname, deferred]);
 

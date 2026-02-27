@@ -346,3 +346,137 @@ create policy "Submitters can read own submissions"
 create index if not exists newsletter_subscribers_confirmed_idx
   on newsletter_subscribers(confirmed, created_at asc)
   where confirmed = true;
+
+-- 4. weekend_digest preference column on newsletter_subscribers
+alter table newsletter_subscribers
+  add column if not exists weekend_digest boolean not null default false;
+
+-- 5. confirmation_token for secure email confirmation (replaces timestamp-based token)
+alter table newsletter_subscribers
+  add column if not exists confirmation_token text;
+
+create unique index if not exists newsletter_subscribers_confirmation_token_idx
+  on newsletter_subscribers(confirmation_token)
+  where confirmation_token is not null;
+
+
+-- ──────────────────────────────────────────────
+-- MARKETPLACE LISTINGS
+-- ──────────────────────────────────────────────
+create table if not exists marketplace_listings (
+  id           uuid primary key default gen_random_uuid(),
+  title        text not null,
+  price        text not null default 'Contact for price',
+  category     text not null default 'General',
+  location     text not null default 'Whidbey Island',
+  description  text,
+  seller_name  text not null,
+  seller_email text not null,
+  emoji        text not null default '🏷️',
+  status       text not null default 'pending'
+                 check (status in ('pending', 'approved', 'rejected')),
+  created_at   timestamptz not null default now()
+);
+
+create index if not exists marketplace_listings_status_idx
+  on marketplace_listings(status);
+create index if not exists marketplace_listings_created_idx
+  on marketplace_listings(created_at desc);
+
+alter table marketplace_listings enable row level security;
+
+-- Public can submit listings via the form
+create policy "Anyone can submit a listing"
+  on marketplace_listings for insert
+  with check (true);
+
+-- Public can read approved listings (shown on /marketplace)
+create policy "Anyone can read approved listings"
+  on marketplace_listings for select
+  using (status = 'approved');
+
+-- Authenticated users (admin) can read all listings regardless of status
+create policy "Authenticated users can read all listings"
+  on marketplace_listings for select
+  using (auth.uid() is not null);
+
+-- Service-role key used by moderation API routes bypasses RLS automatically.
+-- To allow status updates from authenticated admin sessions (anon key + session):
+create policy "Authenticated users can update listing status"
+  on marketplace_listings for update
+  using (auth.uid() is not null)
+  with check (auth.uid() is not null);
+
+
+-- ──────────────────────────────────────────────
+-- NEWS POSTS
+-- ──────────────────────────────────────────────
+create table if not exists news_posts (
+  id           uuid primary key default gen_random_uuid(),
+  title        text not null,
+  slug         text unique not null,
+  emoji        text not null default '📰',
+  category     text not null default 'Community',
+  read_minutes int not null default 3,
+  excerpt      text not null,
+  body         text not null default '',
+  author       text not null default 'WhidbeyWave',
+  published_at date not null default current_date,
+  published    boolean not null default false,
+  created_at   timestamptz not null default now()
+);
+
+create index if not exists news_posts_published_idx
+  on news_posts(published, published_at desc);
+create index if not exists news_posts_slug_idx
+  on news_posts(slug);
+
+alter table news_posts enable row level security;
+
+-- Public can read published posts (shown on /news and homepage)
+create policy "Anyone can read published posts"
+  on news_posts for select
+  using (published = true);
+
+-- Authenticated users (admin) can read all posts including drafts
+create policy "Authenticated users can read all posts"
+  on news_posts for select
+  using (auth.uid() is not null);
+
+-- Service-role key used by /api/news/create and /api/news/toggle bypasses RLS.
+-- To allow toggle via authenticated admin session (anon key + session):
+create policy "Authenticated users can update news posts"
+  on news_posts for update
+  using (auth.uid() is not null)
+  with check (auth.uid() is not null);
+
+create policy "Authenticated users can insert news posts"
+  on news_posts for insert
+  with check (auth.uid() is not null);
+
+
+-- ──────────────────────────────────────────────
+-- SITE FEEDBACK
+-- ──────────────────────────────────────────────
+create table if not exists site_feedback (
+  id         uuid primary key default gen_random_uuid(),
+  message    text not null,
+  email      text,
+  page       text default '/',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists site_feedback_created_idx
+  on site_feedback(created_at desc);
+
+alter table site_feedback enable row level security;
+
+-- Anyone can submit feedback (uses anon key in /api/feedback route)
+create policy "Anyone can submit feedback"
+  on site_feedback for insert
+  with check (true);
+
+-- Authenticated users (admin) can read all feedback
+create policy "Authenticated users can read feedback"
+  on site_feedback for select
+  using (auth.uid() is not null);

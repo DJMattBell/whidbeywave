@@ -47,6 +47,7 @@ export default function AdminFeedbackPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isAdmin) loadFeedback();
   }, [isAdmin, loadFeedback]);
 
