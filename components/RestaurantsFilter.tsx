@@ -42,7 +42,7 @@ export default function RestaurantsFilter({ recs }: { recs: Recommendation[] }) 
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-stone-400 text-sm italic py-4">
+        <p className="text-stone-600 text-sm italic py-4">
           No restaurants listed for {town} yet. Know one? <a href="/recommendations" className="text-forest-600 underline">Add it to Local Picks</a>.
         </p>
       ) : (
@@ -58,13 +58,13 @@ export default function RestaurantsFilter({ recs }: { recs: Recommendation[] }) 
                     {rec.name}
                   </h3>
                   {rec.town && (
-                    <p className="text-xs text-stone-400 mt-0.5">📍 {rec.town}</p>
+                    <p className="text-xs text-stone-600 mt-0.5">📍 {rec.town}</p>
                   )}
                 </div>
                 {rec.average_rating > 0 && (
                   <div className="text-right shrink-0">
                     <Stars rating={rec.average_rating} />
-                    <p className="text-xs text-stone-400">{rec.review_count} review{rec.review_count !== 1 ? 's' : ''}</p>
+                    <p className="text-xs text-stone-600">{rec.review_count} review{rec.review_count !== 1 ? 's' : ''}</p>
                   </div>
                 )}
               </div>

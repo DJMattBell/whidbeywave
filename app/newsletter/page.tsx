@@ -152,9 +152,9 @@ export default function NewsletterPage() {
                   {/* Topic preferences */}
                   <fieldset>
                     <legend className="block text-sm font-medium text-stone-700 mb-1">
-                      Topics you care about <span className="text-stone-400 font-normal">(optional — pick any)</span>
+                      Topics you care about <span className="text-stone-600 font-normal">(optional — pick any)</span>
                     </legend>
-                    <p className="text-sm text-stone-400 mb-3">We&apos;ll highlight these in your digest.</p>
+                    <p className="text-sm text-stone-600 mb-3">We&apos;ll highlight these in your digest.</p>
                     <div className="flex flex-wrap gap-2">
                       {NEWSLETTER_TAGS.map(tag => {
                         const on = tags.includes(tag);
@@ -208,7 +208,7 @@ export default function NewsletterPage() {
                           }`}
                         >
                           <p className="text-sm font-semibold text-stone-800">{opt.label}</p>
-                          <p className="text-sm text-stone-400 mt-0.5">{opt.sub}</p>
+                          <p className="text-sm text-stone-600 mt-0.5">{opt.sub}</p>
                         </button>
                       ))}
                     </div>
@@ -227,7 +227,7 @@ export default function NewsletterPage() {
                       <span className="font-semibold">📅 This Weekend digest</span>
                       <span className="text-stone-500 font-normal"> (Thursdays)</span>
                       <br />
-                      <span className="text-stone-400 text-xs">A short email every Thursday with what&apos;s happening that Friday–Sunday.</span>
+                      <span className="text-stone-600 text-xs">A short email every Thursday with what&apos;s happening that Friday–Sunday.</span>
                     </label>
                   </div>
 
@@ -239,7 +239,7 @@ export default function NewsletterPage() {
                     {status === 'loading' ? 'Signing you up…' : 'Sign Me Up'}
                   </button>
 
-                  <p className="text-sm text-stone-400 text-center">
+                  <p className="text-sm text-stone-600 text-center">
                     No spam, no selling your email. Just your island.
                   </p>
                 </form>
@@ -318,7 +318,7 @@ export default function NewsletterPage() {
                   </div>
                 </div>
 
-                <p className="text-sm text-stone-400 text-center border-t border-parchment-200 pt-4">
+                <p className="text-sm text-stone-600 text-center border-t border-parchment-200 pt-4">
                   You&apos;re getting this because you signed up at WhidbeyWave.com · Unsubscribe anytime
                 </p>
               </div>

@@ -133,7 +133,7 @@ export default function ProfilePage() {
 
         {/* Loading skeleton */}
         {loading && (
-          <div className="text-center py-20 text-stone-400">
+          <div className="text-center py-20 text-stone-600">
             <div className="text-4xl mb-4 animate-pulse">🌊</div>
             <p>Loading…</p>
           </div>
@@ -165,7 +165,7 @@ export default function ProfilePage() {
             <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 mb-10">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Signed in as</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-stone-600 mb-1">Signed in as</p>
                   <p className="text-stone-800 font-medium">{user.email}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -209,14 +209,14 @@ export default function ProfilePage() {
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
               >
                 Your Questions
-                <span className="ml-2 text-base font-normal text-stone-400">({posts.length})</span>
+                <span className="ml-2 text-base font-normal text-stone-600">({posts.length})</span>
               </h2>
 
               {dataLoading ? (
-                <div className="text-stone-400 text-sm py-4">Loading…</div>
+                <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : posts.length === 0 ? (
                 <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-400 text-sm mb-3">You haven&apos;t posted any questions yet.</p>
+                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t posted any questions yet.</p>
                   <Link href="/forum" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
                     Ask the Island →
                   </Link>
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                         {post.title}
                       </p>
                       <div className="shrink-0 text-right">
-                        <p className="text-xs text-stone-400">{formatDate(post.created_at)}</p>
+                        <p className="text-xs text-stone-600">{formatDate(post.created_at)}</p>
                         {post.reply_count > 0 && (
                           <p className="text-xs text-forest-600 font-medium mt-0.5">
                             {post.reply_count} {post.reply_count === 1 ? 'reply' : 'replies'}
@@ -253,14 +253,14 @@ export default function ProfilePage() {
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
               >
                 Submitted Events
-                <span className="ml-2 text-base font-normal text-stone-400">({events.length})</span>
+                <span className="ml-2 text-base font-normal text-stone-600">({events.length})</span>
               </h2>
 
               {dataLoading ? (
-                <div className="text-stone-400 text-sm py-4">Loading…</div>
+                <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : events.length === 0 ? (
                 <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-400 text-sm mb-3">You haven&apos;t submitted any events yet.</p>
+                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t submitted any events yet.</p>
                   <Link href="/submit-event" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
                     Submit an Event →
                   </Link>
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                     >
                       <div className="min-w-0">
                         <p className="text-stone-800 font-medium leading-snug truncate">{ev.title}</p>
-                        <p className="text-xs text-stone-400 mt-0.5">
+                        <p className="text-xs text-stone-600 mt-0.5">
                           {new Date(ev.date + 'T12:00:00').toLocaleDateString('en-US', {
                             month: 'long', day: 'numeric', year: 'numeric',
                           })}
@@ -297,14 +297,14 @@ export default function ProfilePage() {
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
               >
                 Your Reviews
-                <span className="ml-2 text-base font-normal text-stone-400">({reviews.length})</span>
+                <span className="ml-2 text-base font-normal text-stone-600">({reviews.length})</span>
               </h2>
 
               {dataLoading ? (
-                <div className="text-stone-400 text-sm py-4">Loading…</div>
+                <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : reviews.length === 0 ? (
                 <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-400 text-sm mb-3">You haven&apos;t written any reviews yet.</p>
+                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t written any reviews yet.</p>
                   <Link href="/recommendations" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
                     Explore Local Picks →
                   </Link>
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                         <span className="text-amber-400 text-sm" aria-label={`${rev.rating} out of 5 stars`}>
                           {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
                         </span>
-                        <span className="text-xs text-stone-400">{formatDate(rev.created_at)}</span>
+                        <span className="text-xs text-stone-600">{formatDate(rev.created_at)}</span>
                       </div>
                       <p className="text-stone-700 text-sm leading-relaxed">
                         {rev.body.length > 140 ? rev.body.slice(0, 140) + '…' : rev.body}

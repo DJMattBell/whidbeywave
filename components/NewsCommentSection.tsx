@@ -62,22 +62,22 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
       <h3 className="text-base font-semibold text-stone-700 mb-4 flex items-center gap-1.5">
         💬 Comments
         {comments.length > 0 && (
-          <span className="text-stone-400 font-normal">({comments.length})</span>
+          <span className="text-stone-600 font-normal">({comments.length})</span>
         )}
       </h3>
 
       {/* Comment list */}
       {loading ? (
-        <p className="text-sm text-stone-400 mb-4">Loading comments…</p>
+        <p className="text-sm text-stone-600 mb-4">Loading comments…</p>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-stone-400 mb-4">No comments yet — be the first!</p>
+        <p className="text-sm text-stone-600 mb-4">No comments yet — be the first!</p>
       ) : (
         <div className="space-y-3 mb-6">
           {comments.map(c => (
             <div key={c.id} className="bg-parchment-100 rounded-xl p-4 border border-parchment-200">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="font-semibold text-stone-800 text-sm">{c.author_name}</span>
-                <span className="text-xs text-stone-400">
+                <span className="text-xs text-stone-600">
                   {new Date(c.created_at).toLocaleDateString('en-US', {
                     month: 'short', day: 'numeric', year: 'numeric',
                   })}
@@ -121,7 +121,7 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
             maxLength={1000}
             className="w-full px-3 py-2 rounded-lg border border-parchment-300 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400 bg-white text-stone-700 placeholder:text-stone-400 resize-none"
           />
-          <p className="text-xs text-stone-400 mt-1 text-right">{body.length}/1000</p>
+          <p className="text-xs text-stone-600 mt-1 text-right">{body.length}/1000</p>
         </div>
 
         <button

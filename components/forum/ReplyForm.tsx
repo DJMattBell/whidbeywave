@@ -81,7 +81,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
           Add your reply
         </h3>
         {user ? (
-          <span className="text-xs text-stone-400">
+          <span className="text-xs text-stone-600">
             as {user.user_metadata?.full_name ?? user.email?.split('@')[0]}
           </span>
         ) : null}
@@ -104,7 +104,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
           </div>
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">
-              Zip code <span className="text-stone-400 font-normal">(optional)</span>
+              Zip code <span className="text-stone-600 font-normal">(optional)</span>
             </label>
             <input
               type="text" inputMode="numeric" value={anonZip}
@@ -113,7 +113,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
               maxLength={5}
               className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
             />
-            <p className="text-xs text-stone-400 mt-1">Whidbey zips get a 🌊 Local badge</p>
+            <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
           </div>
         </div>
       )}

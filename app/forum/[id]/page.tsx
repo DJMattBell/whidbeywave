@@ -93,7 +93,7 @@ export default async function ForumThreadPage({ params }: { params: { id: string
         <h1 className="text-2xl text-stone-900 mb-3 leading-snug font-semibold">
           {post.title}
         </h1>
-        <p className="text-sm text-stone-400 mb-5 flex flex-wrap items-center gap-1.5">
+        <p className="text-sm text-stone-600 mb-5 flex flex-wrap items-center gap-1.5">
           <span>Asked by <strong className="text-stone-600">{post.author_name}</strong></span>
           {isWhidbeyLocal(post.zip_code) && <LocalBadge />}
           <span>·</span>
@@ -126,7 +126,7 @@ export default async function ForumThreadPage({ params }: { params: { id: string
                   {i < replies.length - 1 && <div className="w-px flex-1 bg-parchment-300 my-1" />}
                 </div>
                 <div className="flex-1 bg-white rounded-xl border border-parchment-200 p-4">
-                  <p className="text-xs text-stone-400 mb-2 flex flex-wrap items-center gap-1.5">
+                  <p className="text-xs text-stone-600 mb-2 flex flex-wrap items-center gap-1.5">
                     <strong className="text-stone-600">{reply.author_name}</strong>
                     {isWhidbeyLocal(reply.zip_code) && <LocalBadge />}
                     <span>·</span>

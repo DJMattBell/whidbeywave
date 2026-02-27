@@ -50,7 +50,7 @@ function CallbackHandler() {
                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               You&apos;re signed in. Welcome back.
             </p>
-            <p className="text-stone-400 text-sm mt-1">Redirecting you home…</p>
+            <p className="text-stone-600 text-sm mt-1">Redirecting you home…</p>
           </>
         )}
         {status === 'error' && (
@@ -60,7 +60,7 @@ function CallbackHandler() {
                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               That link didn&apos;t work.
             </p>
-            <p className="text-stone-400 text-sm mt-1">It may have expired. Try signing in again.</p>
+            <p className="text-stone-600 text-sm mt-1">It may have expired. Try signing in again.</p>
             <Link href="/" className="mt-4 inline-block btn-secondary">Back to Home</Link>
           </>
         )}

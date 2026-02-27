@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
 import TodayWidget from '@/components/TodayWidget';
+import AddToCalendar from '@/components/AddToCalendar';
 
 export const revalidate = 300; // 5 minutes
 
@@ -91,7 +92,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-lg md:text-2xl text-parchment-50 font-light max-w-lg mx-auto mb-2 md:mb-3 tracking-wide">
-            What&apos;s Happening &nbsp;·&nbsp; From the Island &nbsp;·&nbsp; Things for Sale
+            The easiest way to see what&apos;s happening on Whidbey Island
           </p>
 
           <p className="hidden sm:block text-base md:text-lg text-parchment-200 max-w-xl mx-auto mb-12 leading-relaxed">
@@ -99,12 +100,12 @@ export default async function HomePage() {
             written for neighbors, by neighbors.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4 md:mb-12">
+          <div className="flex flex-col items-center gap-3 mb-4 md:mb-12">
             <Link href="/events" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 shadow-warm-lg">
               See What&apos;s On
             </Link>
-            <Link href="/marketplace" className="btn-secondary bg-parchment-100 text-forest-800 border-parchment-300/60 hover:bg-parchment-50">
-              Browse Listings
+            <Link href="/marketplace" className="text-sm text-parchment-200 hover:text-parchment-50 transition-colors">
+              or browse the marketplace →
             </Link>
           </div>
         </div>
@@ -135,6 +136,13 @@ export default async function HomePage() {
               <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
             </Link>
           ))}
+          <Link
+            href="/submit-event"
+            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-2xl bg-forest-500 border border-forest-600 hover:bg-forest-600 transition-colors min-w-[80px] text-center"
+          >
+            <span className="text-2xl leading-none" aria-hidden="true">➕</span>
+            <span className="text-xs font-semibold text-parchment-50 whitespace-nowrap">Submit</span>
+          </Link>
         </div>
       </section>
 
@@ -182,15 +190,15 @@ export default async function HomePage() {
 
         {upcomingEvents.length === 0 ? (
           <div className="card p-10 text-center">
-            <p className="text-stone-500 text-lg mb-4">Nothing on the calendar yet — check back soon or submit an event!</p>
+            <p className="text-stone-600 text-lg mb-4">Nothing on the calendar yet — check back soon or submit an event!</p>
             <Link href="/submit-event" className="btn-secondary">Submit an Event →</Link>
           </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
             {upcomingEvents.map((event) => (
-              <div key={event.id} className="card group">
+              <div key={event.id} className="card group flex flex-col">
                 <div className="h-1.5 bg-gradient-to-r from-forest-400 to-sound-500" />
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-3">
                     <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
                       {event.category}
@@ -203,9 +211,23 @@ export default async function HomePage() {
                   >
                     {event.title}
                   </h3>
-                  <p className="text-[15px] text-stone-500 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
-                  <p className="text-[15px] text-stone-500 mb-4">📍 {event.town}</p>
-                  <p className="text-base text-stone-600 line-clamp-2">{event.description}</p>
+                  <p className="text-[15px] text-stone-600 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
+                  <p className="text-[15px] text-stone-600 mb-4">📍 {event.town}</p>
+                  <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description}</p>
+                  <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-parchment-200">
+                    <AddToCalendar
+                      event={{
+                        title:       event.title,
+                        date:        event.date,
+                        time:        event.time,
+                        location:    event.town,
+                        description: event.description,
+                      }}
+                    />
+                    <Link href="/events" className="text-sm text-forest-600 hover:text-forest-800 transition-colors shrink-0">
+                      View details →
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
@@ -245,7 +267,7 @@ export default async function HomePage() {
                     >
                       {post.title}
                     </h3>
-                    <p className="text-[15px] text-stone-400 mb-2">
+                    <p className="text-[15px] text-stone-600 mb-2">
                       {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
                     </p>
                     <p className="text-base text-stone-600">{post.excerpt}</p>
@@ -271,7 +293,7 @@ export default async function HomePage() {
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {featuredListings.map((listing) => (
-            <div key={listing.id} className="card group cursor-pointer">
+            <Link key={listing.id} href="/marketplace" className="card group block">
               <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center text-5xl">
                 {listing.emoji}
               </div>
@@ -286,9 +308,10 @@ export default async function HomePage() {
                   {listing.title}
                 </h3>
                 <p className="text-forest-600 font-bold text-lg mb-1">{listing.price}</p>
-                <p className="text-[15px] text-stone-500">📍 {listing.location}</p>
+                <p className="text-[15px] text-stone-600 mb-3">📍 {listing.location}</p>
+                <p className="text-sm text-forest-600">View listing →</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -303,11 +326,24 @@ export default async function HomePage() {
             Keep up with the island
           </h2>
           <p className="text-parchment-300 text-lg mb-8 leading-relaxed">
-            Got an event, a story, or something to sell? We&apos;d love to hear from you.
-            This is your site as much as ours.
+            Got an event or something to sell? Add it here — this is your site as much as ours.
           </p>
-          <Link href="/contact" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100">
-            Say Hello
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
+            <Link
+              href="/submit-event"
+              className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 min-h-[48px]"
+            >
+              📅 Submit an Event
+            </Link>
+            <Link
+              href="/submit-listing"
+              className="btn-primary bg-transparent border-2 border-parchment-300 text-parchment-100 hover:bg-parchment-50/10 min-h-[48px]"
+            >
+              🏷️ Post a Listing
+            </Link>
+          </div>
+          <Link href="/contact" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
+            Or just say hello →
           </Link>
         </div>
       </section>

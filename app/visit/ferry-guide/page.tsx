@@ -89,7 +89,7 @@ export default async function FerryGuidePage() {
                   <div className="flex items-start gap-2.5">
                     <span className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1 ${dotColor(ferry.mukilteoCliton!.status)}`} aria-hidden="true" />
                     <div>
-                      <p className="text-xs text-stone-400 leading-tight">Mukilteo / Clinton</p>
+                      <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
                       <p className={`text-sm leading-tight ${statusColor(ferry.mukilteoCliton!.status)}`}>
                         {statusLabel(ferry.mukilteoCliton!.status)}
                       </p>
@@ -100,7 +100,7 @@ export default async function FerryGuidePage() {
                   <div className="flex items-start gap-2.5">
                     <span className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1 ${dotColor(ferry.ptCoupeville!.status)}`} aria-hidden="true" />
                     <div>
-                      <p className="text-xs text-stone-400 leading-tight">Port Townsend / Coupeville</p>
+                      <p className="text-xs text-stone-600 leading-tight">Port Townsend / Coupeville</p>
                       <p className={`text-sm leading-tight ${statusColor(ferry.ptCoupeville!.status)}`}>
                         {statusLabel(ferry.ptCoupeville!.status)}
                       </p>
@@ -147,7 +147,7 @@ export default async function FerryGuidePage() {
                   I-5 exit 182 — about 30 minutes south of Everett and 35 minutes north of Seattle.
                 </p>
                 <div className="space-y-2 mb-5">
-                  <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Local tips</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-stone-600">Local tips</p>
                   {[
                     'Walk-on passengers never wait — park in Mukilteo and walk on if you\'re staying at the south end',
                     'Driving on weekends: arrive 30–60 min early in summer, especially Fridays',
@@ -195,7 +195,7 @@ export default async function FerryGuidePage() {
                   Drive via Highway 20 from Anacortes. No wait, no schedule — just a dramatic bridge crossing
                   over a narrow, churning channel at the north end of the island.
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Best if you&apos;re:</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-stone-600 mb-2">Best if you&apos;re:</p>
                 <ul className="space-y-1.5 mb-5">
                   {[
                     'Coming from north of Seattle, Bellingham, or Canada',
@@ -209,7 +209,7 @@ export default async function FerryGuidePage() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-xs text-stone-400 italic">
+                <p className="text-xs text-stone-600 italic">
                   Note: adds significant driving time from Seattle — the ferry is usually faster if coming from south.
                 </p>
               </div>

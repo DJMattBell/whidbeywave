@@ -78,7 +78,7 @@ function DepartureList({
     <div>
       <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">{label}</p>
       {departures.length === 0 ? (
-        <p className="text-sm text-stone-400 italic">No upcoming departures found</p>
+        <p className="text-sm text-stone-600 italic">No upcoming departures found</p>
       ) : (
         <ol className="space-y-1.5">
           {departures.map((dep, i) => (
@@ -212,7 +212,7 @@ export default async function FerryPage() {
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-0.5">Route</p>
+                          <p className="text-xs font-semibold text-stone-600 uppercase tracking-wide mb-0.5">Route</p>
                           <h3
                             className="text-xl font-semibold text-stone-900"
                             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -234,7 +234,7 @@ export default async function FerryPage() {
                         <DepartureList label="From Clinton →"   departures={r.fromWhidbey} />
                       </div>
 
-                      <p className="text-xs text-stone-400 mt-4">
+                      <p className="text-xs text-stone-600 mt-4">
                         Updated {r.lastUpdated} ·{' '}
                         <a
                           href="https://www.wsdot.wa.gov/ferries/vesselwatch/"
@@ -259,7 +259,7 @@ export default async function FerryPage() {
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-0.5">Route</p>
+                          <p className="text-xs font-semibold text-stone-600 uppercase tracking-wide mb-0.5">Route</p>
                           <h3
                             className="text-xl font-semibold text-stone-900"
                             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -282,7 +282,7 @@ export default async function FerryPage() {
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
-                        <p className="text-xs text-stone-400">
+                        <p className="text-xs text-stone-600">
                           Updated {r.lastUpdated}
                         </p>
                         <a
@@ -302,7 +302,7 @@ export default async function FerryPage() {
           )}
 
           {/* WSDOT alerts link */}
-          <p className="text-sm text-stone-400 mt-4 text-center">
+          <p className="text-sm text-stone-600 mt-4 text-center">
             Full alerts and sailing updates:{' '}
             <a
               href="https://www.wsdot.wa.gov/ferries/alerts/"
@@ -346,7 +346,7 @@ export default async function FerryPage() {
                   <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors leading-snug text-sm">
                     {cam.terminal}
                   </p>
-                  <p className="text-xs text-stone-400 mt-0.5">{cam.side}</p>
+                  <p className="text-xs text-stone-600 mt-0.5">{cam.side}</p>
                 </div>
                 <span className="text-xs font-semibold text-forest-600 group-hover:text-forest-800 transition-colors mt-auto">
                   View Live Camera →

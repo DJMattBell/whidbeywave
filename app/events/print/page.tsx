@@ -140,7 +140,7 @@ export default async function PrintPage() {
           <p className="text-stone-600 text-sm">
             Events: {fmtRangeDate(today)} – {fmtRangeDate(cutoff)}
           </p>
-          <p className="text-stone-400 text-xs mt-0.5">Printed from WhidbeyWave.com</p>
+          <p className="text-stone-600 text-xs mt-0.5">Printed from WhidbeyWave.com</p>
         </div>
 
         {/* Event list */}
@@ -183,7 +183,7 @@ export default async function PrintPage() {
         )}
 
         {/* Footer */}
-        <div className="mt-12 pt-4 border-t border-stone-300 text-xs text-stone-400 text-center">
+        <div className="mt-12 pt-4 border-t border-stone-300 text-xs text-stone-600 text-center">
           WhidbeyWave.com · Community events for Whidbey Island, WA
         </div>
 

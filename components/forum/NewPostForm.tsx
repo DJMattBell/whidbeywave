@@ -93,7 +93,7 @@ export default function NewPostForm() {
         <button onClick={() => setOpen(true)} className="btn-primary">
           Post a Question
         </button>
-        <p className="text-xs text-stone-400 mt-2">
+        <p className="text-xs text-stone-600 mt-2">
           {user
             ? `Posting as ${user.user_metadata?.full_name ?? user.email?.split('@')[0]}`
             : 'No account needed — just a name.'
@@ -110,7 +110,7 @@ export default function NewPostForm() {
             style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
           Ask the island
         </h3>
-        <button onClick={() => setOpen(false)} className="text-stone-400 hover:text-stone-600 text-sm">
+        <button onClick={() => setOpen(false)} className="text-stone-600 hover:text-stone-800 text-sm">
           Cancel
         </button>
       </div>
@@ -149,7 +149,7 @@ export default function NewPostForm() {
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1.5">
                   Zip code
-                  <span className="text-stone-400 font-normal ml-1">(optional)</span>
+                  <span className="text-stone-600 font-normal ml-1">(optional)</span>
                 </label>
                 <input
                   type="text" inputMode="numeric" value={anonZip}
@@ -158,14 +158,14 @@ export default function NewPostForm() {
                   maxLength={5}
                   className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
                 />
-                <p className="text-xs text-stone-400 mt-1">Whidbey zips get a 🌊 Local badge</p>
+                <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
               </div>
             </div>
           )}
 
           {user && (
-            <p className="text-xs text-stone-400">
-              Posting as <strong className="text-stone-600">
+            <p className="text-xs text-stone-600">
+              Posting as <strong className="text-stone-700">
                 {user.user_metadata?.full_name ?? user.email?.split('@')[0]}
               </strong>
             </p>
@@ -184,7 +184,7 @@ export default function NewPostForm() {
 
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">
-              More details <span className="text-stone-400 font-normal">(optional but helpful)</span>
+              More details <span className="text-stone-600 font-normal">(optional but helpful)</span>
             </label>
             <textarea
               rows={4} value={body} onChange={e => setBody(e.target.value)}

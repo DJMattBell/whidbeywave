@@ -78,13 +78,13 @@ export default function ZipPrompt({ user }: { user: User }) {
               <>
                 <p className="text-2xl mb-1">🌊</p>
                 <p className="font-bold text-forest-700 text-sm">You&apos;re a local!</p>
-                <p className="text-xs text-stone-400 mt-0.5">Your posts will show the Local badge.</p>
+                <p className="text-xs text-stone-600 mt-0.5">Your posts will show the Local badge.</p>
               </>
             ) : (
               <>
                 <p className="text-2xl mb-1">👋</p>
                 <p className="font-semibold text-stone-700 text-sm">Welcome to the island!</p>
-                <p className="text-xs text-stone-400 mt-0.5">Zip code saved.</p>
+                <p className="text-xs text-stone-600 mt-0.5">Zip code saved.</p>
               </>
             )}
           </div>
@@ -123,7 +123,7 @@ export default function ZipPrompt({ user }: { user: User }) {
               <button
                 type="button"
                 onClick={dismiss}
-                className="text-xs text-stone-400 hover:text-stone-600 transition-colors px-2 py-2"
+                className="text-xs text-stone-600 hover:text-stone-800 transition-colors px-2 py-2"
               >
                 Skip
               </button>

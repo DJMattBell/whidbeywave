@@ -159,7 +159,7 @@ export default async function ThisWeekendPage() {
                     </div>
                     {/* Content */}
                     <div className="flex-1 p-5">
-                      <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                      <p className="text-xs font-semibold text-stone-600 uppercase tracking-wider mb-1">
                         {event.category} · {event.town}
                       </p>
                       <h3

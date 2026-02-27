@@ -105,7 +105,7 @@ export default async function NewsPage() {
           <div className="text-center py-20 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300 mb-12">
             <div className="text-5xl mb-4">📰</div>
             <p className="text-lg text-stone-700 font-semibold mb-2">No stories yet</p>
-            <p className="text-stone-400 text-sm">Check back soon — there&apos;s always something happening on the island.</p>
+            <p className="text-stone-600 text-sm">Check back soon — there&apos;s always something happening on the island.</p>
           </div>
         ) : (
           <>
@@ -129,7 +129,7 @@ export default async function NewsPage() {
                 <h2 className="text-2xl md:text-3xl text-stone-900 mb-3 group-hover:text-forest-600 transition-colors leading-tight font-semibold">
                   {featured.title}
                 </h2>
-                <p className="text-[15px] text-stone-400 mb-4">
+                <p className="text-[15px] text-stone-600 mb-4">
                   By {featured.author} &nbsp;·&nbsp;{' '}
                   <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time>
                   &nbsp;·&nbsp; {featured.readMinutes} min read
@@ -169,7 +169,7 @@ export default async function NewsPage() {
                         <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
                           {post.title}
                         </h2>
-                        <p className="text-[15px] text-stone-400 mb-3">
+                        <p className="text-[15px] text-stone-600 mb-3">
                           By {post.author} &nbsp;·&nbsp;{' '}
                           <time dateTime={post.publishedAt}>{formatShortDate(post.publishedAt)}</time>
                           &nbsp;·&nbsp; {post.readMinutes} min read

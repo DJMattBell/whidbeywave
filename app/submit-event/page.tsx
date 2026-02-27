@@ -276,7 +276,7 @@ export default function SubmitEventPage() {
 
                 {/* Tags */}
                 <div>
-                  <p className={labelCls}>Tags <span className="text-stone-400 font-normal">(pick all that apply)</span></p>
+                  <p className={labelCls}>Tags <span className="text-stone-600 font-normal">(pick all that apply)</span></p>
                   <div className="flex flex-wrap gap-2" role="group" aria-label="Event tags">
                     {EVENT_TAGS.map(tag => {
                       const on = tags.includes(tag);
@@ -329,7 +329,7 @@ export default function SubmitEventPage() {
             {status === 'loading' ? 'Submitting…' : 'Send It In →'}
           </button>
 
-          <p className="text-sm text-stone-400 text-center">
+          <p className="text-sm text-stone-600 text-center">
             All events are reviewed before going live — usually within 48 hours.
           </p>
 

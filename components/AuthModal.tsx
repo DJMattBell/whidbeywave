@@ -82,7 +82,7 @@ export default function AuthModal({ onClose }: Props) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors p-1 rounded-lg hover:bg-parchment-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="absolute top-4 right-4 text-stone-600 hover:text-stone-800 transition-colors p-1 rounded-lg hover:bg-parchment-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Close sign-in dialog"
         >
           ✕
@@ -99,7 +99,7 @@ export default function AuthModal({ onClose }: Props) {
               <strong className="text-stone-800">{email}</strong>.
               Click the link in that email to sign in — no password needed.
             </p>
-            <p className="text-stone-400 text-sm mt-3">The link expires after 1 hour. Check your spam folder if you don&apos;t see it.</p>
+            <p className="text-stone-600 text-sm mt-3">The link expires after 1 hour. Check your spam folder if you don&apos;t see it.</p>
           </div>
         ) : (
           <>
@@ -137,7 +137,7 @@ export default function AuthModal({ onClose }: Props) {
             {/* Divider */}
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-parchment-300" aria-hidden="true" />
-              <span className="text-xs text-stone-400 font-medium">or sign in with email</span>
+              <span className="text-xs text-stone-600 font-medium">or sign in with email</span>
               <div className="flex-1 h-px bg-parchment-300" aria-hidden="true" />
             </div>
 
@@ -174,7 +174,7 @@ export default function AuthModal({ onClose }: Props) {
                 {status === 'loading' ? 'Sending…' : 'Email me a sign-in link'}
               </button>
 
-              <p className="text-sm text-stone-400 text-center">
+              <p className="text-sm text-stone-600 text-center">
                 We only use your email to sign you in. No spam, ever.
               </p>
             </form>

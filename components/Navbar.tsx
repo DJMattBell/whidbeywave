@@ -37,9 +37,10 @@ const baseCommunityLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [visitOpen, setVisitOpen] = useState(false);
-  const [authOpen, setAuthOpen]   = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
+  const [visitOpen, setVisitOpen]   = useState(false);
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [authOpen, setAuthOpen]     = useState(false);
   const { user, signOut } = useAuth();
 
   const visitActive = pathname.startsWith('/visit');
@@ -158,6 +159,49 @@ export default function Navbar() {
                 })()}
               </nav>
 
+              {/* Submit dropdown — desktop */}
+              <div
+                className="hidden md:flex items-center ml-2 relative"
+                onMouseEnter={() => setSubmitOpen(true)}
+                onMouseLeave={() => setSubmitOpen(false)}
+              >
+                <button
+                  onClick={() => setSubmitOpen(v => !v)}
+                  aria-expanded={submitOpen}
+                  aria-haspopup="listbox"
+                  className="px-4 py-2 rounded-full text-sm font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-500 hover:text-parchment-50 transition-colors inline-flex items-center gap-1.5 min-h-[40px]"
+                >
+                  <span aria-hidden="true">＋</span>
+                  <span>Submit</span>
+                  <svg
+                    className={`w-3 h-3 transition-transform shrink-0 ${submitOpen ? 'rotate-180' : ''}`}
+                    viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.75"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4 4-4" />
+                  </svg>
+                </button>
+
+                {submitOpen && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden min-w-[190px] z-50">
+                    <Link
+                      href="/submit-event"
+                      onClick={() => setSubmitOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                    >
+                      <span aria-hidden="true">📅</span> Submit an Event
+                    </Link>
+                    <Link
+                      href="/submit-listing"
+                      onClick={() => setSubmitOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
+                    >
+                      <span aria-hidden="true">🏷️</span> Post a Listing
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               {/* Search icon — desktop */}
               <div className="hidden md:flex items-center gap-2 ml-2">
                 <Link
@@ -265,7 +309,7 @@ export default function Navbar() {
                 {/* Visit Whidbey — flat indented sub-links */}
                 <div className="mt-1 border-t border-parchment-200 pt-2">
                   <p className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
-                    visitActive ? 'text-forest-700' : 'text-stone-400'
+                    visitActive ? 'text-forest-700' : 'text-stone-600'
                   }`}>
                     🗺️ Visit Whidbey
                   </p>
@@ -291,7 +335,25 @@ export default function Navbar() {
                   })}
                 </div>
 
-                <div className="px-4 pt-3 pb-1 text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                {/* Submit shortcuts */}
+                <div className="px-4 pt-3 pb-2 flex flex-col gap-2">
+                  <Link
+                    href="/submit-event"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 py-3 rounded-xl text-base font-semibold bg-forest-500 text-parchment-50 hover:bg-forest-600 transition-colors min-h-[48px]"
+                  >
+                    <span aria-hidden="true">📅</span> Submit an Event
+                  </Link>
+                  <Link
+                    href="/submit-listing"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 py-3 rounded-xl text-base font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-50 transition-colors min-h-[48px]"
+                  >
+                    <span aria-hidden="true">🏷️</span> Post a Listing
+                  </Link>
+                </div>
+
+                <div className="px-4 pt-1 pb-1 text-xs font-semibold text-stone-600 uppercase tracking-wider">
                   Community
                 </div>
                 {communityLinks.map(({ href, label }) => {
@@ -350,6 +412,22 @@ export default function Navbar() {
         {/* Community strip — mobile (always visible, horizontal scroll) */}
         <div className="md:hidden bg-forest-50 border-b border-parchment-200 overflow-x-auto">
           <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full" aria-label="Community navigation">
+            {/* Search — pinned first, visually distinct pill */}
+            <Link
+              href="/search"
+              aria-current={pathname === '/search' ? 'page' : undefined}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
+                pathname === '/search'
+                  ? 'bg-forest-500 text-parchment-50'
+                  : 'bg-forest-100 text-forest-700 hover:bg-forest-200 hover:text-forest-900'
+              }`}
+            >
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </Link>
+            <span className="text-parchment-400 text-xs shrink-0" aria-hidden="true">·</span>
             {communityLinks.map(({ href, label }, i) => {
               const active = pathname === href || pathname.startsWith(href + '/');
               return (

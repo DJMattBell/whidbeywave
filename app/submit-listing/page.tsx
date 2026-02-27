@@ -187,7 +187,7 @@ export default function SubmitListingPage() {
           {/* Your info */}
           <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 space-y-4">
             <h2 className="text-lg text-stone-900 font-semibold">Your contact info</h2>
-            <p className="text-sm text-stone-400 -mt-2">
+            <p className="text-sm text-stone-600 -mt-2">
               So interested buyers can reach you. Not shown publicly — we&apos;ll pass it along when someone asks.
             </p>
 
@@ -226,7 +226,7 @@ export default function SubmitListingPage() {
 
             <div>
               <label htmlFor="ls-phone" className={labelCls}>
-                Phone <span className="text-stone-400 font-normal">(optional)</span>
+                Phone <span className="text-stone-600 font-normal">(optional)</span>
               </label>
               <input
                 id="ls-phone"
@@ -252,7 +252,7 @@ export default function SubmitListingPage() {
             {status === 'loading' ? 'Submitting…' : 'Submit My Listing'}
           </button>
 
-          <p className="text-sm text-stone-400 text-center">
+          <p className="text-sm text-stone-600 text-center">
             All listings are reviewed before going live. Usually within 48 hours.
           </p>
         </form>

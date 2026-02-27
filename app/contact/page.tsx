@@ -184,7 +184,7 @@ export default function ContactPage() {
                     <>
                       <div>
                         <label htmlFor="contact-phone" className="block text-base font-medium text-stone-700 mb-2">
-                          Phone <span className="text-stone-400 font-normal">(optional)</span>
+                          Phone <span className="text-stone-600 font-normal">(optional)</span>
                         </label>
                         <input
                           id="contact-phone"
@@ -225,7 +225,7 @@ export default function ContactPage() {
                         <button type="submit" disabled={status === 'loading'} className="btn-primary py-3 text-base disabled:opacity-60">
                           {status === 'loading' ? 'Sending…' : 'Send It Along →'}
                         </button>
-                        <p className="text-sm text-stone-400 leading-relaxed">
+                        <p className="text-sm text-stone-600 leading-relaxed">
                           We&apos;ll get back to you — usually within a day or two. No spam, ever.
                         </p>
                       </div>
@@ -240,7 +240,7 @@ export default function ContactPage() {
               <div className="text-center text-forest-600">
                 <div className="text-4xl mb-2" aria-hidden="true">🗺️</div>
                 <p className="text-base font-medium">Whidbey Island, Washington</p>
-                <p className="text-sm text-stone-400 mt-1">Island County &nbsp;·&nbsp; Puget Sound</p>
+                <p className="text-sm text-stone-600 mt-1">Island County &nbsp;·&nbsp; Puget Sound</p>
               </div>
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function ContactPage() {
                 >
                   (360) 926-9101
                 </a>
-                <p className="text-stone-400 text-sm mt-0.5">Whidbey Island DJ Collective</p>
+                <p className="text-stone-600 text-sm mt-0.5">Whidbey Island DJ Collective</p>
               </div>
             </div>
 

@@ -72,7 +72,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-forest-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-forest-400">
+        <div className="border-t border-forest-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-forest-300">
           <p>&copy; {new Date().getFullYear()} WhidbeyWave.com &nbsp;·&nbsp; Whidbey Island, WA</p>
           <Link href="/contact" className="hover:text-parchment-300 transition-colors">
             Something not right? Let us know →

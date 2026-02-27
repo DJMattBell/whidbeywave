@@ -59,7 +59,7 @@ export default function EventRsvpButton({ eventId }: { eventId: string }) {
           ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm-sm'
           : user
             ? 'bg-parchment-50 text-forest-600 border-forest-200 hover:bg-forest-100'
-            : 'bg-parchment-50 text-stone-400 border-parchment-300 cursor-not-allowed'
+            : 'bg-parchment-50 text-stone-600 border-parchment-300 cursor-not-allowed'
       }`}
     >
       <span aria-hidden="true">{going ? '✓' : '+'}</span>

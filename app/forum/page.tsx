@@ -148,7 +148,7 @@ export default async function ForumPage({
             <p className="text-lg text-stone-700 mb-1 font-semibold">
               {activeCategory === 'All' ? 'No questions yet — be the first' : `No posts in "${activeCategory}" yet`}
             </p>
-            <p className="text-stone-400 text-sm">
+            <p className="text-stone-600 text-sm">
               {isConfigured ? 'Scroll down to post a question.' : 'Configure Supabase to enable the forum.'}
             </p>
           </div>
@@ -170,7 +170,7 @@ export default async function ForumPage({
                       aria-label={`${post.reply_count ?? 0} ${(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}`}
                     >
                       <span className="text-lg font-bold text-stone-700" aria-hidden="true">{post.reply_count ?? 0}</span>
-                      <span className="text-xs text-stone-400" aria-hidden="true">{(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}</span>
+                      <span className="text-xs text-stone-600" aria-hidden="true">{(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -186,7 +186,7 @@ export default async function ForumPage({
                       <h2 className="font-semibold text-stone-900 group-hover:text-forest-600 transition-colors leading-snug mb-1 text-base">
                         {post.title}
                       </h2>
-                      <p className="text-sm text-stone-400 flex flex-wrap items-center gap-1.5">
+                      <p className="text-sm text-stone-600 flex flex-wrap items-center gap-1.5">
                         <span>{post.author_name}</span>
                         {isWhidbeyLocal(post.zip_code) && <LocalBadge />}
                         <span>·</span>

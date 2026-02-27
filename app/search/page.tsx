@@ -236,7 +236,7 @@ function SearchBody() {
             <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
               <div className="text-5xl mb-4" aria-hidden="true">🔍</div>
               <p className="text-lg font-semibold text-stone-700 mb-2">Nothing found</p>
-              <p className="text-stone-400 text-sm">Try different keywords — we&apos;re a small island!</p>
+              <p className="text-stone-600 text-sm">Try different keywords — we&apos;re a small island!</p>
             </div>
           )}
         </div>
@@ -269,7 +269,7 @@ export default function SearchPage() {
         </div>
       </div>
       <Suspense fallback={
-        <div className="max-w-4xl mx-auto px-4 py-12 text-center text-stone-400">Loading…</div>
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center text-stone-600">Loading…</div>
       }>
         <SearchBody />
       </Suspense>

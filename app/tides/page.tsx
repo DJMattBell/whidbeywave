@@ -174,7 +174,7 @@ function TideEntry({
       <p className={`text-sm font-semibold mt-1 ${htCls}`}>
         {tide.height.toFixed(1)} ft
       </p>
-      <p className="text-xs text-stone-400 mt-1">
+      <p className="text-xs text-stone-600 mt-1">
         {tide.isPast ? '✓ Passed' : '↑ Upcoming'}
       </p>
     </div>
@@ -245,13 +245,13 @@ export default async function TidesPage() {
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 Today&apos;s Tides
-                <span className="ml-3 text-sm font-normal text-stone-400">
+                <span className="ml-3 text-sm font-normal text-stone-600">
                   {days[0]?.fullDate}
                 </span>
               </h2>
 
               {todayTides.length === 0 ? (
-                <p className="text-stone-400 italic">No tide data for today.</p>
+                <p className="text-stone-600 italic">No tide data for today.</p>
               ) : (
                 <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md overflow-hidden">
                   <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
@@ -305,7 +305,7 @@ export default async function TidesPage() {
                       >
                         {day.label}
                       </span>
-                      <span className="text-sm text-stone-400">{day.fullDate}</span>
+                      <span className="text-sm text-stone-600">{day.fullDate}</span>
                     </div>
 
                     {/* Tides row */}
@@ -389,7 +389,7 @@ export default async function TidesPage() {
         )}
 
         {/* ── Attribution ──────────────────────────────────────────────────── */}
-        <p className="text-xs text-stone-400 text-center pb-2">
+        <p className="text-xs text-stone-600 text-center pb-2">
           Tide data from{' '}
           <a
             href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9444900"

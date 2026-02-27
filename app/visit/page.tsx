@@ -228,7 +228,7 @@ export default function VisitPage() {
                 <div key={label} className="flex gap-3">
                   <span className="text-forest-400 mt-0.5 shrink-0">▸</span>
                   <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-stone-400">{label} </span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-600">{label} </span>
                     <span className="text-sm text-stone-700 leading-snug">{value}</span>
                   </div>
                 </div>
@@ -290,11 +290,11 @@ export default function VisitPage() {
                   <p className="text-sm font-semibold text-stone-700 mb-2">{tagline}</p>
                   <p className="text-sm text-stone-600 leading-relaxed mb-4">{body}</p>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1.5">Known for</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">Known for</p>
                     <ul className="space-y-1">
                       {knowFor.map(item => (
                         <li key={item} className="text-xs text-stone-600 flex gap-1.5">
-                          <span className="text-stone-400 shrink-0">·</span>
+                          <span className="text-stone-600 shrink-0">·</span>
                           {item}
                         </li>
                       ))}
@@ -357,7 +357,7 @@ export default function VisitPage() {
                 <ul className="space-y-1.5">
                   {items.map(item => (
                     <li key={item} className="text-xs text-stone-600 flex gap-1.5">
-                      <span className="text-stone-400 shrink-0 mt-0.5">·</span>
+                      <span className="text-stone-600 shrink-0 mt-0.5">·</span>
                       {item}
                     </li>
                   ))}

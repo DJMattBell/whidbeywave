@@ -148,7 +148,7 @@ export default async function RestaurantsPage() {
                     >
                       {name}
                     </h3>
-                    <p className="text-xs text-stone-400 mt-0.5">📍 {town}</p>
+                    <p className="text-xs text-stone-600 mt-0.5">📍 {town}</p>
                   </div>
                 </div>
                 <p className="text-sm text-stone-700 leading-relaxed mb-3">{note}</p>

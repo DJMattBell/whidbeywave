@@ -5,6 +5,7 @@ import { EVENT_TAGS, categoryColors } from '@/lib/data';
 import type { Event, EventTag } from '@/lib/data';
 import EventRsvpButton from '@/components/EventRsvpButton';
 import ShareButton from '@/components/ShareButton';
+import AddToCalendar from '@/components/AddToCalendar';
 
 const TAG_ICONS: Record<EventTag, string> = {
   'Kids Event':   '🧒',
@@ -95,7 +96,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
             Quiet day for those filters
           </p>
-          <p className="text-stone-400 text-sm mb-5">Try fewer filters — or check back soon.</p>
+          <p className="text-stone-600 text-sm mb-5">Try fewer filters — or check back soon.</p>
           <button onClick={clearAll} className="btn-primary">
             Show everything
           </button>
@@ -132,12 +133,22 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   <span>{event.title}</span>
                 </h2>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-500 mb-3">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-600 mb-3">
                   <span>🕐 {event.time}</span>
                   <span>📍 {event.location}</span>
                 </div>
 
                 <p className="text-stone-600 leading-relaxed mb-4">{event.description}</p>
+
+                <AddToCalendar
+                  event={{
+                    title:       event.title,
+                    date:        event.date,
+                    time:        event.time,
+                    location:    event.location,
+                    description: event.description,
+                  }}
+                />
 
                 {/* Tags + RSVP + Share */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200">

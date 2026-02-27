@@ -119,7 +119,7 @@ async function fetchNewListings(): Promise<number | null> {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2.5">
+    <p className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2.5">
       {children}
     </p>
   );
@@ -185,7 +185,7 @@ export default async function TodayWidget() {
           >
             Today on Whidbey
           </h2>
-          <span className="text-xs text-stone-400 hidden sm:block">{todayLabel}</span>
+          <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
         </div>
 
         {/* Card — flex row on desktop, stacked on mobile */}
@@ -201,11 +201,11 @@ export default async function TodayWidget() {
                 </span>
                 <div>
                   <p className="text-xl font-bold text-stone-800 leading-none">{weather.temp}°F</p>
-                  <p className="text-xs text-stone-500 mt-0.5">{WMO_LABELS[weather.code] ?? ''}</p>
+                  <p className="text-xs text-stone-600 mt-0.5">{WMO_LABELS[weather.code] ?? ''}</p>
                 </div>
               </div>
               {weather.wind > 0 && (
-                <p className="text-xs text-stone-400 mt-1.5">💨 {weather.wind} mph</p>
+                <p className="text-xs text-stone-600 mt-1.5">💨 {weather.wind} mph</p>
               )}
             </div>
           )}
@@ -219,7 +219,7 @@ export default async function TodayWidget() {
                   <div className="flex items-start gap-1.5">
                     <FerryDot status={ferry.mukilteoCliton!.status} />
                     <div className="min-w-0">
-                      <p className="text-xs text-stone-400 leading-tight">Mukilteo / Clinton</p>
+                      <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
                       <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoCliton!.status)}`}>
                         {ferryLabel(ferry.mukilteoCliton!.status)}
                       </p>
@@ -230,7 +230,7 @@ export default async function TodayWidget() {
                   <div className="flex items-start gap-1.5">
                     <FerryDot status={ferry.ptCoupeville!.status} />
                     <div className="min-w-0">
-                      <p className="text-xs text-stone-400 leading-tight">PT / Coupeville</p>
+                      <p className="text-xs text-stone-600 leading-tight">PT / Coupeville</p>
                       <p className={`text-sm leading-tight ${ferryTextCls(ferry.ptCoupeville!.status)}`}>
                         {ferryLabel(ferry.ptCoupeville!.status)}
                       </p>
@@ -249,12 +249,12 @@ export default async function TodayWidget() {
                 <span className="text-2xl leading-none" aria-hidden="true">🌊</span>
                 <div>
                   <p className={`text-xs font-bold uppercase tracking-wide leading-none ${
-                    tide.type === 'H' ? 'text-forest-600' : 'text-stone-500'
+                    tide.type === 'H' ? 'text-forest-600' : 'text-stone-600'
                   }`}>
                     {tide.type === 'H' ? 'High' : 'Low'}
                   </p>
                   <p className="text-xl font-bold text-stone-800 leading-tight mt-0.5">{tide.time}</p>
-                  <p className="text-xs text-stone-400">{tide.height} ft</p>
+                  <p className="text-xs text-stone-600">{tide.height} ft</p>
                 </div>
               </div>
             </div>
@@ -272,12 +272,12 @@ export default async function TodayWidget() {
                   {eventsCount > 0 ? (
                     <>
                       <p className="text-xl font-bold text-stone-800 leading-none">{eventsCount}</p>
-                      <p className="text-xs text-stone-500 mt-0.5">
+                      <p className="text-xs text-stone-600 mt-0.5">
                         event{eventsCount !== 1 ? 's' : ''} today
                       </p>
                     </>
                   ) : (
-                    <p className="text-sm text-stone-500 leading-snug">
+                    <p className="text-sm text-stone-600 leading-snug">
                       Quiet day<br />on the island
                     </p>
                   )}
@@ -294,7 +294,7 @@ export default async function TodayWidget() {
                 <span className="text-2xl leading-none" aria-hidden="true">🛒</span>
                 <div>
                   <p className="text-xl font-bold text-stone-800 leading-none">{listingsCount}</p>
-                  <p className="text-xs text-stone-500 mt-0.5">new today</p>
+                  <p className="text-xs text-stone-600 mt-0.5">new today</p>
                 </div>
               </div>
             </Link>
@@ -303,7 +303,7 @@ export default async function TodayWidget() {
         </div>
 
         {/* Mobile date label */}
-        <p className="text-xs text-stone-400 mt-2 sm:hidden">{todayLabel}</p>
+        <p className="text-xs text-stone-600 mt-2 sm:hidden">{todayLabel}</p>
       </div>
     </section>
   );

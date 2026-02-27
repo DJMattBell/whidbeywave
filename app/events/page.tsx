@@ -140,7 +140,7 @@ export default async function EventsPage() {
                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
               Nothing scheduled yet
             </p>
-            <p className="text-stone-400 text-sm mb-5">Be the first to add something happening on the island.</p>
+            <p className="text-stone-600 text-sm mb-5">Be the first to add something happening on the island.</p>
             <Link href="/submit-event" className="btn-primary">Submit an Event</Link>
           </div>
         ) : (
@@ -150,7 +150,7 @@ export default async function EventsPage() {
         {/* Past events (collapsible) */}
         {past.length > 0 && (
           <details className="mt-14 group">
-            <summary className="cursor-pointer list-none flex items-center gap-2 text-stone-400 hover:text-stone-600 text-base font-medium transition-colors select-none mb-4 min-h-[44px]">
+            <summary className="cursor-pointer list-none flex items-center gap-2 text-stone-600 hover:text-stone-800 text-base font-medium transition-colors select-none mb-4 min-h-[44px]">
               <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden="true">▶</span>
               Past events ({past.length})
             </summary>
@@ -167,7 +167,7 @@ export default async function EventsPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-stone-700 text-base">{event.emoji} {event.title}</p>
-                    <p className="text-sm text-stone-400">
+                    <p className="text-sm text-stone-600">
                       <time dateTime={event.date}>
                         {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                       </time>

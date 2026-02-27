@@ -112,7 +112,7 @@ export default async function MarketplacePage({
           {hasFilters && (
             <Link
               href="/marketplace"
-              className="shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium text-stone-500 border border-parchment-300 hover:border-stone-400 hover:text-stone-700 transition-colors bg-white text-center"
+              className="shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium text-stone-600 border border-parchment-300 hover:border-stone-400 hover:text-stone-700 transition-colors bg-white text-center"
             >
               Clear filters
             </Link>
@@ -156,13 +156,13 @@ export default async function MarketplacePage({
             {hasFilters ? (
               <>
                 <p className="text-lg text-stone-700 mb-2 font-semibold">Nothing matching those filters</p>
-                <p className="text-stone-400 text-sm mb-5">Try adjusting your search or clearing the filters.</p>
+                <p className="text-stone-600 text-sm mb-5">Try adjusting your search or clearing the filters.</p>
                 <Link href="/marketplace" className="btn-primary">Show all listings</Link>
               </>
             ) : (
               <>
                 <p className="text-lg text-stone-700 mb-2 font-semibold">No listings yet</p>
-                <p className="text-stone-400 text-sm mb-5">Be the first to post something for sale!</p>
+                <p className="text-stone-600 text-sm mb-5">Be the first to post something for sale!</p>
                 <Link href="/submit-listing" className="btn-primary">List Something →</Link>
               </>
             )}
@@ -190,7 +190,7 @@ export default async function MarketplacePage({
 
                   <p className="text-sm text-stone-600 leading-relaxed mb-4">{listing.description}</p>
 
-                  <div className="border-t border-parchment-200 pt-3 flex items-center justify-between text-xs text-stone-400">
+                  <div className="border-t border-parchment-200 pt-3 flex items-center justify-between text-xs text-stone-600">
                     <span><span aria-hidden="true">👤</span> {listing.seller_name}</span>
                     <span><span aria-hidden="true">📍</span> {listing.location}</span>
                   </div>

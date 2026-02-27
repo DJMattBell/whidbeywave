@@ -128,7 +128,7 @@ export default function FeedbackButton() {
               </div>
               <div>
                 <label htmlFor="fb-email" className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">
-                  Your email <span className="text-stone-400 font-normal normal-case">(optional — only if you&apos;d like a reply)</span>
+                  Your email <span className="text-stone-600 font-normal normal-case">(optional — only if you&apos;d like a reply)</span>
                 </label>
                 <input
                   id="fb-email"
@@ -152,7 +152,7 @@ export default function FeedbackButton() {
 
         {/* Footer */}
         <div className="px-5 py-3 border-t border-parchment-200 shrink-0">
-          <p className="text-[11px] text-stone-400 text-center">
+          <p className="text-[11px] text-stone-600 text-center">
             Feedback goes straight to Matthew · WhidbeyWave.com
           </p>
         </div>

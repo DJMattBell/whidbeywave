@@ -245,7 +245,7 @@ export default function RecommendationsPage() {
         {/* Search bar */}
         <div className="flex gap-3 mb-6">
           <div className="flex-1 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-600">🔍</span>
             <input
               type="search" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, town, or keyword…"
@@ -282,7 +282,7 @@ export default function RecommendationsPage() {
                   style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
                 Suggest a place
               </h3>
-              <button onClick={() => setAddOpen(false)} className="text-stone-400 hover:text-stone-600 text-sm">Cancel</button>
+              <button onClick={() => setAddOpen(false)} className="text-stone-600 hover:text-stone-800 text-sm">Cancel</button>
             </div>
             {addStatus === 'success' ? (
               <div className="text-center py-6">
@@ -346,7 +346,7 @@ export default function RecommendationsPage() {
                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
               Nothing here yet
             </p>
-            <p className="text-stone-400 text-sm">
+            <p className="text-stone-600 text-sm">
               {isConfigured ? 'Be the first to suggest a place in this category.' : 'Configure Supabase to see recommendations.'}
             </p>
           </div>
@@ -366,7 +366,7 @@ export default function RecommendationsPage() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xl">{CATEGORY_EMOJIS[rec.category] ?? '⭐'}</span>
                           <span className="badge bg-parchment-200 text-stone-600 text-xs">{rec.category}</span>
-                          {rec.town && <span className="text-xs text-stone-400">📍 {rec.town}</span>}
+                          {rec.town && <span className="text-xs text-stone-600">📍 {rec.town}</span>}
                         </div>
                         <h2 className="text-lg text-stone-900 leading-snug"
                             style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
@@ -375,7 +375,7 @@ export default function RecommendationsPage() {
                       </div>
                       <div className="text-right shrink-0">
                         <Stars rating={rec.average_rating} />
-                        <p className="text-xs text-stone-400 mt-0.5">
+                        <p className="text-xs text-stone-600 mt-0.5">
                           {rec.average_rating > 0 ? rec.average_rating.toFixed(1) : '—'} · {rec.review_count} review{rec.review_count !== 1 ? 's' : ''}
                         </p>
                       </div>
@@ -405,17 +405,17 @@ export default function RecommendationsPage() {
                   {/* Reviews panel */}
                   {revOpen && (
                     <div className="border-t border-parchment-200 bg-parchment-50 p-5 space-y-4">
-                      {revLoading && <p className="text-xs text-stone-400">Loading reviews…</p>}
+                      {revLoading && <p className="text-xs text-stone-600">Loading reviews…</p>}
 
                       {!revLoading && revs.length === 0 && rf.status !== 'success' && (
-                        <p className="text-xs text-stone-400 italic">No reviews yet — yours could be first.</p>
+                        <p className="text-xs text-stone-600 italic">No reviews yet — yours could be first.</p>
                       )}
 
                       {!revLoading && revs.map(rev => (
                         <div key={rev.id} className="bg-white rounded-xl border border-parchment-200 p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <Stars rating={rev.rating} />
-                            <span className="text-xs text-stone-400">
+                            <span className="text-xs text-stone-600">
                               {rev.author_name} · <time dateTime={rev.created_at}>{formatReviewDate(rev.created_at)}</time>
                             </span>
                           </div>
@@ -452,7 +452,7 @@ export default function RecommendationsPage() {
                             {rf.zipError ? (
                               <p className="text-red-500 text-xs mt-1">{rf.zipError}</p>
                             ) : (
-                              <p className="text-xs text-stone-400 mt-1">Valid Whidbey zips: 98239, 98249, 98250, 98253, 98260, 98277, 98278</p>
+                              <p className="text-xs text-stone-600 mt-1">Valid Whidbey zips: 98239, 98249, 98250, 98253, 98260, 98277, 98278</p>
                             )}
                           </div>
                           {rf.status === 'error' && <p className="text-red-500 text-xs">Something went wrong — try again.</p>}

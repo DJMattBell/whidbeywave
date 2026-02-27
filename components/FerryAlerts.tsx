@@ -110,7 +110,7 @@ export default async function FerryAlerts() {
 
                   {/* Date */}
                   {pubDate && (
-                    <p className="text-xs text-stone-400 mt-1.5">
+                    <p className="text-xs text-stone-600 mt-1.5">
                       Posted{' '}
                       <time dateTime={pubDate.toISOString()}>
                         {pubDate.toLocaleDateString('en-US', {
