@@ -1,20 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/components/AuthProvider';
+import AuthModal from '@/components/AuthModal';
 
 const CATEGORIES = [
-  'Sporting Goods',
-  'Arts & Crafts',
-  'Food & Farm',
-  'Furniture & Home',
-  'Tools & Equipment',
+  'Furniture',
   'Electronics',
-  'Clothing & Accessories',
-  'Books & Media',
-  'Plants & Garden',
-  'Vehicles & Boats',
-  'Kids & Toys',
+  'Clothing',
+  'Tools',
+  'Free Stuff',
+  'Housing',
+  'Vehicles',
+  'Services',
   'Other',
 ];
 
@@ -29,30 +29,121 @@ const LOCATIONS = [
   'Other',
 ];
 
+const CONTACT_METHODS = ['Email', 'Phone call', 'Text message', 'Any'];
+
+const MAX_PHOTOS = 8;
+
 const inputCls = 'w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
 const labelCls = 'block text-sm font-medium text-stone-700 mb-1.5';
 
 export default function SubmitListingPage() {
-  const [form, setForm] = useState({
-    title: '', price: '', category: '', location: 'Oak Harbor',
-    description: '', name: '', email: '', phone: '',
-  });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const { user, loading } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
 
-  function set(field: keyof typeof form, value: string) {
+  const [form, setForm] = useState({
+    title: '',
+    price: '',
+    is_free: false,
+    category: '',
+    location: 'Oak Harbor',
+    description: '',
+    contact_method: 'Email',
+    contact_email: '',
+    contact_phone: '',
+  });
+
+  // Pre-fill contact email from authenticated user
+  useEffect(() => {
+    if (user?.email) {
+      setForm(p => ({ ...p, contact_email: user.email ?? '' }));
+    }
+  }, [user?.email]);
+
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [status, setStatus] = useState<'idle' | 'uploading' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function set<K extends keyof typeof form>(field: K, value: typeof form[K]) {
     setForm(p => ({ ...p, [field]: value }));
+  }
+
+  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    setPhotos(prev => {
+      const combined = [...prev, ...files];
+      return combined.slice(0, MAX_PHOTOS);
+    });
+    e.target.value = '';
+  }
+
+  function removePhoto(index: number) {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  }
+
+  async function uploadPhotos(files: File[]): Promise<string[]> {
+    if (!user) return [];
+    const urls: string[] = [];
+    for (const file of files) {
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+      // Store under the user's ID folder for RLS scoping
+      const filename = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      try {
+        const { data, error } = await supabase.storage
+          .from('listing-images')
+          .upload(filename, file, { contentType: file.type, upsert: false });
+        if (data && !error) {
+          const { data: urlData } = supabase.storage
+            .from('listing-images')
+            .getPublicUrl(data.path);
+          urls.push(urlData.publicUrl);
+        }
+      } catch {
+        // Skip failed uploads — proceed with what succeeded
+      }
+    }
+    return urls;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setStatus('loading');
+    if (!user) return;
+
+    setStatus('uploading');
     setErrorMsg('');
+
+    let imageUrls: string[] = [];
+    if (photos.length > 0) {
+      imageUrls = await uploadPhotos(photos);
+    }
+
+    setStatus('loading');
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setErrorMsg('Your session expired. Please sign in again.');
+        setStatus('error');
+        return;
+      }
+
       const res = await fetch('/api/listings/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          title: form.title,
+          price: form.is_free ? null : (form.price !== '' ? parseFloat(form.price) : null),
+          is_free: form.is_free,
+          category: form.category,
+          location: form.location,
+          description: form.description,
+          contact_method: form.contact_method,
+          contact_email: form.contact_email,
+          contact_phone: form.contact_phone || null,
+          images: imageUrls,
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -67,6 +158,40 @@ export default function SubmitListingPage() {
     }
   }
 
+  // ── Auth loading ──
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-4xl animate-pulse">🌊</div>
+      </div>
+    );
+  }
+
+  // ── Auth gate ──
+  if (!user) {
+    return (
+      <>
+        {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+        <div className="min-h-[60vh] flex items-center justify-center px-4">
+          <div className="text-center max-w-sm">
+            <div className="text-5xl mb-4">🏷️</div>
+            <h1 className="text-2xl text-stone-800 mb-2"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+              Sign in to list an item
+            </h1>
+            <p className="text-stone-500 mb-5 text-sm leading-relaxed">
+              You need a free account to post a listing. It only takes a minute.
+            </p>
+            <button onClick={() => setAuthOpen(true)} className="btn-primary">
+              Sign in / Sign up
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ── Success ──
   if (status === 'success') {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -82,7 +207,14 @@ export default function SubmitListingPage() {
             <button
               onClick={() => {
                 setStatus('idle');
-                setForm({ title: '', price: '', category: '', location: 'Oak Harbor', description: '', name: '', email: '', phone: '' });
+                setPhotos([]);
+                setForm({
+                  title: '', price: '', is_free: false, category: '',
+                  location: 'Oak Harbor', description: '',
+                  contact_method: 'Email',
+                  contact_email: user.email ?? '',
+                  contact_phone: '',
+                });
               }}
               className="btn-secondary"
             >
@@ -94,6 +226,8 @@ export default function SubmitListingPage() {
     );
   }
 
+  const busy = status === 'uploading' || status === 'loading';
+
   return (
     <>
       <div className="bg-gradient-to-br from-amber-700 via-forest-700 to-sound-800 text-parchment-100 py-14">
@@ -101,13 +235,84 @@ export default function SubmitListingPage() {
           <p className="text-amber-200 font-medium mb-2 tracking-wide uppercase text-sm">🛒 Island Marketplace</p>
           <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">List an Item</h1>
           <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
-            No fees, no account required. Just fill this out and we&apos;ll get it listed — neighbors helping neighbors.
+            No fees — just fill this out and we&apos;ll get it listed. Neighbors helping neighbors.
           </p>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+
+          {/* Photos */}
+          <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 space-y-4">
+            <div>
+              <h2 className="text-lg text-stone-900 font-semibold">Photos</h2>
+              <p className="text-sm text-stone-500 mt-0.5">
+                Add up to {MAX_PHOTOS} photos. Listings with photos sell faster.
+              </p>
+            </div>
+
+            {photos.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {photos.map((file, i) => (
+                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-parchment-100 border border-parchment-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Photo ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(i)}
+                      className="absolute top-1 right-1 w-6 h-6 bg-stone-900/70 text-white rounded-full flex items-center justify-center text-xs hover:bg-stone-900 transition-colors"
+                      aria-label={`Remove photo ${i + 1}`}
+                    >
+                      ×
+                    </button>
+                    {i === 0 && (
+                      <span className="absolute bottom-1 left-1 bg-forest-600/80 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                        Cover
+                      </span>
+                    )}
+                  </div>
+                ))}
+
+                {photos.length < MAX_PHOTOS && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square rounded-xl border-2 border-dashed border-parchment-300 flex flex-col items-center justify-center gap-1 text-stone-400 hover:border-forest-400 hover:text-forest-600 transition-colors"
+                  >
+                    <span className="text-2xl leading-none">+</span>
+                    <span className="text-xs">Add</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {photos.length === 0 && (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-8 rounded-xl border-2 border-dashed border-parchment-300 flex flex-col items-center gap-2 text-stone-500 hover:border-forest-400 hover:text-forest-600 transition-colors bg-white"
+              >
+                <span className="text-3xl">📷</span>
+                <span className="text-sm font-medium">Tap to add photos</span>
+                <span className="text-xs text-stone-400">JPEG, PNG, WebP · up to {MAX_PHOTOS} photos</span>
+              </button>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic"
+              multiple
+              onChange={handlePhotoSelect}
+              className="sr-only"
+              aria-label="Upload listing photos"
+            />
+          </div>
 
           {/* Item details */}
           <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 space-y-5">
@@ -128,24 +333,42 @@ export default function SubmitListingPage() {
               />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="ls-price" className={labelCls}>
-                  Price
+            {/* Price + free toggle */}
+            <div>
+              <label className={labelCls}>Price</label>
+              <div className="flex items-center gap-3 mb-2">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={form.is_free}
+                    onChange={e => set('is_free', e.target.checked)}
+                    className="w-4 h-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
+                  />
+                  <span className="text-sm font-medium text-green-700">This item is free</span>
                 </label>
+              </div>
+              {!form.is_free && (
                 <input
                   id="ls-price"
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={form.price}
                   onChange={e => set('price', e.target.value)}
-                  placeholder="$200 or Free or Make an offer"
+                  placeholder="150"
                   className={inputCls}
                 />
-              </div>
+              )}
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="ls-category" className={labelCls}>Category</label>
+                <label htmlFor="ls-category" className={labelCls}>
+                  Category <span className="text-red-400" aria-hidden="true">*</span>
+                </label>
                 <select
                   id="ls-category"
+                  required
                   value={form.category}
                   onChange={e => set('category', e.target.value)}
                   className={inputCls}
@@ -154,18 +377,17 @@ export default function SubmitListingPage() {
                   {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="ls-location" className={labelCls}>Your town</label>
-              <select
-                id="ls-location"
-                value={form.location}
-                onChange={e => set('location', e.target.value)}
-                className={inputCls}
-              >
-                {LOCATIONS.map(l => <option key={l}>{l}</option>)}
-              </select>
+              <div>
+                <label htmlFor="ls-location" className={labelCls}>Your town</label>
+                <select
+                  id="ls-location"
+                  value={form.location}
+                  onChange={e => set('location', e.target.value)}
+                  className={inputCls}
+                >
+                  {LOCATIONS.map(l => <option key={l}>{l}</option>)}
+                </select>
+              </div>
             </div>
 
             <div>
@@ -184,60 +406,60 @@ export default function SubmitListingPage() {
             </div>
           </div>
 
-          {/* Your info */}
+          {/* Contact info */}
           <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 space-y-4">
-            <h2 className="text-lg text-stone-900 font-semibold">Your contact info</h2>
+            <h2 className="text-lg text-stone-900 font-semibold">How buyers can reach you</h2>
             <p className="text-sm text-stone-600 -mt-2">
-              So interested buyers can reach you. Not shown publicly — we&apos;ll pass it along when someone asks.
+              Not shown publicly — we route messages through our contact form.
             </p>
+
+            <div>
+              <label htmlFor="ls-contact-method" className={labelCls}>Preferred contact method</label>
+              <select
+                id="ls-contact-method"
+                value={form.contact_method}
+                onChange={e => set('contact_method', e.target.value)}
+                className={inputCls}
+              >
+                {CONTACT_METHODS.map(m => <option key={m}>{m}</option>)}
+              </select>
+            </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="ls-name" className={labelCls}>
-                  Your name <span className="text-red-400" aria-hidden="true">*</span>
-                </label>
-                <input
-                  id="ls-name"
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={e => set('name', e.target.value)}
-                  placeholder="Jane Smith"
-                  className={inputCls}
-                  autoComplete="name"
-                />
-              </div>
-              <div>
-                <label htmlFor="ls-email" className={labelCls}>
+                <label htmlFor="ls-contact-email" className={labelCls}>
                   Email <span className="text-red-400" aria-hidden="true">*</span>
                 </label>
                 <input
-                  id="ls-email"
+                  id="ls-contact-email"
                   type="email"
                   required
-                  value={form.email}
-                  onChange={e => set('email', e.target.value)}
+                  value={form.contact_email}
+                  onChange={e => set('contact_email', e.target.value)}
                   placeholder="jane@example.com"
                   className={inputCls}
                   autoComplete="email"
                 />
               </div>
+              <div>
+                <label htmlFor="ls-contact-phone" className={labelCls}>
+                  Phone <span className="text-stone-500 font-normal">(optional)</span>
+                </label>
+                <input
+                  id="ls-contact-phone"
+                  type="tel"
+                  value={form.contact_phone}
+                  onChange={e => set('contact_phone', e.target.value)}
+                  placeholder="(360) 555-0100"
+                  className={inputCls}
+                  autoComplete="tel"
+                />
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="ls-phone" className={labelCls}>
-                Phone <span className="text-stone-600 font-normal">(optional)</span>
-              </label>
-              <input
-                id="ls-phone"
-                type="tel"
-                value={form.phone}
-                onChange={e => set('phone', e.target.value)}
-                placeholder="(360) 555-0100"
-                className={inputCls}
-                autoComplete="tel"
-              />
-            </div>
+            <p className="text-xs text-stone-400">
+              Listing as <strong>{user.email}</strong>
+            </p>
           </div>
 
           {status === 'error' && (
@@ -246,10 +468,12 @@ export default function SubmitListingPage() {
 
           <button
             type="submit"
-            disabled={status === 'loading'}
+            disabled={busy}
             className="w-full btn-primary justify-center py-3 text-base disabled:opacity-60"
           >
-            {status === 'loading' ? 'Submitting…' : 'Submit My Listing'}
+            {status === 'uploading' ? `Uploading ${photos.length} photo${photos.length !== 1 ? 's' : ''}…`
+              : status === 'loading' ? 'Submitting…'
+              : 'Submit My Listing'}
           </button>
 
           <p className="text-sm text-stone-600 text-center">

@@ -480,3 +480,265 @@ create policy "Anyone can submit feedback"
 create policy "Authenticated users can read feedback"
   on site_feedback for select
   using (auth.uid() is not null);
+
+
+-- ──────────────────────────────────────────────
+-- MIGRATION: marketplace photo-forward redesign
+-- Run these statements in the Supabase SQL editor
+-- ──────────────────────────────────────────────
+
+-- 1. Photos column (array of public storage URLs)
+alter table marketplace_listings
+  add column if not exists photos text[] not null default '{}';
+
+-- 2. Seller phone (was collected in form but not stored)
+alter table marketplace_listings
+  add column if not exists seller_phone text;
+
+-- 3. Allow 'sold' as a valid status
+alter table marketplace_listings
+  drop constraint if exists marketplace_listings_status_check;
+alter table marketplace_listings
+  add constraint marketplace_listings_status_check
+  check (status in ('pending', 'approved', 'rejected', 'sold'));
+
+-- 4. Update public read policy to include sold listings
+drop policy if exists "Anyone can read approved listings" on marketplace_listings;
+create policy "Anyone can read approved or sold listings"
+  on marketplace_listings for select
+  using (status in ('approved', 'sold'));
+
+-- 5. Supabase Storage bucket for listing photos (public, 10 MB per file)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'listing-photos',
+  'listing-photos',
+  true,
+  10485760,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/gif']
+)
+on conflict (id) do nothing;
+
+-- 6. Storage policies
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Public read listing photos'
+  ) then
+    create policy "Public read listing photos"
+      on storage.objects for select
+      using (bucket_id = 'listing-photos');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Anyone can upload listing photos'
+  ) then
+    create policy "Anyone can upload listing photos"
+      on storage.objects for insert
+      with check (bucket_id = 'listing-photos');
+  end if;
+end $$;
+
+
+-- ──────────────────────────────────────────────
+-- MIGRATION: sold boolean + expires_at + ownership
+-- Run in the Supabase SQL editor
+-- ──────────────────────────────────────────────
+
+-- 1. sold boolean (replaces using status='sold')
+alter table marketplace_listings
+  add column if not exists sold boolean not null default false;
+
+-- 2. expires_at — 60 days from creation for new rows; backfill existing rows
+alter table marketplace_listings
+  add column if not exists expires_at timestamptz
+  default (now() + interval '60 days');
+
+update marketplace_listings
+  set expires_at = created_at + interval '60 days'
+  where expires_at is null;
+
+-- 3. Remove 'sold' from the status constraint (sold is now its own column)
+--    Re-apply constraint with only the approval-workflow values.
+alter table marketplace_listings
+  drop constraint if exists marketplace_listings_status_check;
+alter table marketplace_listings
+  add constraint marketplace_listings_status_check
+  check (status in ('pending', 'approved', 'rejected'));
+
+-- 4. Update RLS so the public can only read approved listings
+--    (sold=true rows are still approved, so they remain visible)
+drop policy if exists "Anyone can read approved or sold listings" on marketplace_listings;
+drop policy if exists "Anyone can read approved listings" on marketplace_listings;
+create policy "Anyone can read approved listings"
+  on marketplace_listings for select
+  using (status = 'approved');
+
+-- 5. Index for expiry filtering
+create index if not exists marketplace_listings_expires_idx
+  on marketplace_listings (expires_at);
+
+
+-- ──────────────────────────────────────────────
+-- MIGRATION: auth-based ownership, table rename,
+-- column renames, new spec columns, listing_alerts
+-- Run in the Supabase SQL editor
+-- ──────────────────────────────────────────────
+
+-- 1. Rename table
+alter table marketplace_listings rename to listings;
+
+-- 2. Rename columns to match spec
+alter table listings rename column photos        to images;
+alter table listings rename column seller_email  to contact_email;
+alter table listings rename column seller_phone  to contact_phone;
+
+-- 3. Add new spec columns
+alter table listings
+  add column if not exists user_id         uuid references auth.users(id) on delete set null;
+alter table listings
+  add column if not exists is_free         boolean not null default false;
+alter table listings
+  add column if not exists contact_method  text;
+
+-- 4. Convert price from text to numeric
+--    Rows with non-numeric text (e.g. "Contact for price") become NULL.
+alter table listings
+  alter column price type numeric
+  using case
+    when price ~ '^[0-9]+(\.[0-9]+)?$' then price::numeric
+    else null
+  end;
+alter table listings alter column price drop not null;
+alter table listings alter column price drop default;
+
+-- 5. Drop all old RLS policies and replace with spec-compliant set
+drop policy if exists "Anyone can submit a listing"              on listings;
+drop policy if exists "Anyone can read approved listings"        on listings;
+drop policy if exists "Authenticated users can read all listings" on listings;
+drop policy if exists "Authenticated users can update listing status" on listings;
+
+-- Public: browse approved listings only
+create policy "Public read approved listings"
+  on listings for select
+  using (status = 'approved');
+
+-- Authenticated: admin can read all statuses
+create policy "Authenticated read all listings"
+  on listings for select
+  using (auth.uid() is not null);
+
+-- Authenticated INSERT: user_id must equal the caller's uid
+create policy "Authenticated insert own listing"
+  on listings for insert
+  with check (auth.uid() is not null and user_id = auth.uid());
+
+-- Authenticated UPDATE: only own rows
+create policy "Users update own listings"
+  on listings for update
+  using  (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- Authenticated DELETE: only own rows
+create policy "Users delete own listings"
+  on listings for delete
+  using (auth.uid() = user_id);
+
+-- 6. Rename storage bucket listing-photos → listing-images
+--    (Supabase does not have a RENAME for buckets; insert the new one and
+--     update the existing bucket's id/name in one step via upsert.)
+update storage.buckets
+  set id   = 'listing-images',
+      name = 'listing-images'
+  where id = 'listing-photos';
+
+-- If the bucket didn't exist yet, create it now
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'listing-images',
+  'listing-images',
+  true,
+  10485760,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/gif']
+)
+on conflict (id) do nothing;
+
+-- 7. Drop old storage policies and replace with auth-scoped ones
+do $$
+begin
+  -- Drop old open policies
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Public read listing photos'
+  ) then
+    drop policy "Public read listing photos" on storage.objects;
+  end if;
+
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Anyone can upload listing photos'
+  ) then
+    drop policy "Anyone can upload listing photos" on storage.objects;
+  end if;
+
+  -- Public read
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Public read listing images'
+  ) then
+    create policy "Public read listing images"
+      on storage.objects for select
+      using (bucket_id = 'listing-images');
+  end if;
+
+  -- Authenticated upload, scoped to own user_id folder
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Authenticated upload listing images'
+  ) then
+    create policy "Authenticated upload listing images"
+      on storage.objects for insert
+      with check (
+        bucket_id = 'listing-images'
+        and auth.uid() is not null
+        and (storage.foldername(name))[1] = auth.uid()::text
+      );
+  end if;
+
+  -- Authenticated delete own files
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'Users delete own listing images'
+  ) then
+    create policy "Users delete own listing images"
+      on storage.objects for delete
+      using (
+        bucket_id = 'listing-images'
+        and auth.uid() is not null
+        and (storage.foldername(name))[1] = auth.uid()::text
+      );
+  end if;
+end $$;
+
+-- 8. listing_alerts table (for marketplace email subscriptions)
+create table if not exists listing_alerts (
+  email      text not null,
+  category   text,              -- null = all categories
+  created_at timestamptz not null default now(),
+  primary key (email, category)
+);
+
+alter table listing_alerts enable row level security;
+
+create policy "Anyone can subscribe to listing alerts"
+  on listing_alerts for insert
+  with check (true);

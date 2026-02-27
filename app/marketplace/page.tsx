@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { categoryColors } from '@/lib/data';
 import { createServerClient } from '@/lib/supabase';
+import { type MarketplaceListing } from '@/lib/marketplace';
 import MarketplaceSearch from '@/components/MarketplaceSearch';
 import MarketplaceLocationFilter from '@/components/MarketplaceLocationFilter';
-import MarketplaceContactButton from '@/components/MarketplaceContactButton';
+import MarketplaceCategoryFilter, { CATEGORIES } from '@/components/MarketplaceCategoryFilter';
+import MarketplaceGrid from '@/components/MarketplaceGrid';
+import ListingAlertSubscription from '@/components/ListingAlertSubscription';
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function MarketplacePage({
   searchParams,
@@ -15,10 +17,14 @@ export default async function MarketplacePage({
 }) {
   const supabase = createServerClient();
 
+  const now = new Date().toISOString();
+
   let query = supabase
-    .from('marketplace_listings')
-    .select('id, title, price, category, location, description, seller_name, emoji, status, created_at')
+    .from('listings')
+    .select('id, title, price, is_free, category, location, description, seller_name, emoji, images, sold, expires_at, created_at, user_id, contact_method')
     .eq('status', 'approved')
+    // Filter out expired listings; null expires_at means no expiry set
+    .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('created_at', { ascending: false });
 
   if (searchParams.category && searchParams.category !== 'All') {
@@ -28,30 +34,33 @@ export default async function MarketplacePage({
     query = query.eq('location', searchParams.location);
   }
 
-  const { data: listingsData } = await query;
-  let listings = listingsData ?? [];
-
-  // Text search client-side after fetch
-  const q = searchParams.q?.trim().toLowerCase();
+  // Full-text search via Supabase wfts (uses GIN indexes on title + description)
+  const q = searchParams.q?.trim();
   if (q) {
-    listings = listings.filter(
-      l =>
-        l.title?.toLowerCase().includes(q) ||
-        l.description?.toLowerCase().includes(q)
-    );
+    const ftsQ = q.replace(/[,()]/g, ' ').trim();
+    query = query.or(`title.wfts(english).${ftsQ},description.wfts(english).${ftsQ}`);
   }
 
-  // Fetch all approved for category/location dropdowns (unfiltered)
-  const { data: allData } = await supabase
-    .from('marketplace_listings')
-    .select('category, location')
-    .eq('status', 'approved');
+  const { data: listingsData } = await query;
+  const listings = (listingsData ?? []) as MarketplaceListing[];
 
-  const allListings = allData ?? [];
-  const allCategories = ['All', ...Array.from(new Set(allListings.map(l => l.category).filter(Boolean)))];
-  const allLocations  = ['All Locations', ...Array.from(new Set(allListings.map(l => l.location).filter(Boolean)))];
+  // Locations for dropdown (categories are predefined)
+  const { data: locData } = await supabase
+    .from('listings')
+    .select('location')
+    .eq('status', 'approved')
+    .or(`expires_at.is.null,expires_at.gt.${now}`);
 
-  const hasFilters = !!(q || (searchParams.category && searchParams.category !== 'All') || (searchParams.location && searchParams.location !== 'All Locations'));
+  const allLocations = [
+    'All Locations',
+    ...Array.from(new Set((locData ?? []).map(l => l.location).filter(Boolean))),
+  ];
+
+  const hasFilters = !!(
+    q ||
+    (searchParams.category && searchParams.category !== 'All') ||
+    (searchParams.location && searchParams.location !== 'All Locations')
+  );
 
   return (
     <>
@@ -68,9 +77,27 @@ export default async function MarketplacePage({
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-10">
 
-        {/* Search + filters bar */}
+        {/* Category pills — scrollable on mobile, wrapping on desktop */}
+        <div className="mb-5">
+          <Suspense fallback={
+            <div
+              className="flex overflow-x-auto gap-2 pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {CATEGORIES.map(cat => (
+                <div key={cat} className="shrink-0 px-4 py-2.5 rounded-full text-sm bg-parchment-100 border border-parchment-300 text-stone-400 min-h-[44px] flex items-center">
+                  {cat}
+                </div>
+              ))}
+            </div>
+          }>
+            <MarketplaceCategoryFilter current={searchParams.category} />
+          </Suspense>
+        </div>
+
+        {/* Search + location bar */}
         <div className="bg-parchment-50 border border-parchment-300 rounded-2xl shadow-warm-sm p-4 mb-6 flex flex-col sm:flex-row gap-3">
           <Suspense fallback={
             <div className="flex-1 relative">
@@ -86,20 +113,6 @@ export default async function MarketplacePage({
           }>
             <MarketplaceSearch defaultValue={searchParams.q} />
           </Suspense>
-
-          <div>
-            <label htmlFor="marketplace-category" className="sr-only">Filter by category</label>
-            <select
-              id="marketplace-category"
-              defaultValue={searchParams.category ?? 'All'}
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-parchment-300 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm text-stone-600 bg-white"
-              disabled
-            >
-              {allCategories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
 
           <Suspense fallback={
             <select className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-parchment-300 text-sm text-stone-600 bg-white" disabled>
@@ -119,29 +132,8 @@ export default async function MarketplacePage({
           )}
         </div>
 
-        {/* Category pills */}
-        <div className="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter by category">
-          {allCategories.map((cat) => {
-            const isActive = cat === (searchParams.category ?? 'All');
-            return (
-              <Link
-                key={cat}
-                href={`/marketplace?category=${encodeURIComponent(cat)}`}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                  isActive
-                    ? 'bg-forest-500 text-parchment-50 border-forest-500'
-                    : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600'
-                }`}
-                aria-current={isActive ? 'true' : undefined}
-              >
-                {cat}
-              </Link>
-            );
-          })}
-        </div>
-
         {/* Results count */}
-        <p className="text-sm text-stone-500 mb-6" aria-live="polite">
+        <p className="text-sm text-stone-500 mb-4" aria-live="polite">
           {hasFilters ? (
             <><strong className="text-stone-800">{listings.length}</strong> listings match your search</>
           ) : (
@@ -168,43 +160,13 @@ export default async function MarketplacePage({
             )}
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {listings.map((listing) => (
-              <article key={listing.id} className="card flex flex-col">
-                {/* Emoji hero */}
-                <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-40 flex items-center justify-center text-6xl rounded-t-2xl" aria-hidden="true">
-                  {listing.emoji ?? '🏷️'}
-                </div>
-
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <span className={`badge ${categoryColors[listing.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                      {listing.category}
-                    </span>
-                    <span className="text-forest-600 font-extrabold text-lg">{listing.price}</span>
-                  </div>
-
-                  <h2 className="text-stone-900 text-lg mb-2 leading-snug flex-1">
-                    {listing.title}
-                  </h2>
-
-                  <p className="text-sm text-stone-600 leading-relaxed mb-4">{listing.description}</p>
-
-                  <div className="border-t border-parchment-200 pt-3 flex items-center justify-between text-xs text-stone-600">
-                    <span><span aria-hidden="true">👤</span> {listing.seller_name}</span>
-                    <span><span aria-hidden="true">📍</span> {listing.location}</span>
-                  </div>
-
-                  <MarketplaceContactButton
-                    listingId={listing.id}
-                    listingTitle={listing.title}
-                    sellerName={listing.seller_name}
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
+          <MarketplaceGrid listings={listings} />
         )}
+
+        {/* Alert subscription */}
+        <div className="mb-6">
+          <ListingAlertSubscription />
+        </div>
 
         {/* Post listing CTA */}
         <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-2xl p-8 border border-parchment-300 flex flex-col md:flex-row items-center gap-6">

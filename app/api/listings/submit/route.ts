@@ -7,9 +7,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, price, category, location, description, name, email, phone } = await request.json();
+    const {
+      title, price, is_free, category, location,
+      description, contact_method, contact_email, contact_phone, images,
+    } = await request.json();
 
-    if (!title?.trim() || !name?.trim() || !email?.trim() || !description?.trim()) {
+    if (!title?.trim() || !description?.trim() || !contact_email?.trim()) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -18,50 +21,74 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server not configured' }, { status: 500 });
     }
 
-    // Save to Supabase (non-fatal if DB is down)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      return NextResponse.json({ error: 'Server not configured' }, { status: 500 });
+    }
+
+    // Verify auth token
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    }
+
+    // Derive seller display name from user metadata
+    const sellerName = (
+      user.user_metadata?.full_name ??
+      user.user_metadata?.name ??
+      user.email ??
+      'Anonymous'
+    ) as string;
+
+    // Normalise price
+    const priceValue = is_free ? null : (price != null && price !== '' ? Number(price) : null);
+
     let insertedId: string | null = null;
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const { data, error } = await supabase
+        .from('listings')
+        .insert({
+          title: title.trim(),
+          price: priceValue,
+          is_free: Boolean(is_free),
+          category: category || 'Other',
+          location: location || 'Whidbey Island',
+          description: description.trim(),
+          seller_name: sellerName,
+          contact_email: contact_email.trim(),
+          contact_phone: contact_phone?.trim() || null,
+          contact_method: contact_method || null,
+          images: Array.isArray(images) ? images.slice(0, 8) : [],
+          emoji: '🏷️',
+          status: 'pending',
+          user_id: user.id,
+        })
+        .select('id')
+        .single();
 
-      if (supabaseUrl && serviceRoleKey) {
-        const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-        const { data, error } = await supabase
-          .from('marketplace_listings')
-          .insert({
-            title: title.trim(),
-            price: price || 'Contact for price',
-            category: category || 'General',
-            location: location || 'Whidbey Island',
-            description: description.trim(),
-            seller_name: name.trim(),
-            seller_email: email.trim(),
-            emoji: '🏷️',
-            status: 'pending',
-          })
-          .select('id')
-          .single();
-
-        if (error) {
-          if (error.message?.includes('does not exist') || error.code === '42P01') {
-            console.error('ERROR: marketplace_listings table not found. Run the SQL migration in Supabase first.');
-          } else {
-            console.error('Supabase insert error:', error);
-          }
-        } else {
-          insertedId = data?.id ?? null;
-        }
+      if (error) {
+        console.error('Supabase insert error:', error);
+      } else {
+        insertedId = data?.id ?? null;
       }
     } catch (dbErr) {
       console.error('Supabase insert error:', dbErr);
     }
 
     // Email admin
+    const priceDisplay = is_free ? 'Free' : (priceValue != null ? `$${priceValue}` : 'Contact for price');
     await resend.emails.send({
       from: 'WhidbeyWave <hello@whidbeywave.com>',
       to: adminEmail,
-      replyTo: email.trim(),
+      replyTo: contact_email.trim(),
       subject: `New marketplace listing: "${title.trim()}"`,
       html: `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
@@ -73,11 +100,11 @@ export async function POST(request: NextRequest) {
             <h2 style="color:#1c3d2c;margin:0 0 16px;font-size:20px;">New Marketplace Listing</h2>
             <table style="width:100%;border-collapse:collapse;font-size:14px;color:#44403c;">
               <tr><td style="padding:8px 0;color:#888;width:120px;vertical-align:top;">Item</td><td style="padding:8px 0;font-weight:bold;">${escapeHtml(title.trim())}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Price</td><td style="padding:8px 0;">${escapeHtml(price || 'Not specified')}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Price</td><td style="padding:8px 0;">${escapeHtml(priceDisplay)}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Category</td><td style="padding:8px 0;">${escapeHtml(category || 'Not specified')}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Location</td><td style="padding:8px 0;">${escapeHtml(location || 'Not specified')}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Description</td><td style="padding:8px 0;white-space:pre-wrap;">${escapeHtml(description.trim())}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Seller</td><td style="padding:8px 0;">${escapeHtml(name.trim())} &lt;${escapeHtml(email.trim())}&gt;${phone ? ` · ${escapeHtml(phone)}` : ''}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Contact</td><td style="padding:8px 0;">${escapeHtml(sellerName)} &lt;${escapeHtml(contact_email.trim())}&gt;${contact_phone ? ` · ${escapeHtml(contact_phone)}` : ''}</td></tr>
               <tr><td style="padding:8px 0;color:#888;vertical-align:top;">Submission ID</td><td style="padding:8px 0;">${insertedId ?? 'See Supabase'}</td></tr>
             </table>
             <p style="font-size:13px;color:#a8a29e;margin-top:24px;">
@@ -93,7 +120,7 @@ export async function POST(request: NextRequest) {
     try {
       await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
-        to: email.trim(),
+        to: contact_email.trim(),
         subject: `We received your listing: "${title.trim()}"`,
         html: `
           <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
@@ -102,7 +129,7 @@ export async function POST(request: NextRequest) {
               <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
             </div>
             <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks, ${escapeHtml(name.trim())}!</h2>
+              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks!</h2>
               <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">
                 We received your marketplace listing for <strong>${escapeHtml(title.trim())}</strong>.
                 We'll review it and get it added to the site — usually within a day or two.
@@ -120,7 +147,7 @@ export async function POST(request: NextRequest) {
       // Non-fatal
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, id: insertedId });
   } catch (err) {
     console.error('Listing submit error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

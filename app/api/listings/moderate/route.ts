@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
     );
 
     const { data: listing, error: fetchError } = await supabase
-      .from('marketplace_listings')
-      .select('id, title, seller_name, seller_email')
+      .from('listings')
+      .select('id, title, seller_name, contact_email')
       .eq('id', id)
       .single();
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { error: updateError } = await supabase
-      .from('marketplace_listings')
+      .from('listings')
       .update({ status: action })
       .eq('id', id);
 
@@ -37,11 +37,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Send seller confirmation email when approved
-    if (action === 'approved' && listing.seller_email) {
+    if (action === 'approved' && listing.contact_email) {
       try {
         await resend.emails.send({
           from: 'WhidbeyWave <hello@whidbeywave.com>',
-          to: listing.seller_email,
+          to: listing.contact_email,
           subject: `Your listing "${listing.title}" is live on WhidbeyWave`,
           html: `
             <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">

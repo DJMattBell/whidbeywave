@@ -11,18 +11,24 @@ const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 type Listing = {
   id: string;
   title: string;
-  price: string;
+  price: number | null;
+  is_free: boolean;
   category: string;
   location: string;
   description: string | null;
   seller_name: string;
-  seller_email: string;
+  contact_email: string;
+  contact_phone: string | null;
+  contact_method: string | null;
   emoji: string;
+  images: string[];
+  sold: boolean;
+  expires_at: string | null;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
 };
 
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<string, string> = {
   pending:  'bg-amber-100 text-amber-800 border border-amber-200',
   approved: 'bg-forest-100 text-forest-800 border border-forest-200',
   rejected: 'bg-red-100 text-red-700 border border-red-200',
@@ -52,7 +58,7 @@ export default function AdminListingsPage() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
     const q = supabase
-      .from('marketplace_listings')
+      .from('listings')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -201,7 +207,7 @@ export default function AdminListingsPage() {
                       {listing.emoji} {listing.title}
                     </p>
                     <p className="text-xs text-stone-400 mt-0.5">
-                      {listing.price} · {listing.category} · {listing.location} · submitted by {listing.seller_name}
+                      {listing.is_free ? 'Free' : listing.price != null ? `$${listing.price}` : 'Contact for price'} · {listing.category} · {listing.location} · submitted by {listing.seller_name}
                     </p>
                   </div>
                   <span className="text-stone-400 text-sm shrink-0">{isExpanded ? '▲' : '▼'}</span>
@@ -212,13 +218,29 @@ export default function AdminListingsPage() {
                   <div className="border-t border-parchment-200 p-5 space-y-4">
                     <div className="grid sm:grid-cols-2 gap-3 text-sm">
                       <div><span className="text-stone-400">Title</span><p className="text-stone-800 font-medium">{listing.title}</p></div>
-                      <div><span className="text-stone-400">Price</span><p className="text-stone-800 font-medium">{listing.price}</p></div>
+                      <div><span className="text-stone-400">Price</span><p className="text-stone-800 font-medium">{listing.is_free ? 'Free' : listing.price != null ? `$${listing.price}` : 'Contact for price'}</p></div>
                       <div><span className="text-stone-400">Category</span><p className="text-stone-800 font-medium">{listing.category}</p></div>
                       <div><span className="text-stone-400">Location</span><p className="text-stone-800 font-medium">{listing.location}</p></div>
                       <div><span className="text-stone-400">Seller</span><p className="text-stone-800 font-medium">{listing.seller_name}</p></div>
-                      <div><span className="text-stone-400">Email</span><p className="text-stone-800 font-medium">{listing.seller_email}</p></div>
+                      <div><span className="text-stone-400">Email</span><p className="text-stone-800 font-medium">{listing.contact_email}</p></div>
                       <div><span className="text-stone-400">Submitted</span><p className="text-stone-800 font-medium">{fmt(listing.created_at)}</p></div>
+                      <div><span className="text-stone-400">Sold</span><p className={`font-medium ${listing.sold ? 'text-stone-600' : 'text-forest-700'}`}>{listing.sold ? 'Yes' : 'No'}</p></div>
+                      {listing.expires_at && <div><span className="text-stone-400">Expires</span><p className="text-stone-800 font-medium">{fmt(listing.expires_at)}</p></div>}
                     </div>
+
+                    {listing.images?.length > 0 && (
+                      <div>
+                        <p className="text-xs text-stone-400 mb-2">Photos ({listing.images.length})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {listing.images.map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={url} alt={`Photo ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border border-parchment-200 hover:opacity-80 transition-opacity" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {listing.description && (
                       <div>

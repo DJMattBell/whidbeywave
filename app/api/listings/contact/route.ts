@@ -19,18 +19,18 @@ export async function POST(req: NextRequest) {
     );
 
     const { data: listing } = await supabase
-      .from('marketplace_listings')
-      .select('title, seller_name, seller_email')
+      .from('listings')
+      .select('title, seller_name, contact_email')
       .eq('id', listingId)
       .single();
 
-    if (!listing?.seller_email) {
+    if (!listing?.contact_email) {
       return NextResponse.json({ ok: false, error: 'Listing not found' }, { status: 404 });
     }
 
     await resend.emails.send({
       from: 'WhidbeyWave Marketplace <noreply@whidbeywave.com>',
-      to: listing.seller_email,
+      to: listing.contact_email,
       replyTo: buyerEmail,
       subject: `Someone is interested in "${listing.title}"`,
       html: `
