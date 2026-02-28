@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { createServerClient } from '@/lib/supabase';
-import { type MarketplaceListing } from '@/lib/marketplace';
+import { type MarketplaceListing, MARKETPLACE_CATEGORIES as CATEGORIES } from '@/lib/marketplace';
 import MarketplaceSearch from '@/components/MarketplaceSearch';
 import MarketplaceLocationFilter from '@/components/MarketplaceLocationFilter';
-import MarketplaceCategoryFilter, { CATEGORIES } from '@/components/MarketplaceCategoryFilter';
+import MarketplaceCategoryFilter from '@/components/MarketplaceCategoryFilter';
 import MarketplaceGrid from '@/components/MarketplaceGrid';
 import ListingAlertSubscription from '@/components/ListingAlertSubscription';
 

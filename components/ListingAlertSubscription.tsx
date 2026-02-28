@@ -1,19 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace';
 
-const ALERT_CATEGORIES = [
-  'All categories',
-  'Furniture',
-  'Electronics',
-  'Clothing',
-  'Tools',
-  'Free Stuff',
-  'Housing',
-  'Vehicles',
-  'Services',
-  'Other',
-] as const;
+// Prepend the "all" option to the shared list
+const ALERT_CATEGORIES = ['All categories', ...MARKETPLACE_CATEGORIES.filter(c => c !== 'All')] as const;
 
 const inputCls =
   'px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';

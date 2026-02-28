@@ -1,3 +1,18 @@
+export const MARKETPLACE_CATEGORIES = [
+  'All',
+  'Furniture',
+  'Electronics',
+  'Clothing',
+  'Tools',
+  'Free Stuff',
+  'Housing',
+  'Vehicles',
+  'Services',
+  'Other',
+] as const;
+
+export type MarketplaceCategory = typeof MARKETPLACE_CATEGORIES[number];
+
 export type MarketplaceListing = {
   id: string;
   title: string;

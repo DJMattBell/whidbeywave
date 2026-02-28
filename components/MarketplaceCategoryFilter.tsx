@@ -1,18 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-
-const CATEGORIES = [
-  'All',
-  'Furniture',
-  'Electronics',
-  'Clothing',
-  'Tools',
-  'Free Stuff',
-  'Housing',
-  'Vehicles',
-  'Services',
-  'Other',
-] as const;
+import { MARKETPLACE_CATEGORIES as CATEGORIES } from '@/lib/marketplace';
 
 export { CATEGORIES };
 
