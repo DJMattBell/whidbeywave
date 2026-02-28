@@ -42,32 +42,29 @@ function fmt(dateStr: string) {
 
 export default function AdminListingsPage() {
   const { user, loading } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
-  const [fetching, setFetching] = useState(false);
-  const [acting, setActing] = useState<Record<string, boolean>>({});
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [authOpen, setAuthOpen]     = useState(false);
+  const [allListings, setAllListings] = useState<Listing[]>([]);
+  const [filter, setFilter]         = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
+  const [fetching, setFetching]     = useState(false);
+  const [acting, setActing]         = useState<Record<string, boolean>>({});
+  const [expanded, setExpanded]     = useState<Record<string, boolean>>({});
 
   const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
+  // Always load all listings — filter client-side so counts stay accurate on all tabs
   const loadListings = useCallback(async () => {
     setFetching(true);
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
-    const q = supabase
+    const { data } = await supabase
       .from('listings')
       .select('*')
       .order('created_at', { ascending: false });
-
-    if (filter !== 'all') q.eq('status', filter);
-
-    const { data } = await q;
-    setListings((data ?? []) as Listing[]);
+    setAllListings((data ?? []) as Listing[]);
     setFetching(false);
-  }, [filter]);
+  }, []);
 
   useEffect(() => {
     if (isAdmin) loadListings();
@@ -129,11 +126,17 @@ export default function AdminListingsPage() {
     );
   }
 
+  // Counts always from the full dataset so all tabs show correct numbers
   const counts = {
-    pending:  listings.filter(l => l.status === 'pending').length,
-    approved: listings.filter(l => l.status === 'approved').length,
-    rejected: listings.filter(l => l.status === 'rejected').length,
+    pending:  allListings.filter(l => l.status === 'pending').length,
+    approved: allListings.filter(l => l.status === 'approved').length,
+    rejected: allListings.filter(l => l.status === 'rejected').length,
   };
+
+  // Client-side filter for display
+  const displayed = filter === 'all'
+    ? allListings
+    : allListings.filter(l => l.status === filter);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -148,23 +151,23 @@ export default function AdminListingsPage() {
         </div>
         <p className="text-stone-500 text-sm">Signed in as {user.email}</p>
         <div className="mt-3 flex gap-4 text-sm flex-wrap">
-          <Link href="/admin/events" className="text-forest-600 hover:text-forest-800 font-medium">← Events</Link>
+          <Link href="/admin/events"    className="text-forest-600 hover:text-forest-800 font-medium">← Events</Link>
           <span className="text-stone-300">|</span>
-          <Link href="/admin/news"   className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
+          <Link href="/admin/news"      className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
           <span className="text-stone-300">|</span>
           <span className="text-stone-400 font-medium">Marketplace</span>
           <span className="text-stone-300">|</span>
-          <Link href="/admin/feedback" className="text-forest-600 hover:text-forest-800 font-medium">Feedback →</Link>
+          <Link href="/admin/feedback"  className="text-forest-600 hover:text-forest-800 font-medium">Feedback →</Link>
         </div>
       </div>
 
       {/* Filter tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {([
-          { key: 'pending',  label: `Pending (${counts.pending})` },
+          { key: 'pending',  label: `Pending (${counts.pending})`   },
           { key: 'approved', label: `Approved (${counts.approved})` },
           { key: 'rejected', label: `Rejected (${counts.rejected})` },
-          { key: 'all',      label: 'All listings' },
+          { key: 'all',      label: `All (${allListings.length})`   },
         ] as const).map(({ key, label }) => (
           <button key={key} onClick={() => setFilter(key)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
@@ -182,14 +185,16 @@ export default function AdminListingsPage() {
       </div>
 
       {/* Listings list */}
-      {listings.length === 0 ? (
+      {displayed.length === 0 ? (
         <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
           <div className="text-4xl mb-3">🌾</div>
-          <p className="text-stone-500 text-sm">No {filter === 'all' ? '' : filter} listings.</p>
+          <p className="text-stone-500 text-sm">
+            {fetching ? 'Loading…' : `No ${filter === 'all' ? '' : filter} listings.`}
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {listings.map(listing => {
+          {displayed.map(listing => {
             const isExpanded = expanded[listing.id] ?? (listing.status === 'pending');
             return (
               <div key={listing.id} className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm overflow-hidden">
@@ -207,7 +212,8 @@ export default function AdminListingsPage() {
                       {listing.emoji} {listing.title}
                     </p>
                     <p className="text-xs text-stone-400 mt-0.5">
-                      {listing.is_free ? 'Free' : listing.price != null ? `$${listing.price}` : 'Contact for price'} · {listing.category} · {listing.location} · submitted by {listing.seller_name}
+                      {listing.is_free ? 'Free' : listing.price != null ? `$${listing.price}` : 'Contact for price'}
+                      {' · '}{listing.category}{' · '}{listing.location}{' · '}submitted by {listing.seller_name}
                     </p>
                   </div>
                   <span className="text-stone-400 text-sm shrink-0">{isExpanded ? '▲' : '▼'}</span>
@@ -223,9 +229,17 @@ export default function AdminListingsPage() {
                       <div><span className="text-stone-400">Location</span><p className="text-stone-800 font-medium">{listing.location}</p></div>
                       <div><span className="text-stone-400">Seller</span><p className="text-stone-800 font-medium">{listing.seller_name}</p></div>
                       <div><span className="text-stone-400">Email</span><p className="text-stone-800 font-medium">{listing.contact_email}</p></div>
+                      {listing.contact_phone && (
+                        <div><span className="text-stone-400">Phone</span><p className="text-stone-800 font-medium">{listing.contact_phone}</p></div>
+                      )}
+                      {listing.contact_method && (
+                        <div><span className="text-stone-400">Preferred contact</span><p className="text-stone-800 font-medium">{listing.contact_method}</p></div>
+                      )}
                       <div><span className="text-stone-400">Submitted</span><p className="text-stone-800 font-medium">{fmt(listing.created_at)}</p></div>
                       <div><span className="text-stone-400">Sold</span><p className={`font-medium ${listing.sold ? 'text-stone-600' : 'text-forest-700'}`}>{listing.sold ? 'Yes' : 'No'}</p></div>
-                      {listing.expires_at && <div><span className="text-stone-400">Expires</span><p className="text-stone-800 font-medium">{fmt(listing.expires_at)}</p></div>}
+                      {listing.expires_at && (
+                        <div><span className="text-stone-400">Expires</span><p className="text-stone-800 font-medium">{fmt(listing.expires_at)}</p></div>
+                      )}
                     </div>
 
                     {listing.images?.length > 0 && (
@@ -251,26 +265,25 @@ export default function AdminListingsPage() {
                       </div>
                     )}
 
-                    {listing.status === 'pending' && (
-                      <div className="border-t border-parchment-200 pt-4">
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => moderate(listing.id, 'approved')}
-                            disabled={acting[listing.id]}
-                            className="btn-primary py-2 px-5 text-sm disabled:opacity-60"
-                          >
-                            {acting[listing.id] ? 'Saving…' : '✓ Approve'}
-                          </button>
-                          <button
-                            onClick={() => moderate(listing.id, 'rejected')}
-                            disabled={acting[listing.id]}
-                            className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-60"
-                          >
-                            {acting[listing.id] ? 'Saving…' : '✕ Reject'}
-                          </button>
-                        </div>
+                    {/* Action buttons — available for any status so admin can correct mistakes */}
+                    <div className="border-t border-parchment-200 pt-4">
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => moderate(listing.id, 'approved')}
+                          disabled={acting[listing.id] || listing.status === 'approved'}
+                          className="btn-primary py-2 px-5 text-sm disabled:opacity-40"
+                        >
+                          {acting[listing.id] ? 'Saving…' : '✓ Approve'}
+                        </button>
+                        <button
+                          onClick={() => moderate(listing.id, 'rejected')}
+                          disabled={acting[listing.id] || listing.status === 'rejected'}
+                          className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                        >
+                          {acting[listing.id] ? 'Saving…' : '✕ Reject'}
+                        </button>
                       </div>
-                    )}
+                    </div>
                   </div>
                 )}
               </div>
