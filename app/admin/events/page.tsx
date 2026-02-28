@@ -39,10 +39,10 @@ function fmt(dateStr: string) {
 
 export default function AdminEventsPage() {
   const { user, loading } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
-  const [fetching, setFetching] = useState(false);
+  const [authOpen, setAuthOpen]   = useState(false);
+  const [allSubmissions, setAllSubmissions] = useState<Submission[]>([]);
+  const [filter, setFilter]       = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
+  const [fetching, setFetching]   = useState(false);
 
   // Per-row state
   const [notes, setNotes]       = useState<Record<string, string>>({});
@@ -50,29 +50,26 @@ export default function AdminEventsPage() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   // Newsletter tools
-  const [nlStatus, setNlStatus]     = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-  const [subCount, setSubCount]     = useState<number | null>(null);
+  const [nlStatus, setNlStatus]         = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [subCount, setSubCount]         = useState<number | null>(null);
   const [countLoading, setCountLoading] = useState(false);
 
   const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
+  // Always load all submissions — filter client-side so counts stay accurate on all tabs
   const loadSubmissions = useCallback(async () => {
     setFetching(true);
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
-    const q = supabase
+    const { data } = await supabase
       .from('event_submissions')
       .select('*')
       .order('created_at', { ascending: false });
-
-    if (filter !== 'all') q.eq('status', filter);
-
-    const { data } = await q;
-    setSubmissions((data ?? []) as Submission[]);
+    setAllSubmissions((data ?? []) as Submission[]);
     setFetching(false);
-  }, [filter]);
+  }, []);
 
   useEffect(() => {
     if (isAdmin) loadSubmissions();
@@ -81,7 +78,7 @@ export default function AdminEventsPage() {
   async function sendTestDigest() {
     setNlStatus('sending');
     try {
-      const res = await fetch('/api/newsletter/send-digest?test=true');
+      const res  = await fetch('/api/newsletter/send-digest?test=true');
       const data = await res.json();
       setNlStatus(data.ok ? 'sent' : 'error');
     } catch {
@@ -115,7 +112,6 @@ export default function AdminEventsPage() {
     }
   }
 
-  // Not loaded yet
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -124,7 +120,6 @@ export default function AdminEventsPage() {
     );
   }
 
-  // Not signed in
   if (!user) {
     return (
       <>
@@ -144,7 +139,6 @@ export default function AdminEventsPage() {
     );
   }
 
-  // Signed in but not admin
   if (!isAdmin) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -160,11 +154,17 @@ export default function AdminEventsPage() {
     );
   }
 
+  // Counts always from the full dataset so all tabs show correct numbers
   const counts = {
-    pending:  submissions.filter(s => s.status === 'pending').length,
-    approved: submissions.filter(s => s.status === 'approved').length,
-    rejected: submissions.filter(s => s.status === 'rejected').length,
+    pending:  allSubmissions.filter(s => s.status === 'pending').length,
+    approved: allSubmissions.filter(s => s.status === 'approved').length,
+    rejected: allSubmissions.filter(s => s.status === 'rejected').length,
   };
+
+  // Client-side filter for display
+  const displayed = filter === 'all'
+    ? allSubmissions
+    : allSubmissions.filter(s => s.status === filter);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -192,10 +192,10 @@ export default function AdminEventsPage() {
       {/* Filter tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         {([
-          { key: 'pending',  label: `Pending (${counts.pending})` },
+          { key: 'pending',  label: `Pending (${counts.pending})`   },
           { key: 'approved', label: `Approved (${counts.approved})` },
           { key: 'rejected', label: `Rejected (${counts.rejected})` },
-          { key: 'all',      label: 'All submissions' },
+          { key: 'all',      label: `All (${allSubmissions.length})` },
         ] as const).map(({ key, label }) => (
           <button key={key} onClick={() => setFilter(key)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
@@ -233,13 +233,9 @@ export default function AdminEventsPage() {
           >
             {countLoading ? 'Loading…' : '👥 View Subscriber Count'}
           </button>
-          {nlStatus === 'sent' && (
-            <span className="text-sm text-forest-700 font-medium">✓ Test digest sent to admin email</span>
-          )}
-          {nlStatus === 'error' && (
-            <span className="text-sm text-red-600 font-medium">✕ Failed — check server logs</span>
-          )}
-          {subCount !== null && (
+          {nlStatus === 'sent'  && <span className="text-sm text-forest-700 font-medium">✓ Test digest sent to admin email</span>}
+          {nlStatus === 'error' && <span className="text-sm text-red-600 font-medium">✕ Failed — check server logs</span>}
+          {subCount !== null    && (
             <span className="text-sm text-stone-600 font-medium">
               <strong className="text-stone-900">{subCount}</strong> confirmed subscriber{subCount !== 1 ? 's' : ''}
             </span>
@@ -248,14 +244,16 @@ export default function AdminEventsPage() {
       </div>
 
       {/* Submissions list */}
-      {submissions.length === 0 ? (
+      {displayed.length === 0 ? (
         <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
           <div className="text-4xl mb-3">🌾</div>
-          <p className="text-stone-500 text-sm">No {filter === 'all' ? '' : filter} submissions.</p>
+          <p className="text-stone-500 text-sm">
+            {fetching ? 'Loading…' : `No ${filter === 'all' ? '' : filter} submissions.`}
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {submissions.map(sub => {
+          {displayed.map(sub => {
             const isExpanded = expanded[sub.id] ?? (sub.status === 'pending');
             return (
               <div key={sub.id} className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm overflow-hidden">
@@ -289,7 +287,7 @@ export default function AdminEventsPage() {
                       <div><span className="text-stone-400">Location</span><p className="text-stone-800 font-medium">{sub.location}, {sub.town}</p></div>
                       <div><span className="text-stone-400">Category</span><p className="text-stone-800 font-medium">{sub.category}</p></div>
                       <div><span className="text-stone-400">Submitter</span><p className="text-stone-800 font-medium">{sub.submitter_name} · {sub.submitter_email}</p></div>
-                      <div><span className="text-stone-400">Tags</span><p className="text-stone-800 font-medium">{sub.tags.join(', ') || '—'}</p></div>
+                      <div><span className="text-stone-400">Tags</span><p className="text-stone-800 font-medium">{sub.tags?.join(', ') || '—'}</p></div>
                     </div>
 
                     {sub.description && (
@@ -301,46 +299,44 @@ export default function AdminEventsPage() {
                       </div>
                     )}
 
-                    {/* Admin actions (only for pending) */}
-                    {sub.status === 'pending' && (
-                      <div className="border-t border-parchment-200 pt-4 space-y-3">
-                        <div>
-                          <label className="block text-xs font-medium text-stone-600 mb-1.5">
-                            Note for submitter <span className="text-stone-400 font-normal">(optional, sent in approval email)</span>
-                          </label>
-                          <textarea
-                            rows={2}
-                            value={notes[sub.id] ?? ''}
-                            onChange={e => setNotes(p => ({ ...p, [sub.id]: e.target.value }))}
-                            placeholder="e.g. We've added your event to the spring lineup — see you there!"
-                            className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
-                          />
-                        </div>
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => moderate(sub.id, 'approved')}
-                            disabled={acting[sub.id]}
-                            className="btn-primary py-2 px-5 text-sm disabled:opacity-60"
-                          >
-                            {acting[sub.id] ? 'Saving…' : '✓ Approve'}
-                          </button>
-                          <button
-                            onClick={() => moderate(sub.id, 'rejected')}
-                            disabled={acting[sub.id]}
-                            className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-60"
-                          >
-                            {acting[sub.id] ? 'Saving…' : '✕ Reject'}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Show admin notes for already-reviewed */}
+                    {/* Show previously sent admin note (read-only) */}
                     {sub.admin_notes && sub.status !== 'pending' && (
                       <div className="text-sm text-stone-500 bg-white rounded-xl border border-parchment-200 p-3">
                         <span className="font-medium text-stone-600">Note sent: </span>{sub.admin_notes}
                       </div>
                     )}
+
+                    {/* Action buttons — available for any status so admin can correct mistakes */}
+                    <div className="border-t border-parchment-200 pt-4 space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-stone-600 mb-1.5">
+                          Note for submitter <span className="text-stone-400 font-normal">(optional, sent in approval email)</span>
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={notes[sub.id] ?? ''}
+                          onChange={e => setNotes(p => ({ ...p, [sub.id]: e.target.value }))}
+                          placeholder="e.g. We've added your event to the spring lineup — see you there!"
+                          className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => moderate(sub.id, 'approved')}
+                          disabled={acting[sub.id] || sub.status === 'approved'}
+                          className="btn-primary py-2 px-5 text-sm disabled:opacity-40"
+                        >
+                          {acting[sub.id] ? 'Saving…' : '✓ Approve'}
+                        </button>
+                        <button
+                          onClick={() => moderate(sub.id, 'rejected')}
+                          disabled={acting[sub.id] || sub.status === 'rejected'}
+                          className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                        >
+                          {acting[sub.id] ? 'Saving…' : '✕ Reject'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
