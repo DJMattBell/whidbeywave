@@ -107,7 +107,7 @@ async function fetchNewListings(): Promise<number | null> {
   try {
     const since = new Date(Date.now() - 86_400_000).toISOString();
     const { count, error } = await createServerClient()
-      .from('marketplace_listings')
+      .from('listings')
       .select('id', { count: 'exact', head: true })
       .gte('created_at', since);
     if (error) return null;

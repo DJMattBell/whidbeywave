@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { newsPosts, listings, formatShortDate, categoryColors } from '@/lib/data';
+import { newsPosts, formatShortDate, categoryColors } from '@/lib/data';
+import { formatPrice } from '@/lib/marketplace';
 import { createServerClient } from '@/lib/supabase';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
@@ -65,7 +66,19 @@ export default async function HomePage() {
       }))
     : newsPosts.slice(0, 2);
 
-  const featuredListings = listings.slice(0, 3);
+  const now = new Date().toISOString();
+  const { data: featuredListingsData } = await supabase
+    .from('listings')
+    .select('id, title, price, is_free, category, location, emoji, images')
+    .eq('status', 'approved')
+    .eq('sold', false)
+    .or(`expires_at.is.null,expires_at.gt.${now}`)
+    .order('created_at', { ascending: false })
+    .limit(3);
+  const featuredListings = (featuredListingsData ?? []) as {
+    id: string; title: string; price: number | null; is_free: boolean;
+    category: string; location: string; emoji: string; images: string[];
+  }[];
 
   return (
     <>
@@ -280,41 +293,46 @@ export default async function HomePage() {
       </section>
 
       {/* ── Things for Sale ─────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <h2 className="section-title">Things for Sale</h2>
-            <p className="section-subtitle mb-0">Your neighbors are letting some things go</p>
-          </div>
-          <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
-            See everything →
-          </Link>
-        </div>
-
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {featuredListings.map((listing) => (
-            <Link key={listing.id} href="/marketplace" className="card group block">
-              <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center text-5xl">
-                {listing.emoji}
-              </div>
-              <div className="p-5">
-                <span className={`badge ${categoryColors[listing.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
-                  {listing.category}
-                </span>
-                <h3
-                  className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-                >
-                  {listing.title}
-                </h3>
-                <p className="text-forest-600 font-bold text-lg mb-1">{listing.price}</p>
-                <p className="text-[15px] text-stone-600 mb-3">📍 {listing.location}</p>
-                <p className="text-sm text-forest-600">View listing →</p>
-              </div>
+      {featuredListings.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <h2 className="section-title">Things for Sale</h2>
+              <p className="section-subtitle mb-0">Your neighbors are letting some things go</p>
+            </div>
+            <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
+              See everything →
             </Link>
-          ))}
-        </div>
-      </section>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {featuredListings.map((listing) => (
+              <Link key={listing.id} href="/marketplace" className="card group block">
+                <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center overflow-hidden">
+                  {listing.images?.[0]
+                    ? <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                    : <span className="text-5xl">{listing.emoji}</span>
+                  }
+                </div>
+                <div className="p-5">
+                  <span className={`badge ${categoryColors[listing.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
+                    {listing.category}
+                  </span>
+                  <h3
+                    className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                  >
+                    {listing.title}
+                  </h3>
+                  <p className="text-forest-600 font-bold text-lg mb-1">{formatPrice(listing.price, listing.is_free)}</p>
+                  <p className="text-[15px] text-stone-600 mb-3">📍 {listing.location}</p>
+                  <p className="text-sm text-forest-600">View listing →</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Closing CTA ─────────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-forest-800 to-sound-800 text-parchment-100 py-20">

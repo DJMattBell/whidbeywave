@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { newsPosts } from '@/lib/data';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -28,6 +27,13 @@ type ForumPostRow = {
   id: string;
   title: string;
   reply_count: number;
+};
+
+type NewsPostRow = {
+  id: string;
+  title: string;
+  excerpt: string;
+  emoji: string | null;
 };
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -89,9 +95,9 @@ function buildDigestHtml(
   sub: Subscriber,
   events: EventRow[],
   forumPosts: ForumPostRow[],
+  newsItems: NewsPostRow[],
 ) {
   const dateLabel  = mondayDateLabel();
-  const newsItems  = newsPosts.slice(0, 2);
 
   const eventsSection = events.length === 0
     ? `<p style="font-size:15px;color:#9ca3af;font-style:italic;margin:0;">
@@ -99,7 +105,11 @@ function buildDigestHtml(
        </p>`
     : events.map(buildEventCard).join('');
 
-  const newsSection = newsItems.map(n => `
+  const newsSection = newsItems.length === 0
+    ? `<p style="font-size:15px;color:#9ca3af;font-style:italic;margin:0;">
+        Nothing new this week — <a href="${SITE_URL}/news" style="color:#255c42;">check the news page</a>.
+       </p>`
+    : newsItems.map(n => `
     <table width="100%" cellpadding="0" cellspacing="0"
            style="background:#f0f7ff;border:1px solid #c7dff7;border-radius:12px;margin-bottom:10px;">
       <tr>
@@ -312,8 +322,17 @@ export async function GET(request: NextRequest) {
     .order('updated_at', { ascending: false })
     .limit(3);
 
+  // Fetch recent published news posts
+  const { data: newsPosts } = await supabaseAnon
+    .from('news_posts')
+    .select('id, title, excerpt, emoji')
+    .eq('published', true)
+    .order('published_at', { ascending: false })
+    .limit(2);
+
   const upcomingEvents    = (events      ?? []) as EventRow[];
   const activeForumPosts  = (forumPosts  ?? []) as ForumPostRow[];
+  const activeNewsPosts   = (newsPosts   ?? []) as NewsPostRow[];
 
   const subject = isTest
     ? `[TEST] WhidbeyWave Weekly — ${mondayDateLabel()}`
@@ -332,7 +351,7 @@ export async function GET(request: NextRequest) {
           from: 'WhidbeyWave <hello@whidbeywave.com>',
           to:   sub.email,
           subject,
-          html: buildDigestHtml(sub, upcomingEvents, activeForumPosts),
+          html: buildDigestHtml(sub, upcomingEvents, activeForumPosts, activeNewsPosts),
         })
       )
     );

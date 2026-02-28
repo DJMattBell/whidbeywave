@@ -10,7 +10,8 @@ type WebhookPayload = {
   record: {
     id: string;
     title: string;
-    price: string;
+    price: number | null;
+    is_free: boolean;
     category: string;
     location: string;
     description: string | null;
@@ -58,7 +59,11 @@ export async function POST(request: NextRequest) {
 
     const photoUrl = listing.images?.[0] ?? null;
     const listingUrl = `https://whidbeywave.com/marketplace`;
-    const priceText = listing.price || 'Price not listed';
+    const priceText = listing.is_free
+      ? 'Free'
+      : listing.price != null
+        ? `$${listing.price % 1 === 0 ? listing.price : listing.price.toFixed(2)}`
+        : 'Price not listed';
     const photoHtml = photoUrl
       ? `<div style="margin:16px 0;text-align:center;">
            <img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(listing.title)}"

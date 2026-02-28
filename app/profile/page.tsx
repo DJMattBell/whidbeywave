@@ -7,6 +7,20 @@ import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 import type { ForumPostRow, EventSubmissionRow, Review } from '@/lib/db-types';
 
+type MyListing = {
+  id: string;
+  title: string;
+  price: number | null;
+  is_free: boolean;
+  category: string;
+  location: string;
+  emoji: string;
+  images: string[];
+  sold: boolean;
+  status: string;
+  created_at: string;
+};
+
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
   const now = new Date();
@@ -35,6 +49,7 @@ export default function ProfilePage() {
   const [posts, setPosts]           = useState<ForumPostRow[]>([]);
   const [events, setEvents]         = useState<EventSubmissionRow[]>([]);
   const [reviews, setReviews]       = useState<Review[]>([]);
+  const [myListings, setMyListings] = useState<MyListing[]>([]);
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue]   = useState('');
   const [nameSaving, setNameSaving] = useState(false);
@@ -61,7 +76,7 @@ export default function ProfilePage() {
 
     async function fetchData() {
       setDataLoading(true);
-      const [postsRes, eventsRes, reviewsRes] = await Promise.all([
+      const [postsRes, eventsRes, reviewsRes, listingsRes] = await Promise.all([
         supabase
           .from('forum_posts')
           .select('id, title, created_at, reply_count, category_id, author_email')
@@ -80,11 +95,18 @@ export default function ProfilePage() {
           .eq('author_id', user!.id)
           .order('created_at', { ascending: false })
           .limit(20),
+        supabase
+          .from('listings')
+          .select('id, title, price, is_free, category, location, emoji, images, sold, status, created_at')
+          .eq('user_id', user!.id)
+          .order('created_at', { ascending: false })
+          .limit(20),
       ]);
 
       setPosts((postsRes.data ?? []) as ForumPostRow[]);
       setEvents((eventsRes.data ?? []) as EventSubmissionRow[]);
       setReviews((reviewsRes.data ?? []) as Review[]);
+      setMyListings((listingsRes.data ?? []) as MyListing[]);
       setDataLoading(false);
     }
 
@@ -283,6 +305,56 @@ export default function ProfilePage() {
                       </div>
                       <span className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border ${STATUS_STYLES[ev.status] ?? ''}`}>
                         {STATUS_LABELS[ev.status] ?? ev.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* My Listings */}
+            <section className="mb-10">
+              <h2
+                className="text-2xl text-stone-900 mb-4"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+              >
+                My Listings
+                <span className="ml-2 text-base font-normal text-stone-600">({myListings.length})</span>
+              </h2>
+
+              {dataLoading ? (
+                <div className="text-stone-600 text-sm py-4">Loading…</div>
+              ) : myListings.length === 0 ? (
+                <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
+                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t posted any listings yet.</p>
+                  <Link href="/submit-listing" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
+                    Post a Listing →
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {myListings.map(listing => (
+                    <div
+                      key={listing.id}
+                      className="flex items-center justify-between gap-4 bg-parchment-50 rounded-xl border border-parchment-200 p-4"
+                    >
+                      <div className="min-w-0 flex items-center gap-3">
+                        <span className="text-2xl shrink-0" aria-hidden="true">{listing.emoji}</span>
+                        <div className="min-w-0">
+                          <p className="text-stone-800 font-medium leading-snug truncate">{listing.title}</p>
+                          <p className="text-xs text-stone-600 mt-0.5">
+                            {listing.is_free ? 'Free' : listing.price != null ? `$${listing.price}` : 'Contact for price'}
+                            {listing.sold ? ' · Sold' : ''}
+                            {' · '}{listing.location}
+                          </p>
+                        </div>
+                      </div>
+                      <span className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                        listing.sold
+                          ? 'bg-stone-100 text-stone-600 border-stone-200'
+                          : STATUS_STYLES[listing.status] ?? 'bg-parchment-100 text-stone-700 border-parchment-300'
+                      }`}>
+                        {listing.sold ? 'Sold' : STATUS_LABELS[listing.status] ?? listing.status}
                       </span>
                     </div>
                   ))}
