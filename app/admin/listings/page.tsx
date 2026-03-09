@@ -5,8 +5,14 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import { supabase } from '@/lib/supabase';
 
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+async function getToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ?? null;
+}
 
 type Listing = {
   id: string;
@@ -73,9 +79,13 @@ export default function AdminListingsPage() {
   async function moderate(id: string, action: 'approved' | 'rejected') {
     setActing(p => ({ ...p, [id]: true }));
     try {
+      const token = await getToken();
       await fetch('/api/listings/moderate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ id, action }),
       });
       await loadListings();

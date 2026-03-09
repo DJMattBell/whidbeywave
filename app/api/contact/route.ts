@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { Validator, ALLOWED_CONTACT_TOPICS } from '@/lib/validate';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -16,8 +17,20 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, topic, phone, message } = await request.json();
 
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const v = new Validator();
+    v.required(name, 'Name')
+     .minLength(name, 2, 'Name')
+     .maxLength(name, 100, 'Name')
+     .required(email, 'Email')
+     .email(email, 'Email')
+     .required(message, 'Message')
+     .minLength(message, 10, 'Message')
+     .maxLength(message, 5000, 'Message')
+     .maxLength(phone, 30, 'Phone')
+     .oneOf(topic, ALLOWED_CONTACT_TOPICS, 'Topic');
+
+    if (!v.ok()) {
+      return NextResponse.json({ error: v.firstError() }, { status: 400 });
     }
 
     const adminEmail = process.env.ADMIN_EMAIL;

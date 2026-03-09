@@ -66,7 +66,7 @@ async function fetchAlerts(): Promise<{ data: any[]; success: boolean }> {
   const key = process.env.WSDOT_API_KEY;
   if (!isFerryConfigured()) return { data: [], success: false };
   try {
-    const res = await fetch(`${BASE}/${key}/alerts`, { next: { revalidate: 300 } });
+    const res = await fetch(`${BASE}/alerts?apiaccesscode=${key}`, { next: { revalidate: 300 } });
     if (!res.ok) return { data: [], success: false };
     const raw = await res.json();
     return { data: Array.isArray(raw) ? raw : [], success: true };
@@ -79,7 +79,8 @@ async function fetchScheduleData(routeId: number): Promise<any | null> {
   const key = process.env.WSDOT_API_KEY;
   if (!isFerryConfigured()) return null;
   try {
-    const res = await fetch(`${BASE}/${key}/scheduletoday/${routeId}`, {
+    // OnlyRemainingTimes=true returns only future sailings, reducing payload size
+    const res = await fetch(`${BASE}/scheduletoday/${routeId}/true?apiaccesscode=${key}`, {
       next: { revalidate: 300 },
     });
     if (!res.ok) return null;

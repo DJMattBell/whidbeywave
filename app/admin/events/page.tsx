@@ -5,8 +5,14 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import { supabase } from '@/lib/supabase';
 
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+async function getToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ?? null;
+}
 
 type Submission = {
   id: string;
@@ -78,7 +84,10 @@ export default function AdminEventsPage() {
   async function sendTestDigest() {
     setNlStatus('sending');
     try {
-      const res  = await fetch('/api/newsletter/send-digest?test=true');
+      const token = await getToken();
+      const res  = await fetch('/api/newsletter/send-digest?test=true', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       setNlStatus(data.ok ? 'sent' : 'error');
     } catch {
@@ -89,7 +98,10 @@ export default function AdminEventsPage() {
   async function loadSubCount() {
     setCountLoading(true);
     try {
-      const res  = await fetch('/api/newsletter/count');
+      const token = await getToken();
+      const res  = await fetch('/api/newsletter/count', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       setSubCount(data.count ?? 0);
     } catch {
@@ -101,9 +113,13 @@ export default function AdminEventsPage() {
   async function moderate(id: string, action: 'approved' | 'rejected') {
     setActing(p => ({ ...p, [id]: true }));
     try {
+      const token = await getToken();
       await fetch('/api/events/moderate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ id, action, admin_notes: notes[id] ?? '' }),
       });
       await loadSubmissions();

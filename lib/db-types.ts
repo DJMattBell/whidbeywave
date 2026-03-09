@@ -44,6 +44,8 @@ export type NewsletterSubscriber = {
   tags: string[];
   frequency: 'weekly' | 'immediate';
   confirmed: boolean;
+  confirmation_token: string | null;
+  weekend_digest: boolean;
   created_at: string;
 };
 
@@ -127,7 +129,11 @@ export type EventSubmissionRow = {
   location: string;
   town: string;
   category: string;
+  description: string | null;
+  tags: string[];
   status: 'pending' | 'approved' | 'rejected';
+  admin_notes: string | null;
+  reviewed_at: string | null;
   submitter_name: string;
   submitter_email: string;
   created_at: string;

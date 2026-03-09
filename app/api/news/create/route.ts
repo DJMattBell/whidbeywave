@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { verifyAdminRequest } from '@/lib/adminAuth';
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await verifyAdminRequest(request);
+    if ('error' in auth) return auth.error;
+
     const body = await request.json();
     const {
       title, slug, emoji, category, read_minutes,

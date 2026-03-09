@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
+import {
+  Validator,
+  ALLOWED_TOWNS,
+  ALLOWED_EVENT_CATEGORIES,
+  ALLOWED_EVENT_TAGS,
+} from '@/lib/validate';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,8 +19,30 @@ export async function POST(request: NextRequest) {
       description, tags, submitter_name, submitter_email,
     } = body;
 
-    if (!title || !date || !time || !location || !town || !submitter_name || !submitter_email) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const v = new Validator();
+    v.required(title, 'Event title')
+     .minLength(title, 3, 'Event title')
+     .maxLength(title, 120, 'Event title')
+     .required(date, 'Event date')
+     .date(date, 'Event date')
+     .required(time, 'Event time')
+     .maxLength(time, 50, 'Event time')
+     .required(location, 'Location')
+     .maxLength(location, 200, 'Location')
+     .required(town, 'Town')
+     .oneOf(town, ALLOWED_TOWNS, 'Town')
+     .oneOf(category, ALLOWED_EVENT_CATEGORIES, 'Category')
+     .required(submitter_name, 'Your name')
+     .minLength(submitter_name, 2, 'Your name')
+     .maxLength(submitter_name, 100, 'Your name')
+     .required(submitter_email, 'Your email')
+     .email(submitter_email, 'Your email')
+     .maxLength(description, 2000, 'Description')
+     .maxItems(tags, 10, 'Tags')
+     .eachOneOf(tags, ALLOWED_EVENT_TAGS, 'Tags');
+
+    if (!v.ok()) {
+      return NextResponse.json({ error: v.firstError() }, { status: 400 });
     }
 
     // Save to Supabase

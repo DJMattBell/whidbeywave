@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { Validator, ALLOWED_LISTING_CATEGORIES } from '@/lib/validate';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -12,8 +13,28 @@ export async function POST(request: NextRequest) {
       description, contact_method, contact_email, contact_phone, images,
     } = await request.json();
 
-    if (!title?.trim() || !description?.trim() || !contact_email?.trim()) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const v = new Validator();
+    v.required(title, 'Title')
+     .minLength(title, 3, 'Title')
+     .maxLength(title, 120, 'Title')
+     .required(description, 'Description')
+     .minLength(description, 10, 'Description')
+     .maxLength(description, 3000, 'Description')
+     .required(contact_email, 'Contact email')
+     .email(contact_email, 'Contact email')
+     .maxLength(contact_phone, 30, 'Phone number')
+     .maxLength(location, 200, 'Location')
+     .oneOf(category, ALLOWED_LISTING_CATEGORIES, 'Category')
+     .maxItems(images, 8, 'Images');
+
+    if (!is_free && price !== undefined && price !== null && price !== '') {
+      if (isNaN(Number(price)) || Number(price) < 0) {
+        return NextResponse.json({ error: 'Price must be a non-negative number' }, { status: 400 });
+      }
+    }
+
+    if (!v.ok()) {
+      return NextResponse.json({ error: v.firstError() }, { status: 400 });
     }
 
     const adminEmail = process.env.ADMIN_EMAIL;

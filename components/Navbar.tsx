@@ -116,7 +116,8 @@ export default function Navbar() {
                   </button>
 
                   {visitOpen && (
-                    <div className="absolute top-full left-0 mt-1 bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden min-w-[210px] z-50">
+                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[210px] z-50">
+                    <div className="bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden">
                       {visitLinks.map(({ href, label }) => {
                         const active = href === '/visit'
                           ? pathname === '/visit'
@@ -136,6 +137,7 @@ export default function Navbar() {
                           </Link>
                         );
                       })}
+                    </div>
                     </div>
                   )}
                 </div>
@@ -183,7 +185,8 @@ export default function Navbar() {
                 </button>
 
                 {submitOpen && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden min-w-[190px] z-50">
+                  <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[190px] z-50">
+                  <div className="bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden">
                     <Link
                       href="/submit-event"
                       onClick={() => setSubmitOpen(false)}
@@ -198,6 +201,7 @@ export default function Navbar() {
                     >
                       <span aria-hidden="true">🏷️</span> Post a Listing
                     </Link>
+                  </div>
                   </div>
                 )}
               </div>

@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { verifyAdminRequest } from '@/lib/adminAuth';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await verifyAdminRequest(request);
+    if ('error' in auth) return auth.error;
+
     const { id, action, admin_notes } = await request.json();
 
     if (!id || !action || !['approved', 'rejected'].includes(action)) {

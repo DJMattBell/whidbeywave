@@ -5,8 +5,14 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import { supabase } from '@/lib/supabase';
 
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+async function getToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ?? null;
+}
 
 const CATEGORIES = [
   'Transportation', 'Arts & Culture', 'Agriculture', 'Community',
@@ -103,9 +109,13 @@ export default function AdminNewsPage() {
     setSubmitting(true);
     setSubmitStatus('idle');
 
+    const token = await getToken();
     const res  = await fetch('/api/news/create', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body:    JSON.stringify({ ...form, read_minutes: Number(form.read_minutes) }),
     });
     const data = await res.json();
@@ -126,9 +136,13 @@ export default function AdminNewsPage() {
 
   async function togglePublished(post: Post) {
     setToggling(t => ({ ...t, [post.id]: true }));
+    const token = await getToken();
     await fetch('/api/news/toggle', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body:    JSON.stringify({ id: post.id, published: !post.published }),
     });
     await loadPosts();

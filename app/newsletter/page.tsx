@@ -1,8 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { isConfigured } from '@/lib/supabase';
 import { events, newsPosts } from '@/lib/data';
+
+function ConfirmBanner() {
+  const params = useSearchParams();
+  const confirmed = params.get('confirmed');
+  const error     = params.get('error');
+
+  if (confirmed === 'true') {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <div className="bg-forest-50 border border-forest-200 rounded-2xl px-6 py-5 flex items-start gap-4">
+          <span className="text-3xl shrink-0" aria-hidden="true">🌿</span>
+          <div>
+            <p className="font-semibold text-forest-800 text-base">You&apos;re confirmed — welcome aboard!</p>
+            <p className="text-forest-700 text-sm mt-0.5">
+              You&apos;re now subscribed to the WhidbeyWave Weekly. Expect your first issue next Monday morning.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-6 py-5 flex items-start gap-4">
+          <span className="text-3xl shrink-0" aria-hidden="true">🌧️</span>
+          <div>
+            <p className="font-semibold text-red-800 text-base">That confirmation link didn&apos;t work.</p>
+            <p className="text-red-700 text-sm mt-0.5">
+              It may have already been used or expired. Sign up again below and we&apos;ll send a fresh one.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 const NEWSLETTER_TAGS = [
   'News',
@@ -80,6 +121,10 @@ export default function NewsletterPage() {
           </p>
         </div>
       </div>
+
+      <Suspense>
+        <ConfirmBanner />
+      </Suspense>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
         {/*
