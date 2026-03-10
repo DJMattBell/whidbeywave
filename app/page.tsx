@@ -80,7 +80,7 @@ export default async function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-800 opacity-10 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-40 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-32 text-center">
           <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-8 border border-parchment-50/20">
             <span>🌊</span>
             <span className="text-parchment-200">Whidbey Island, Washington</span>
@@ -106,15 +106,18 @@ export default async function HomePage() {
             <Link href="/events" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 shadow-warm-lg">
               See What&apos;s On
             </Link>
-            <Link href="/marketplace" className="text-sm text-parchment-200 hover:text-parchment-50 transition-colors">
+            <Link href="/marketplace" className="min-h-[44px] flex items-center text-sm text-parchment-200 hover:text-parchment-50 transition-colors">
               or browse the marketplace →
             </Link>
           </div>
         </div>
 
-        {/* Warm parchment wave transition */}
-        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        {/* Wave transition — shorter on mobile */}
+        <svg className="absolute bottom-0 left-0 w-full hidden sm:block" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M0 60L60 50C120 40 240 20 360 18C480 16 600 32 720 36C840 40 960 32 1080 26C1200 20 1320 16 1380 14L1440 12V60H0Z" fill="#fdfaf3" />
+        </svg>
+        <svg className="absolute bottom-0 left-0 w-full sm:hidden" viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M0 40L60 33C120 26 240 13 360 12C480 11 600 21 720 24C840 27 960 21 1080 17C1200 13 1320 11 1380 9L1440 8V40H0Z" fill="#fdfaf3" />
         </svg>
       </section>
 
