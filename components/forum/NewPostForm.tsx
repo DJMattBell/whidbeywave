@@ -73,6 +73,7 @@ export default function NewPostForm() {
       author_email: user?.email ?? null,
       zip_code:    zip,
       category_id: catData?.id ?? null,
+      category_name: categorySlug,
     });
 
     if (error) {

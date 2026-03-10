@@ -66,24 +66,16 @@ async function getPosts(category: string | null): Promise<ForumPost[]> {
   const db = createServerClient();
   let q = db
     .from('forum_posts')
-    .select('*, forum_categories(name, slug)')
+    .select('*, forum_categories(name, slug), category_name')
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (category && category !== 'All') {
-    // Filter via the joined forum_categories name
-    q = q.eq('forum_categories.name', category) as typeof q;
+    q = q.eq('category_name', category);
   }
 
   const { data } = await q;
-  let posts = (data ?? []) as ForumPost[];
-
-  // Client-side filter by category name since the join filter above may return all rows
-  if (category && category !== 'All') {
-    posts = posts.filter(p => (p.forum_categories as any)?.name === category);
-  }
-
-  return posts;
+  return (data ?? []) as ForumPost[];
 }
 
 export default async function ForumPage({
