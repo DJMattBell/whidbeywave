@@ -135,68 +135,102 @@ export default async function ForumPage({
 
         {/* Post list */}
         {posts.length === 0 ? (
-          <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-            <div className="text-5xl mb-4" aria-hidden="true">🌾</div>
-            <p className="text-lg text-stone-700 mb-1 font-semibold">
-              {activeCategory === 'All' ? 'No questions yet — be the first' : `No posts in "${activeCategory}" yet`}
-            </p>
-            <p className="text-stone-600 text-sm">
-              {isConfigured ? 'Scroll down to post a question.' : 'Configure Supabase to enable the forum.'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3" role="list">
-            {posts.map(post => {
-              const catName = (post.forum_categories as any)?.name ?? 'General';
-              return (
-                <Link
-                  key={post.id}
-                  href={`/forum/${post.id}`}
-                  role="listitem"
-                  className="block bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden p-5 group hover:border-forest-200 border border-transparent"
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Reply count */}
-                    <div
-                      className="shrink-0 w-12 h-12 rounded-xl bg-parchment-100 border border-parchment-200 flex flex-col items-center justify-center"
-                      aria-label={`${post.reply_count ?? 0} ${(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}`}
-                    >
-                      <span className="text-lg font-bold text-stone-700" aria-hidden="true">{post.reply_count ?? 0}</span>
-                      <span className="text-xs text-stone-600" aria-hidden="true">{(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        {post.is_pinned && (
-                          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800">
-                            📌 Pinned
-                          </span>
-                        )}
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${CATEGORY_COLORS[catName] ?? 'bg-stone-100 text-stone-700'}`}>
-                          {catName}
-                        </span>
-                      </div>
-                      <h2 className="font-semibold text-stone-900 group-hover:text-forest-600 transition-colors leading-snug mb-1 text-base">
-                        {post.title}
-                      </h2>
-                      <p className="text-sm text-stone-600 flex flex-wrap items-center gap-1.5">
-                        <span>{post.author_name}</span>
-                        {isWhidbeyLocal(post.zip_code) && <LocalBadge />}
-                        <span>·</span>
-                        <time dateTime={post.created_at}>
-                          {formatPostDate(post.created_at)}
-                        </time>
-                      </p>
-                    </div>
-                    <span className="text-stone-300 group-hover:text-forest-400 transition-colors shrink-0 text-lg" aria-hidden="true">→</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+          <>
+            {/* Form first so new users can immediately post */}
+            <section id="ask" aria-label="Ask a question" className="mb-10">
+              <div className="mb-5">
+                <h2 className="text-2xl text-stone-900"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                  Ask a Question
+                </h2>
+                <p className="text-stone-500 text-sm mt-1">Neighbors know things no search engine does.</p>
+              </div>
+              <NewPostForm />
+            </section>
 
-        {/* New post form */}
-        <NewPostForm />
+            <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
+              <div className="text-5xl mb-4" aria-hidden="true">🌾</div>
+              <p className="text-lg text-stone-700 mb-1 font-semibold">
+                {activeCategory === 'All' ? 'No questions yet — be the first' : `No posts in "${activeCategory}" yet`}
+              </p>
+              <p className="text-stone-600 text-sm">
+                {isConfigured ? 'Use the form above to post a question.' : 'Configure Supabase to enable the forum.'}
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="space-y-3" role="list">
+              {posts.map(post => {
+                const catName = (post.forum_categories as any)?.name ?? 'General';
+                return (
+                  <Link
+                    key={post.id}
+                    href={`/forum/${post.id}`}
+                    role="listitem"
+                    className="block bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden p-5 group hover:border-forest-200 border border-transparent"
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Reply count */}
+                      <div
+                        className="shrink-0 w-12 h-12 rounded-xl bg-parchment-100 border border-parchment-200 flex flex-col items-center justify-center"
+                        aria-label={`${post.reply_count ?? 0} ${(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}`}
+                      >
+                        <span className="text-lg font-bold text-stone-700" aria-hidden="true">{post.reply_count ?? 0}</span>
+                        <span className="text-xs text-stone-600" aria-hidden="true">{(post.reply_count ?? 0) === 1 ? 'reply' : 'replies'}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          {post.is_pinned && (
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800">
+                              📌 Pinned
+                            </span>
+                          )}
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${CATEGORY_COLORS[catName] ?? 'bg-stone-100 text-stone-700'}`}>
+                            {catName}
+                          </span>
+                        </div>
+                        <h2 className="font-semibold text-stone-900 group-hover:text-forest-600 transition-colors leading-snug mb-1 text-base">
+                          {post.title}
+                        </h2>
+                        <p className="text-sm text-stone-600 flex flex-wrap items-center gap-1.5">
+                          <span>{post.author_name}</span>
+                          {isWhidbeyLocal(post.zip_code) && <LocalBadge />}
+                          <span>·</span>
+                          <time dateTime={post.created_at}>
+                            {formatPostDate(post.created_at)}
+                          </time>
+                        </p>
+                      </div>
+                      <span className="text-stone-300 group-hover:text-forest-400 transition-colors shrink-0 text-lg" aria-hidden="true">→</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Mobile FAB — scrolls to the ask section */}
+            <a
+              href="#ask"
+              className="fixed bottom-6 right-4 z-40 md:hidden btn-primary rounded-full w-14 h-14 text-2xl shadow-warm-lg flex items-center justify-center"
+              aria-label="Ask a question"
+            >
+              ✍️
+            </a>
+
+            {/* Ask a question section */}
+            <section id="ask" aria-label="Ask a question" className="mt-16 pt-10 border-t border-parchment-200">
+              <div className="mb-5">
+                <h2 className="text-2xl text-stone-900"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                  Ask a Question
+                </h2>
+                <p className="text-stone-500 text-sm mt-1">Neighbors know things no search engine does.</p>
+              </div>
+              <NewPostForm />
+            </section>
+          </>
+        )}
       </div>
     </>
   );
