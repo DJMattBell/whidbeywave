@@ -24,6 +24,7 @@ export const ALLOWED_EVENT_CATEGORIES = [
 export const ALLOWED_EVENT_TAGS = [
   'Kids Event', 'Family Event', 'Adult Event', 'Live Music',
   'Festival', 'Karaoke', 'Class', 'Visual Art', 'Just Fun', 'Market',
+  'Visitor Friendly',
 ] as const;
 
 export const ALLOWED_CONTACT_TOPICS = [

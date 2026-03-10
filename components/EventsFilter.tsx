@@ -8,16 +8,17 @@ import ShareButton from '@/components/ShareButton';
 import AddToCalendar from '@/components/AddToCalendar';
 
 const TAG_ICONS: Record<EventTag, string> = {
-  'Kids Event':   '🧒',
-  'Family Event': '👨‍👩‍👧',
-  'Adult Event':  '🍷',
-  'Live Music':   '🎵',
-  'Festival':     '🎉',
-  'Karaoke':      '🎤',
-  'Class':        '📚',
-  'Visual Art':   '🎨',
-  'Just Fun':     '😄',
-  'Market':       '🛒',
+  'Kids Event':       '🧒',
+  'Family Event':     '👨‍👩‍👧',
+  'Adult Event':      '🍷',
+  'Live Music':       '🎵',
+  'Festival':         '🎉',
+  'Karaoke':          '🎤',
+  'Class':            '📚',
+  'Visual Art':       '🎨',
+  'Just Fun':         '😄',
+  'Market':           '🛒',
+  'Visitor Friendly': '🗺️',
 };
 
 export default function EventsFilter({ events }: { events: Event[] }) {

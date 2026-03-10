@@ -9,6 +9,7 @@ export const EVENT_TAGS = [
   'Visual Art',
   'Just Fun',
   'Market',
+  'Visitor Friendly',
 ] as const;
 
 export type EventTag = (typeof EVENT_TAGS)[number];
