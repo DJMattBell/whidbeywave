@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { EVENT_TAGS, categoryColors } from '@/lib/data';
 import type { Event, EventTag } from '@/lib/data';
 import EventRsvpButton from '@/components/EventRsvpButton';
@@ -21,8 +22,20 @@ const TAG_ICONS: Record<EventTag, string> = {
   'Visitor Friendly': '🗺️',
 };
 
+const TOWNS = [
+  'All',
+  'Oak Harbor',
+  'Coupeville',
+  'Langley',
+  'Freeland',
+  'Greenbank',
+  'Clinton',
+  'Bayview',
+] as const;
+
 export default function EventsFilter({ events }: { events: Event[] }) {
   const [activeTags, setActiveTags] = useState<EventTag[]>([]);
+  const [activeTown, setActiveTown] = useState('All');
 
   function toggleTag(tag: EventTag) {
     setActiveTags((prev) =>
@@ -32,59 +45,95 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
   function clearAll() {
     setActiveTags([]);
+    setActiveTown('All');
   }
 
-  const filtered =
-    activeTags.length === 0
-      ? events
-      : events.filter((e) => activeTags.some((t) => e.tags.includes(t)));
+  const hasFilters = activeTags.length > 0 || activeTown !== 'All';
+
+  const filtered = events.filter((e) => {
+    if (activeTown !== 'All' && e.town !== activeTown) return false;
+    if (activeTags.length > 0 && !activeTags.some((t) => e.tags.includes(t))) return false;
+    return true;
+  });
 
   return (
     <div>
-      {/* ── Tag filter bar ──────────────────────────────────────────── */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-3">
+      {/* ── Filter bars ───────────────────────────────────────────── */}
+      <div className="mb-8 space-y-5">
+        <div className="flex items-center justify-between mb-1">
           <p className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
             Looking for something specific?
           </p>
-          {activeTags.length > 0 && (
+          {hasFilters && (
             <button
               onClick={clearAll}
               className="text-xs text-forest-600 hover:text-forest-800 font-medium underline underline-offset-2"
             >
-              Show everything ({activeTags.length} filter{activeTags.length > 1 ? 's' : ''} active)
+              Show everything
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {EVENT_TAGS.map((tag) => {
-            const active = activeTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
-                  active
-                    ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
-                    : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
-                }`}
-              >
-                <span>{TAG_ICONS[tag]}</span>
-                <span>{tag}</span>
-              </button>
-            );
-          })}
+        {/* Town filter */}
+        <div>
+          <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
+          <div className="flex flex-wrap gap-2">
+            {TOWNS.map((town) => {
+              const active = town === activeTown;
+              return (
+                <button
+                  key={town}
+                  onClick={() => setActiveTown(town)}
+                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                    active
+                      ? 'bg-sound-600 text-parchment-50 border-sound-600 shadow-warm scale-105'
+                      : 'bg-sound-50 text-sound-700 border-sound-200 hover:bg-sound-100 hover:border-sound-300'
+                  }`}
+                >
+                  {town}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {activeTags.length > 0 && (
-          <p className="mt-3 text-sm text-stone-500" aria-live="polite">
+        {/* Tag filter */}
+        <div>
+          <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
+          <div className="flex flex-wrap gap-2">
+            {EVENT_TAGS.map((tag) => {
+              const active = activeTags.includes(tag);
+              return (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                    active
+                      ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
+                      : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
+                  }`}
+                >
+                  <span>{TAG_ICONS[tag]}</span>
+                  <span>{tag}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {hasFilters && (
+          <p className="text-sm text-stone-500" aria-live="polite">
             Found{' '}
             <strong className="text-stone-800">{filtered.length}</strong> of{' '}
-            {events.length} events &nbsp;·&nbsp; matching{' '}
-            <span className="text-forest-600 font-medium">
-              {activeTags.join(' or ')}
-            </span>
+            {events.length} events
+            {activeTown !== 'All' && (
+              <span className="text-sound-600 font-medium"> · in {activeTown}</span>
+            )}
+            {activeTags.length > 0 && (
+              <span className="text-forest-600 font-medium">
+                {' '}· {activeTags.join(' or ')}
+              </span>
+            )}
           </p>
         )}
       </div>
@@ -128,11 +177,13 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
                 </div>
 
-                <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
-                  <span>{event.emoji}</span>
-                  <span>{event.title}</span>
-                </h2>
+                <Link href={`/events/${event.id}`}>
+                  <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                    <span>{event.emoji}</span>
+                    <span>{event.title}</span>
+                  </h2>
+                </Link>
 
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-600 mb-3">
                   <span>🕐 {event.time}</span>
