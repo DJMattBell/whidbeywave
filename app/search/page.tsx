@@ -3,17 +3,24 @@
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { events, newsPosts, listings, formatShortDate } from '@/lib/data';
+import { listings } from '@/lib/data';
 import { supabase, isConfigured } from '@/lib/supabase';
 import type { ForumPostRow, Recommendation } from '@/lib/db-types';
 
+type EventResult = { id: string; title: string; date: string; town: string; category: string; description: string };
+type NewsResult = { id: string; title: string; excerpt: string; slug: string; emoji: string; category: string };
+
 type Results = {
-  events: typeof events;
-  news: typeof newsPosts;
+  events: EventResult[];
+  news: NewsResult[];
   listings: typeof listings;
   forum: Pick<ForumPostRow, 'id' | 'title' | 'author_name' | 'reply_count'>[];
   recommendations: Pick<Recommendation, 'id' | 'name' | 'category' | 'town'>[];
 };
+
+function formatShortDate(dateStr: string) {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
 function SearchBody() {
   const params = useSearchParams();
@@ -22,60 +29,65 @@ function SearchBody() {
 
   const [query, setQuery]       = useState(initialQ);
   const [results, setResults]   = useState<Results | null>(null);
-  const [dbLoading, setDbLoading] = useState(false);
+  const [loading, setLoading]   = useState(false);
 
   const runSearch = useCallback((q: string) => {
     if (!q.trim()) { setResults(null); return; }
     const lower = q.trim().toLowerCase();
 
-    // Static data — instant
-    const matchedEvents = events.filter(e =>
-      e.title.toLowerCase().includes(lower) ||
-      e.description.toLowerCase().includes(lower) ||
-      e.town.toLowerCase().includes(lower)
-    );
-    const matchedNews = newsPosts.filter(p =>
-      p.title.toLowerCase().includes(lower) ||
-      p.excerpt.toLowerCase().includes(lower) ||
-      p.body.toLowerCase().includes(lower)
-    );
+    // Static listings search (marketplace has its own search page)
     const matchedListings = listings.filter(l =>
       l.title.toLowerCase().includes(lower) ||
       l.description.toLowerCase().includes(lower) ||
       l.location.toLowerCase().includes(lower)
     );
 
-    setResults({ events: matchedEvents, news: matchedNews, listings: matchedListings, forum: [], recommendations: [] });
-
-    // DB search
-    if (isConfigured) {
-      setDbLoading(true);
-      const term = q.trim();
-      Promise.all([
-        supabase
-          .from('forum_posts')
-          .select('id, title, author_name, reply_count')
-          .or(`title.ilike.%${term}%,body.ilike.%${term}%`)
-          .order('created_at', { ascending: false })
-          .limit(5),
-        supabase
-          .from('recommendations')
-          .select('id, name, category, town')
-          .or(`name.ilike.%${term}%,description.ilike.%${term}%`)
-          .limit(5),
-      ]).then(([forumRes, recRes]) => {
-        setResults(prev =>
-          prev
-            ? {
-                ...prev,
-                forum: (forumRes.data ?? []) as Results['forum'],
-                recommendations: (recRes.data ?? []) as Results['recommendations'],
-              }
-            : null
-        );
-        setDbLoading(false);
-      });
+    if (!isConfigured) {
+      setResults({ events: [], news: [], listings: matchedListings, forum: [], recommendations: [] });
+      return;
     }
+
+    setLoading(true);
+    const term = q.trim();
+    const today = new Date().toLocaleDateString('en-CA');
+
+    Promise.all([
+      supabase
+        .from('event_submissions')
+        .select('id, title, date, town, category, description')
+        .eq('status', 'approved')
+        .or(`title.ilike.%${term}%,description.ilike.%${term}%,town.ilike.%${term}%`)
+        .gte('date', today)
+        .order('date', { ascending: true })
+        .limit(8),
+      supabase
+        .from('news_posts')
+        .select('id, title, excerpt, slug, emoji, category')
+        .eq('published', true)
+        .or(`title.ilike.%${term}%,excerpt.ilike.%${term}%`)
+        .order('published_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('forum_posts')
+        .select('id, title, author_name, reply_count')
+        .or(`title.ilike.%${term}%,body.ilike.%${term}%`)
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('recommendations')
+        .select('id, name, category, town')
+        .or(`name.ilike.%${term}%,description.ilike.%${term}%`)
+        .limit(5),
+    ]).then(([eventsRes, newsRes, forumRes, recRes]) => {
+      setResults({
+        events: (eventsRes.data ?? []) as EventResult[],
+        news: (newsRes.data ?? []) as NewsResult[],
+        listings: matchedListings,
+        forum: (forumRes.data ?? []) as Results['forum'],
+        recommendations: (recRes.data ?? []) as Results['recommendations'],
+      });
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -117,8 +129,13 @@ function SearchBody() {
         </div>
       </form>
 
+      {/* Loading */}
+      {loading && currentQ && (
+        <p className="text-sm text-stone-500 mb-6">Searching…</p>
+      )}
+
       {/* Result count */}
-      {currentQ && results && (
+      {currentQ && results && !loading && (
         <p className="text-sm text-stone-500 mb-6" aria-live="polite">
           {total === 0
             ? 'Nothing found — try a different word.'
@@ -126,7 +143,6 @@ function SearchBody() {
               <>
                 <strong className="text-stone-800">{total}</strong>{' '}
                 result{total !== 1 ? 's' : ''} for &ldquo;{currentQ}&rdquo;
-                {dbLoading && ' (still searching…)'}
               </>
             )
           }
@@ -134,7 +150,7 @@ function SearchBody() {
       )}
 
       {/* Results */}
-      {results && (
+      {results && !loading && (
         <div className="space-y-10">
           {results.events.length > 0 && (
             <section>
@@ -144,7 +160,7 @@ function SearchBody() {
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.events.map(e => (
                   <Link key={e.id} href="/events" className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
-                    <span className="text-2xl shrink-0" aria-hidden="true">{e.emoji}</span>
+                    <span className="text-2xl shrink-0" aria-hidden="true">📅</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{e.title}</p>
                       <p className="text-sm text-stone-500">📅 {formatShortDate(e.date)} · 📍 {e.town}</p>
@@ -163,7 +179,7 @@ function SearchBody() {
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.news.map(p => (
                   <Link key={p.id} href={`/news#${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
-                    <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji}</span>
+                    <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji ?? '📰'}</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{p.title}</p>
                       <p className="text-sm text-stone-500 mt-0.5 line-clamp-1">{p.excerpt}</p>
@@ -232,7 +248,7 @@ function SearchBody() {
             </section>
           )}
 
-          {total === 0 && currentQ && !dbLoading && (
+          {total === 0 && currentQ && !loading && (
             <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
               <div className="text-5xl mb-4" aria-hidden="true">🔍</div>
               <p className="text-lg font-semibold text-stone-700 mb-2">Nothing found</p>
