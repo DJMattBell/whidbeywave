@@ -136,7 +136,6 @@ export default async function HomePage() {
             { emoji: '📅', label: "What's On",   href: '/events'      },
             { emoji: '📰', label: 'Island News',  href: '/news'        },
             { emoji: '🛒', label: 'Buy & Sell',   href: '/marketplace' },
-            { emoji: '🤝', label: 'Barter',       href: '/barter'      },
             { emoji: '🚢', label: 'Ferry',         href: '/ferry'       },
             { emoji: '🌊', label: 'Tides',         href: '/tides'       },
           ].map(({ emoji, label, href }) => (
@@ -166,7 +165,7 @@ export default async function HomePage() {
             { emoji: '📅', label: "What's Going On", href: '/events',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
             { emoji: '📰', label: 'Island News',      href: '/news',        color: 'bg-sound-50 text-sound-700 hover:bg-sound-100' },
             { emoji: '🛒', label: 'Buy & Sell',       href: '/marketplace', color: 'bg-amber-50 text-amber-800 hover:bg-amber-100' },
-            { emoji: '🤝', label: 'Barter & Trade',   href: '/barter',      color: 'bg-terra-50 text-terra-800 hover:bg-terra-100' },
+            { emoji: '💬', label: 'Ask the Island',   href: '/forum',       color: 'bg-terra-50 text-terra-800 hover:bg-terra-100' },
           ].map(({ emoji, label, href, color }) => (
             <Link
               key={href}

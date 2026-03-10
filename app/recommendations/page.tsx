@@ -452,7 +452,7 @@ export default function RecommendationsPage() {
                             {rf.zipError ? (
                               <p className="text-red-500 text-xs mt-1">{rf.zipError}</p>
                             ) : (
-                              <p className="text-xs text-stone-600 mt-1">Valid Whidbey zips: 98239, 98249, 98250, 98253, 98260, 98277, 98278</p>
+                              <p className="text-xs text-stone-600 mt-1">Must be a Whidbey Island zip code</p>
                             )}
                           </div>
                           {rf.status === 'error' && <p className="text-red-500 text-xs">Something went wrong — try again.</p>}

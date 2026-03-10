@@ -31,7 +31,6 @@ const baseCommunityLinks = [
   { href: '/forum',           label: 'Ask the Island' },
   { href: '/recommendations', label: 'Local Picks' },
   { href: '/marketplace',     label: 'Buy & Sell' },
-  { href: '/barter',          label: 'Barter & Trade' },
   { href: '/newsletter',      label: 'Newsletter' },
 ];
 
