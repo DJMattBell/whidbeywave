@@ -181,7 +181,7 @@ export default async function HomePage() {
       <FerryAlerts />
 
       {/* ── Coming Up ───────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-20">
         <div className="flex items-end justify-between mb-10">
           <div>
             <h2 className="section-title">Coming Up on the Island</h2>
@@ -239,7 +239,9 @@ export default async function HomePage() {
         )}
 
         <div className="text-center mt-6 sm:hidden">
-          <Link href="/events" className="btn-secondary">See all events</Link>
+          <Link href="/events" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
+            See all events →
+          </Link>
         </div>
       </section>
 

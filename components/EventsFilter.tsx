@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { EVENT_TAGS, categoryColors } from '@/lib/data';
 import type { Event, EventTag } from '@/lib/data';
@@ -30,12 +31,20 @@ const TOWNS = [
   'Freeland',
   'Greenbank',
   'Clinton',
-  'Bayview',
 ] as const;
 
+const MOBILE_TAG_LIMIT = 5;
+
 export default function EventsFilter({ events }: { events: Event[] }) {
+  const searchParams = useSearchParams();
   const [activeTags, setActiveTags] = useState<EventTag[]>([]);
   const [activeTown, setActiveTown] = useState('All');
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  useEffect(() => {
+    const town = searchParams.get('town');
+    if (town) setActiveTown(town);
+  }, [searchParams]);
 
   function toggleTag(tag: EventTag) {
     setActiveTags((prev) =>
@@ -58,8 +67,8 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
   return (
     <div>
-      {/* ── Filter bars ───────────────────────────────────────────── */}
-      <div className="mb-8 space-y-5">
+      {/* ── Filter bars — sticky on mobile ──────────────────────── */}
+      <div className="mb-8 space-y-5 sticky top-[104px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 -mt-4 shadow-sm">
         <div className="flex items-center justify-between mb-1">
           <p className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
             Looking for something specific?
@@ -67,24 +76,24 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           {hasFilters && (
             <button
               onClick={clearAll}
-              className="text-xs text-forest-600 hover:text-forest-800 font-medium underline underline-offset-2"
+              className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1 hover:bg-stone-200 transition-colors"
             >
               Show everything
             </button>
           )}
         </div>
 
-        {/* Town filter */}
+        {/* Town filter — scrollable on mobile */}
         <div>
           <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none sm:flex-wrap">
             {TOWNS.map((town) => {
               const active = town === activeTown;
               return (
                 <button
                   key={town}
                   onClick={() => setActiveTown(town)}
-                  className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                  className={`inline-flex items-center shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
                     active
                       ? 'bg-sound-600 text-parchment-50 border-sound-600 shadow-warm scale-105'
                       : 'bg-sound-50 text-sound-700 border-sound-200 hover:bg-sound-100 hover:border-sound-300'
@@ -97,27 +106,36 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           </div>
         </div>
 
-        {/* Tag filter */}
+        {/* Tag filter — collapsed on mobile */}
         <div>
           <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
           <div className="flex flex-wrap gap-2">
-            {EVENT_TAGS.map((tag) => {
+            {EVENT_TAGS.map((tag, i) => {
               const active = activeTags.includes(tag);
+              const hiddenOnMobile = !showAllTags && i >= MOBILE_TAG_LIMIT;
               return (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                  className={`items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
                     active
                       ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
                       : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
-                  }`}
+                  } ${hiddenOnMobile ? 'hidden sm:inline-flex' : 'inline-flex'}`}
                 >
                   <span>{TAG_ICONS[tag]}</span>
                   <span>{tag}</span>
                 </button>
               );
             })}
+            {EVENT_TAGS.length > MOBILE_TAG_LIMIT && (
+              <button
+                onClick={() => setShowAllTags(v => !v)}
+                className="inline-flex sm:hidden items-center px-4 py-2 rounded-full text-sm font-medium border border-parchment-300 bg-parchment-100 text-stone-500 hover:bg-parchment-200 transition-colors"
+              >
+                {showAllTags ? 'Show less' : `+${EVENT_TAGS.length - MOBILE_TAG_LIMIT} more`}
+              </button>
+            )}
           </div>
         </div>
 
@@ -154,7 +172,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       ) : (
         <div className="grid gap-6">
           {filtered.map((event) => (
-            <article key={event.id} className="card flex flex-col md:flex-row group">
+            <Link key={event.id} href={`/events/${event.id}`} className="card flex flex-col md:flex-row group block">
               {/* Date block */}
               <div className="md:w-36 bg-gradient-to-br from-forest-600 to-sound-600 text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none shrink-0">
                 <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
@@ -177,13 +195,11 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
                 </div>
 
-                <Link href={`/events/${event.id}`}>
-                  <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
-                    <span>{event.emoji}</span>
-                    <span>{event.title}</span>
-                  </h2>
-                </Link>
+                <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                  <span>{event.emoji}</span>
+                  <span>{event.title}</span>
+                </h2>
 
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-600 mb-3">
                   <span>🕐 {event.time}</span>
@@ -203,7 +219,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                 />
 
                 {/* Tags + RSVP + Share */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200" onClick={(e) => e.stopPropagation()}>
                   <div className="flex flex-wrap gap-1.5">
                     {event.tags.map((tag) => (
                       <button
@@ -230,7 +246,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   </div>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       )}

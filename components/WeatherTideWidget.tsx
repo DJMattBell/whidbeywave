@@ -112,30 +112,33 @@ export default async function WeatherTideWidget() {
 
   return (
     <div className="bg-sound-50 border-b border-sound-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-sound-800">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-x-6 text-sm text-sound-800 overflow-x-auto scrollbar-none">
 
         {/* Location label */}
-        <span className="font-semibold text-sound-700 shrink-0">
+        <span className="font-semibold text-sound-700 shrink-0 whitespace-nowrap">
           🗺️ Whidbey Now
         </span>
 
         {/* Weather */}
         {weather && (
-          <span className="flex items-center gap-1.5 shrink-0">
-            <span aria-hidden="true">{icon}</span>
-            <span className="font-semibold">{weather.temp}°F</span>
-            <span className="text-sound-600">{label}</span>
-            {weather.wind > 0 && (
-              <span className="text-sound-500">· {weather.wind} mph wind</span>
-            )}
-          </span>
+          <>
+            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+            <span className="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+              <span aria-hidden="true">{icon}</span>
+              <span className="font-semibold">{weather.temp}°F</span>
+              <span className="text-sound-600">{label}</span>
+              {weather.wind > 0 && (
+                <span className="text-sound-500">· {weather.wind} mph wind</span>
+              )}
+            </span>
+          </>
         )}
 
         {/* Ferry — Clinton/Mukilteo */}
         {hasMuk && (
           <>
-            {weather && <span className="text-sound-300 hidden sm:inline" aria-hidden="true">|</span>}
-            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 hover:text-sound-600 transition-colors">
+            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
               <span aria-hidden="true">🚢</span>
               <span className="text-sound-600 font-medium">Clinton–Mukilteo:</span>
               <FerryStatusText status={ferry.mukilteoCliton!.status} />
@@ -146,8 +149,8 @@ export default async function WeatherTideWidget() {
         {/* Ferry — Coupeville/PT */}
         {hasPT && (
           <>
-            <span className="text-sound-300 hidden sm:inline" aria-hidden="true">·</span>
-            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 hover:text-sound-600 transition-colors">
+            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
               <span aria-hidden="true">⛴</span>
               <span className="text-sound-600 font-medium">Coupeville–PT:</span>
               <FerryStatusText status={ferry.ptCoupeville!.status} />
@@ -155,32 +158,30 @@ export default async function WeatherTideWidget() {
           </>
         )}
 
-        {/* Divider before tides */}
-        {(weather || hasMuk || hasPT) && hasTides && (
-          <span className="text-sound-300 hidden sm:inline" aria-hidden="true">|</span>
-        )}
-
         {/* Tides */}
         {hasTides && (
-          <span className="flex items-center gap-3 shrink-0">
-            <span className="text-sound-600 font-medium">🌊 Tides:</span>
-            {tides!.map((tide, i) => (
-              <span key={i} className="flex items-center gap-1">
-                <span className={`font-semibold text-xs uppercase tracking-wide ${
-                  tide.type === 'H' ? 'text-forest-600' : 'text-stone-500'
-                }`}>
-                  {tide.type === 'H' ? 'High' : 'Low'}
+          <>
+            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+            <span className="flex items-center gap-3 shrink-0 whitespace-nowrap">
+              <span className="text-sound-600 font-medium">🌊 Tides:</span>
+              {tides!.map((tide, i) => (
+                <span key={i} className="flex items-center gap-1">
+                  <span className={`font-semibold text-xs uppercase tracking-wide ${
+                    tide.type === 'H' ? 'text-forest-600' : 'text-stone-500'
+                  }`}>
+                    {tide.type === 'H' ? 'High' : 'Low'}
+                  </span>
+                  <span>{tide.time}</span>
+                  <span className="text-sound-500">({tide.height} ft)</span>
+                  {i < tides!.length - 1 && <span className="text-sound-300 mx-1">·</span>}
                 </span>
-                <span>{tide.time}</span>
-                <span className="text-sound-500">({tide.height} ft)</span>
-                {i < tides!.length - 1 && <span className="text-sound-300 mx-1">·</span>}
-              </span>
-            ))}
-          </span>
+              ))}
+            </span>
+          </>
         )}
 
         {/* Attribution */}
-        <span className="ml-auto text-xs text-sound-400 hidden md:block">
+        <span className="ml-auto text-xs text-sound-400 hidden md:block shrink-0">
           NOAA · Open-Meteo · WSDOT
         </span>
       </div>

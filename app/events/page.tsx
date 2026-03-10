@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { events as fallbackEvents, categoryColors } from '@/lib/data';
 import type { Event } from '@/lib/data';
@@ -144,7 +144,9 @@ export default async function EventsPage() {
             <Link href="/submit-event" className="btn-primary">Submit an Event</Link>
           </div>
         ) : (
-          <EventsFilter events={upcoming} />
+          <Suspense fallback={null}>
+            <EventsFilter events={upcoming} />
+          </Suspense>
         )}
 
         {/* Past events (collapsible) */}

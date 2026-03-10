@@ -25,10 +25,7 @@
     font-size: max(16px, 1em);
   }
 
-  /* 48px minimum touch target on all buttons */
-  button {
-    min-height: 48px;
-  }
+  /* Minimum touch target on icon-only interactive elements */
 }
 
 /* Restore Tailwind's default rem base on desktop */

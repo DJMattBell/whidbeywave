@@ -253,10 +253,10 @@ export default async function TidesPage() {
               {todayTides.length === 0 ? (
                 <p className="text-stone-600 italic">No tide data for today.</p>
               ) : (
-                <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md overflow-hidden">
-                  <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
+                <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md">
+                  <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500 rounded-t-2xl" />
                   <div className="p-6">
-                    <div className={`grid gap-4 ${
+                    <div className={`grid gap-4 pt-4 ${
                       todayTides.length === 4 ? 'grid-cols-2 lg:grid-cols-4' :
                       todayTides.length === 3 ? 'grid-cols-1 sm:grid-cols-3'  :
                                                 'grid-cols-2'
@@ -289,7 +289,7 @@ export default async function TidesPage() {
                 {days.map((day, di) => (
                   <div
                     key={day.dateStr}
-                    className={`rounded-2xl border overflow-hidden ${
+                    className={`rounded-2xl border ${
                       di === 0
                         ? 'border-forest-200 bg-forest-50/30'
                         : 'border-parchment-200 bg-parchment-50'
@@ -309,8 +309,8 @@ export default async function TidesPage() {
                     </div>
 
                     {/* Tides row */}
-                    <div className="px-4 py-4">
-                      <div className={`grid gap-3 ${
+                    <div className="px-4 pb-4">
+                      <div className={`grid gap-4 mt-3 pt-4 ${
                         day.tides.length === 4 ? 'grid-cols-2 sm:grid-cols-4' :
                         day.tides.length === 3 ? 'grid-cols-1 sm:grid-cols-3'  :
                                                  'grid-cols-2'

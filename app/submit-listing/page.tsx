@@ -25,7 +25,6 @@ const LOCATIONS = [
   'Freeland',
   'Greenbank',
   'Clinton',
-  'Bayview',
   'Other',
 ];
 
@@ -265,42 +264,47 @@ export default function SubmitListingPage() {
             </div>
 
             {photos.length > 0 && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {photos.map((file, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-parchment-100 border border-parchment-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Photo ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {photos.map((file, i) => (
+                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-parchment-100 border border-parchment-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Photo ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-1 right-1 p-2 -m-2">
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(i)}
+                          className="w-8 h-8 bg-stone-900/70 text-white rounded-full flex items-center justify-center text-sm hover:bg-stone-900 transition-colors"
+                          aria-label={`Remove photo ${i + 1}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      {i === 0 && (
+                        <span className="absolute bottom-1 left-1 bg-forest-600/80 text-white text-xs font-semibold px-1.5 py-0.5 rounded">
+                          Cover
+                        </span>
+                      )}
+                    </div>
+                  ))}
+
+                  {photos.length < MAX_PHOTOS && (
                     <button
                       type="button"
-                      onClick={() => removePhoto(i)}
-                      className="absolute top-1 right-1 w-6 h-6 bg-stone-900/70 text-white rounded-full flex items-center justify-center text-xs hover:bg-stone-900 transition-colors"
-                      aria-label={`Remove photo ${i + 1}`}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square rounded-xl border-2 border-dashed border-parchment-300 flex flex-col items-center justify-center gap-1 text-stone-400 hover:border-forest-400 hover:text-forest-600 transition-colors"
                     >
-                      ×
+                      <span className="text-2xl leading-none">+</span>
+                      <span className="text-xs">Add</span>
                     </button>
-                    {i === 0 && (
-                      <span className="absolute bottom-1 left-1 bg-forest-600/80 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
-                        Cover
-                      </span>
-                    )}
-                  </div>
-                ))}
-
-                {photos.length < MAX_PHOTOS && (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-xl border-2 border-dashed border-parchment-300 flex flex-col items-center justify-center gap-1 text-stone-400 hover:border-forest-400 hover:text-forest-600 transition-colors"
-                  >
-                    <span className="text-2xl leading-none">+</span>
-                    <span className="text-xs">Add</span>
-                  </button>
-                )}
-              </div>
+                  )}
+                </div>
+                <p className="text-xs text-stone-400">Drag to reorder</p>
+              </>
             )}
 
             {photos.length === 0 && (

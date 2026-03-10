@@ -70,7 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
 function ArticleBody({ body }: { body: string }) {
   const paragraphs = body.split(/\n\n+/).filter(Boolean);
   return (
-    <div className="space-y-4 border-t border-parchment-200 pt-5">
+    <div className="space-y-6 max-w-prose border-t border-parchment-200 pt-5">
       {paragraphs.map((p, i) => (
         <p key={i} className="text-stone-700 leading-relaxed text-base">{p.replace(/\n/g, ' ')}</p>
       ))}

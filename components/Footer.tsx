@@ -17,9 +17,17 @@ export default function Footer() {
                 WhidbeyWave
               </span>
             </div>
-            <p className="text-forest-300 text-sm leading-relaxed">
+            <p className="text-forest-300 text-sm leading-relaxed mb-3">
               Your neighbor&apos;s guide to everything happening on Whidbey Island, Washington.
             </p>
+            <a
+              href="https://maps.google.com/?q=Whidbey+Island,+Washington"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-forest-400 hover:text-parchment-200 transition-colors"
+            >
+              📍 Whidbey Island, WA
+            </a>
           </div>
 
           {/* Explore */}
@@ -64,10 +72,23 @@ export default function Footer() {
               Island Towns
             </h3>
             <ul className="space-y-2 text-sm text-forest-300">
-              <li>Oak Harbor</li>
-              <li>Langley</li>
-              <li>Coupeville</li>
-              <li>Freeland</li>
+              {[
+                ['Oak Harbor',  'Oak Harbor'],
+                ['Coupeville',  'Coupeville'],
+                ['Langley',     'Langley'],
+                ['Freeland',    'Freeland'],
+                ['Greenbank',   'Greenbank'],
+                ['Clinton',     'Clinton'],
+              ].map(([label, town]) => (
+                <li key={town}>
+                  <Link
+                    href={`/events?town=${encodeURIComponent(town)}`}
+                    className="hover:text-parchment-100 transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

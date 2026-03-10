@@ -188,12 +188,12 @@ export default async function TodayWidget() {
           <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
         </div>
 
-        {/* Card — flex row on desktop, stacked on mobile */}
-        <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-parchment-200 border border-parchment-200 rounded-xl overflow-hidden bg-white">
+        {/* Card — 2×2 grid on mobile, flex row on desktop */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-row border border-parchment-200 rounded-xl overflow-hidden bg-white [&>*]:min-h-[80px] sm:[&>*]:min-h-0 [&>*:nth-child(odd)]:border-r sm:[&>*:nth-child(odd)]:border-r-0 [&>*:nth-last-child(n+3)]:border-b sm:[&>*]:border-b-0 sm:[&>*:not(:last-child)]:border-r [&>*]:border-parchment-200 [&>*:nth-child(even)]:bg-parchment-50/50 sm:[&>*:nth-child(even)]:bg-transparent">
 
           {/* ── 1. Weather ─────────────────────────────────────────── */}
           {weather && (
-            <div className="flex-1 px-4 py-4 min-w-0">
+            <div className="sm:flex-1 px-4 py-4 min-w-0">
               <SectionLabel>Weather</SectionLabel>
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl leading-none" aria-hidden="true">
@@ -212,7 +212,7 @@ export default async function TodayWidget() {
 
           {/* ── 2. Ferry ───────────────────────────────────────────── */}
           {hasFerry && (
-            <Link href="/ferry" className="flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <Link href="/ferry" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
               <SectionLabel>Ferry</SectionLabel>
               <div className="space-y-2">
                 {hasMuk && (
@@ -243,7 +243,7 @@ export default async function TodayWidget() {
 
           {/* ── 3. Next Tide ───────────────────────────────────────── */}
           {tide && (
-            <div className="flex-1 px-4 py-4 min-w-0">
+            <div className="sm:flex-1 px-4 py-4 min-w-0">
               <SectionLabel>Next Tide</SectionLabel>
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl leading-none" aria-hidden="true">🌊</span>
@@ -262,7 +262,7 @@ export default async function TodayWidget() {
 
           {/* ── 4. Events Today ────────────────────────────────────── */}
           {eventsCount !== null && (
-            <Link href="/events" className="flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <Link href="/events" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
               <SectionLabel>Events Today</SectionLabel>
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl leading-none" aria-hidden="true">
@@ -288,7 +288,7 @@ export default async function TodayWidget() {
 
           {/* ── 5. New Listings ────────────────────────────────────── */}
           {showListings && (
-            <Link href="/marketplace" className="flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <Link href="/marketplace" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
               <SectionLabel>New Listings</SectionLabel>
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl leading-none" aria-hidden="true">🛒</span>

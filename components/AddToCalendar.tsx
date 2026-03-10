@@ -18,7 +18,7 @@ export default function AddToCalendar({ event }: { event: CalendarEventInput }) 
   }
 
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="flex items-center gap-2 text-sm" onClick={(e) => e.stopPropagation()}>
       <a
         href={googleCalendarUrl(event)}
         target="_blank"

@@ -26,8 +26,6 @@ const TOWNS = [
   'Freeland',
   'Greenbank',
   'Clinton',
-  'Bayview',
-  'Maxwelton',
   'Other',
 ];
 
@@ -217,6 +215,21 @@ export default function SubmitEventPage() {
             </select>
           </div>
 
+          {/* Category */}
+          <div>
+            <label htmlFor="ev-category" className={labelCls}>
+              What kind of event is this?
+            </label>
+            <select
+              id="ev-category"
+              value={form.category}
+              onChange={e => set('category', e.target.value)}
+              className={inputCls}
+            >
+              {EVENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+
           {/* Email */}
           <div>
             <label htmlFor="ev-submitter-email" className={labelCls}>
@@ -259,19 +272,6 @@ export default function SubmitEventPage() {
                     placeholder="Tell people what to expect — who it's for, what to bring, cost if any…"
                     className={inputCls + ' resize-none'}
                   />
-                </div>
-
-                {/* Category */}
-                <div>
-                  <label htmlFor="ev-category" className={labelCls}>Category</label>
-                  <select
-                    id="ev-category"
-                    value={form.category}
-                    onChange={e => set('category', e.target.value)}
-                    className={inputCls}
-                  >
-                    {EVENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-                  </select>
                 </div>
 
                 {/* Tags */}

@@ -11,7 +11,7 @@ export function isValidDate(dateStr: string): boolean {
 // Canonical allowed values — single source of truth for server-side validation
 export const ALLOWED_TOWNS = [
   'Oak Harbor', 'Coupeville', 'Langley', 'Freeland',
-  'Greenbank', 'Clinton', 'Bayview', 'Maxwelton', 'Other',
+  'Greenbank', 'Clinton', 'Other',
 ] as const;
 
 export const ALLOWED_EVENT_CATEGORIES = [
