@@ -31,6 +31,7 @@ const baseCommunityLinks = [
   { href: '/forum',           label: 'Ask the Island' },
   { href: '/recommendations', label: 'Local Picks' },
   { href: '/marketplace',     label: 'Buy & Sell' },
+  { href: '/barter',          label: '🔄 Barter & Trade' },
   { href: '/newsletter',      label: 'Newsletter' },
 ];
 
@@ -45,8 +46,8 @@ export default function Navbar() {
   const visitActive = pathname.startsWith('/visit');
 
   const communityLinks = [
+    ...(user ? [{ href: '/profile', label: '👤 My Profile' }] : []),
     ...baseCommunityLinks,
-    ...(user ? [{ href: '/profile', label: 'My Profile' }] : []),
   ];
 
   return (
@@ -413,8 +414,10 @@ export default function Navbar() {
         </div>
 
         {/* Community strip — mobile (always visible, horizontal scroll) */}
-        <div className="md:hidden bg-forest-50 border-b border-parchment-200 overflow-x-auto">
-          <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full" aria-label="Community navigation">
+        <div className="md:hidden bg-forest-50 border-b border-parchment-200 relative">
+          {/* Right-edge fade to signal scrollability */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-forest-50 to-transparent pointer-events-none z-10" aria-hidden="true" />
+          <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full overflow-x-auto" aria-label="Community navigation">
             {/* Search — pinned first, visually distinct pill */}
             <Link
               href="/search"
