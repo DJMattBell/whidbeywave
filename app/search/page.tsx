@@ -3,17 +3,17 @@
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { listings } from '@/lib/data';
 import { supabase, isConfigured } from '@/lib/supabase';
 import type { ForumPostRow, Recommendation } from '@/lib/db-types';
 
 type EventResult = { id: string; title: string; date: string; town: string; category: string; description: string };
 type NewsResult = { id: string; title: string; excerpt: string; slug: string; emoji: string; category: string };
+type ListingResult = { id: string; title: string; price: number | null; is_free: boolean; emoji: string; location: string; description: string | null };
 
 type Results = {
   events: EventResult[];
   news: NewsResult[];
-  listings: typeof listings;
+  listings: ListingResult[];
   forum: Pick<ForumPostRow, 'id' | 'title' | 'author_name' | 'reply_count'>[];
   recommendations: Pick<Recommendation, 'id' | 'name' | 'category' | 'town'>[];
 };
@@ -33,17 +33,9 @@ function SearchBody() {
 
   const runSearch = useCallback((q: string) => {
     if (!q.trim()) { setResults(null); return; }
-    const lower = q.trim().toLowerCase();
-
-    // Static listings search (marketplace has its own search page)
-    const matchedListings = listings.filter(l =>
-      l.title.toLowerCase().includes(lower) ||
-      l.description.toLowerCase().includes(lower) ||
-      l.location.toLowerCase().includes(lower)
-    );
 
     if (!isConfigured) {
-      setResults({ events: [], news: [], listings: matchedListings, forum: [], recommendations: [] });
+      setResults({ events: [], news: [], listings: [], forum: [], recommendations: [] });
       return;
     }
 
@@ -78,11 +70,18 @@ function SearchBody() {
         .select('id, name, category, town')
         .or(`name.ilike.%${term}%,description.ilike.%${term}%`)
         .limit(5),
-    ]).then(([eventsRes, newsRes, forumRes, recRes]) => {
+      supabase
+        .from('listings')
+        .select('id, title, price, is_free, emoji, location, description')
+        .eq('status', 'approved')
+        .or(`title.ilike.%${term}%,description.ilike.%${term}%,location.ilike.%${term}%`)
+        .order('created_at', { ascending: false })
+        .limit(6),
+    ]).then(([eventsRes, newsRes, forumRes, recRes, listingsRes]) => {
       setResults({
         events: (eventsRes.data ?? []) as EventResult[],
         news: (newsRes.data ?? []) as NewsResult[],
-        listings: matchedListings,
+        listings: (listingsRes.data ?? []) as ListingResult[],
         forum: (forumRes.data ?? []) as Results['forum'],
         recommendations: (recRes.data ?? []) as Results['recommendations'],
       });
@@ -159,7 +158,7 @@ function SearchBody() {
               </h2>
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.events.map(e => (
-                  <Link key={e.id} href="/events" className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
+                  <Link key={e.id} href={`/events/${e.id}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
                     <span className="text-2xl shrink-0" aria-hidden="true">📅</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{e.title}</p>
@@ -197,12 +196,14 @@ function SearchBody() {
               </h2>
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.listings.map(l => (
-                  <Link key={l.id} href="/marketplace" className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
+                  <Link key={l.id} href={`/marketplace/${l.id}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
                     <span className="text-2xl shrink-0" aria-hidden="true">{l.emoji}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{l.title}</p>
-                        <span className="text-forest-600 font-bold text-sm">{l.price}</span>
+                        <span className="text-forest-600 font-bold text-sm">
+                          {l.is_free ? 'Free' : l.price != null ? `$${l.price}` : 'Contact for price'}
+                        </span>
                       </div>
                       <p className="text-sm text-stone-500">📍 {l.location}</p>
                     </div>

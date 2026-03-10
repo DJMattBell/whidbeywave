@@ -236,7 +236,7 @@ export default async function HomePage() {
                         description: event.description,
                       }}
                     />
-                    <Link href="/events" className="text-sm text-forest-600 hover:text-forest-800 transition-colors shrink-0">
+                    <Link href={`/events/${event.id}`} className="text-sm text-forest-600 hover:text-forest-800 transition-colors shrink-0">
                       View details →
                     </Link>
                   </div>
@@ -306,7 +306,7 @@ export default async function HomePage() {
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {featuredListings.map((listing) => (
-              <Link key={listing.id} href="/marketplace" className="card group block">
+              <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card group block">
                 <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center overflow-hidden">
                   {listing.images?.[0]
                     ? <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
