@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase';
-import { newsPosts as fallbackPosts, formatDate, formatShortDate, categoryColors } from '@/lib/data';
+import { formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import NewsCommentSection from '@/components/NewsCommentSection';
 import ShareButton from '@/components/ShareButton';
 
@@ -30,7 +30,7 @@ const getCachedPosts = cache(async () => {
     .eq('published', true)
     .order('published_at', { ascending: false });
 
-  const raw = postsData && postsData.length > 0 ? postsData : fallbackPosts;
+  const raw = postsData ?? [];
   return raw.map(normalize);
 });
 
@@ -104,8 +104,11 @@ export default async function NewsPage() {
         {!featured ? (
           <div className="text-center py-20 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300 mb-12">
             <div className="text-5xl mb-4">📰</div>
-            <p className="text-lg text-stone-700 font-semibold mb-2">No stories yet</p>
-            <p className="text-stone-600 text-sm">Check back soon — there&apos;s always something happening on the island.</p>
+            <p className="text-lg text-stone-700 font-semibold mb-2">Nothing published yet</p>
+            <p className="text-stone-600 text-sm mb-5">Check back soon — there&apos;s always something happening on the island.</p>
+            <Link href="/contact" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
+              Got a story? Share it →
+            </Link>
           </div>
         ) : (
           <>
