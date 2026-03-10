@@ -21,15 +21,15 @@ export default function ListingCard({
 
   return (
     <article
-      className={`group cursor-pointer rounded-2xl overflow-hidden border bg-white transition-all duration-200 ${
+      className={`group cursor-pointer rounded-2xl overflow-hidden border bg-white transition-all duration-200 flex flex-row sm:flex-col ${
         sold
           ? 'border-stone-200 opacity-60 grayscale'
           : 'border-parchment-200 hover:border-parchment-300 hover:shadow-warm'
       }`}
       onClick={onClick}
     >
-      {/* Photo area */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-amber-100">
+      {/* Photo area — square on mobile, 4/3 on sm+ */}
+      <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-amber-100">
         {photo ? (
           <img
             src={photo}
@@ -38,7 +38,7 @@ export default function ListingCard({
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl" aria-hidden="true">
+          <div className="w-full h-full flex items-center justify-center text-4xl sm:text-5xl" aria-hidden="true">
             {listing.emoji}
           </div>
         )}
@@ -46,7 +46,7 @@ export default function ListingCard({
         {/* SOLD ribbon */}
         {sold && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-stone-900/80 text-white font-bold text-sm px-4 py-1.5 rounded tracking-[0.15em] uppercase rotate-[-3deg] shadow-lg">
+            <span className="bg-stone-900/80 text-white font-bold text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded tracking-[0.15em] uppercase rotate-[-3deg] shadow-lg">
               SOLD
             </span>
           </div>
@@ -59,8 +59,8 @@ export default function ListingCard({
           </div>
         )}
 
-        {/* Category badge */}
-        <div className="absolute bottom-2 left-2">
+        {/* Category badge — hidden on mobile (shown in body instead) */}
+        <div className="absolute bottom-2 left-2 hidden sm:block">
           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
             {listing.category}
           </span>
@@ -68,12 +68,19 @@ export default function ListingCard({
       </div>
 
       {/* Card body */}
-      <div className="p-3">
+      <div className="flex-1 p-3">
+        {/* Category badge — mobile only */}
+        <div className="sm:hidden mb-1">
+          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
+            {listing.category}
+          </span>
+        </div>
+
         <div className={`font-bold text-base leading-tight mb-1 ${free ? 'text-green-600' : 'text-stone-900'}`}>
           {priceLabel}
         </div>
 
-        <h3 className="text-sm text-stone-700 leading-snug line-clamp-2 mb-2.5">
+        <h3 className="text-base text-stone-700 leading-snug line-clamp-2 mb-2">
           {listing.title}
         </h3>
 
