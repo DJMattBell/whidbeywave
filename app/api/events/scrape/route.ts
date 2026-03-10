@@ -3,6 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { scrapeWica } from '@/lib/scrapers/wica';
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
+import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
+import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
+import { scrapeSWParks } from '@/lib/scrapers/swparks';
+import { scrapeGreenbankFarm } from '@/lib/scrapers/greenbank';
+import { scrapeCoupevilleArts } from '@/lib/scrapers/coupeville-arts';
 
 export const runtime = 'nodejs';
 
@@ -46,13 +51,32 @@ export async function GET(request: NextRequest) {
   }
 
   // Run scrapers in parallel — each has its own 6s timeout; failures return []
-  const [wicaEvents, oakHarborEvents] = await Promise.all([
+  const [wicaEvents, oakHarborEvents, langleyLibEvents, coupevilleLibEvents, swParksEvents, greenbankEvents, coupevilleArtsEvents] = await Promise.all([
     scrapeWica(),
     scrapeOakHarbor(),
+    scrapeLangleyLibrary(),
+    scrapeCoupevilleLibrary(),
+    scrapeSWParks(),
+    scrapeGreenbankFarm(),
+    scrapeCoupevilleArts(),
   ]);
 
-  const candidates = [...wicaEvents, ...oakHarborEvents];
-  console.log(`[scrape] found ${candidates.length} candidate events (WICA: ${wicaEvents.length}, OakHarbor: ${oakHarborEvents.length})`);
+  const candidates = [
+    ...wicaEvents,
+    ...oakHarborEvents,
+    ...langleyLibEvents,
+    ...coupevilleLibEvents,
+    ...swParksEvents,
+    ...greenbankEvents,
+    ...coupevilleArtsEvents,
+  ];
+  console.log(
+    `[scrape] found ${candidates.length} candidate events` +
+    ` (WICA: ${wicaEvents.length}, OakHarbor: ${oakHarborEvents.length},` +
+    ` LangleyLib: ${langleyLibEvents.length}, CoupevilleLib: ${coupevilleLibEvents.length},` +
+    ` SWParks: ${swParksEvents.length}, Greenbank: ${greenbankEvents.length},` +
+    ` CoupevilleArts: ${coupevilleArtsEvents.length})`
+  );
 
   // If all scrapers returned empty, send a warning email
   if (candidates.length === 0) {
