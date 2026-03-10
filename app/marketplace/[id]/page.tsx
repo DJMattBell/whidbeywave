@@ -6,6 +6,7 @@ import { formatPrice, timeAgo, type MarketplaceListing } from '@/lib/marketplace
 import { categoryColors } from '@/lib/data';
 import ShareButton from '@/components/ShareButton';
 import ListingOwnerActions from '@/components/ListingOwnerActions';
+import MarketplaceContactButton from '@/components/MarketplaceContactButton';
 
 export const revalidate = 60;
 
@@ -159,26 +160,18 @@ export default async function ListingDetailPage({
               <p className="text-lg text-stone-900 font-semibold">{listing.seller_name}</p>
             </div>
           </div>
-          {listing.contact_method && !listing.sold && (
+          {!listing.sold && (
             <div className="mt-4 pt-4 border-t border-parchment-200">
-              <p className="text-xs text-stone-500 font-medium mb-1.5">Preferred contact</p>
-              {listing.contact_method.includes('@') ? (
-                <a
-                  href={`mailto:${listing.contact_method}`}
-                  className="btn-primary inline-flex items-center gap-2 text-sm py-2.5 px-5"
-                >
-                  📧 {listing.contact_method}
-                </a>
-              ) : /^\+?\d[\d\s()-]{6,}$/.test(listing.contact_method) ? (
-                <a
-                  href={`tel:${listing.contact_method.replace(/\s/g, '')}`}
-                  className="btn-primary inline-flex items-center gap-2 text-sm py-2.5 px-5"
-                >
-                  📞 {listing.contact_method}
-                </a>
-              ) : (
-                <p className="text-sm text-stone-700">{listing.contact_method}</p>
+              {listing.contact_method && (
+                <p className="text-xs text-stone-500 font-medium mb-1.5">
+                  Preferred contact: <span className="text-stone-700 normal-case">{listing.contact_method}</span>
+                </p>
               )}
+              <MarketplaceContactButton
+                listingId={listing.id}
+                listingTitle={listing.title}
+                sellerName={listing.seller_name ?? 'Seller'}
+              />
             </div>
           )}
         </div>

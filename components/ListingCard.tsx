@@ -1,5 +1,8 @@
+'use client';
+
 import { categoryColors } from '@/lib/data';
 import { timeAgo, formatPrice, type MarketplaceListing } from '@/lib/marketplace';
+import MarketplaceContactButton from '@/components/MarketplaceContactButton';
 
 export default function ListingCard({
   listing,
@@ -84,6 +87,16 @@ export default function ListingCard({
             {timeAgo(listing.created_at)}
           </time>
         </div>
+
+        {!sold && (
+          <div onClick={e => e.stopPropagation()}>
+            <MarketplaceContactButton
+              listingId={listing.id}
+              listingTitle={listing.title}
+              sellerName={listing.seller_name ?? 'Seller'}
+            />
+          </div>
+        )}
       </div>
     </article>
   );
