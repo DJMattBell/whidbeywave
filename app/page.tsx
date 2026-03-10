@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { newsPosts, formatShortDate, categoryColors } from '@/lib/data';
+import { formatShortDate, categoryColors } from '@/lib/data';
 import { formatPrice } from '@/lib/marketplace';
 import { createServerClient } from '@/lib/supabase';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
@@ -44,27 +44,16 @@ export default async function HomePage() {
     .order('published_at', { ascending: false })
     .limit(2);
 
-  const latestNews: Array<{
-    id: string | number;
-    title: string;
-    excerpt: string;
-    category: string;
-    publishedAt: string;
-    readMinutes: number;
-    slug: string;
-    emoji: string;
-  }> = (newsData && newsData.length > 0)
-    ? newsData.map((p) => ({
-        id: p.id,
-        title: p.title,
-        excerpt: p.excerpt,
-        category: p.category,
-        publishedAt: p.published_at,
-        readMinutes: p.read_minutes,
-        slug: p.slug,
-        emoji: p.emoji ?? '📰',
-      }))
-    : newsPosts.slice(0, 2);
+  const latestNews = (newsData ?? []).map((p) => ({
+    id: p.id,
+    title: p.title,
+    excerpt: p.excerpt,
+    category: p.category,
+    publishedAt: p.published_at,
+    readMinutes: p.read_minutes,
+    slug: p.slug,
+    emoji: p.emoji ?? '📰',
+  }));
 
   const now = new Date().toISOString();
   const { data: featuredListingsData } = await supabase
@@ -208,7 +197,7 @@ export default async function HomePage() {
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
             {upcomingEvents.map((event) => (
-              <div key={event.id} className="card group flex flex-col">
+              <Link key={event.id} href={`/events/${event.id}`} className="card group flex flex-col block">
                 <div className="h-1.5 bg-gradient-to-r from-forest-400 to-sound-500" />
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-3">
@@ -236,12 +225,12 @@ export default async function HomePage() {
                         description: event.description,
                       }}
                     />
-                    <Link href={`/events/${event.id}`} className="text-sm text-forest-600 hover:text-forest-800 transition-colors shrink-0">
+                    <span className="text-sm text-forest-600 group-hover:text-forest-800 transition-colors shrink-0">
                       View details →
-                    </Link>
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -264,30 +253,39 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {latestNews.map((post) => (
-              <Link key={post.id} href={`/news#${post.slug}`} className="card p-6 block group">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl shrink-0">{post.emoji}</div>
-                  <div>
-                    <span className={`badge ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
-                      {post.category}
-                    </span>
-                    <h3
-                      className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-                    >
-                      {post.title}
-                    </h3>
-                    <p className="text-[15px] text-stone-600 mb-2">
-                      {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
-                    </p>
-                    <p className="text-base text-stone-600">{post.excerpt}</p>
-                  </div>
-                </div>
+          {latestNews.length === 0 ? (
+            <div className="card p-8 text-center col-span-2">
+              <p className="text-stone-600 mb-3">Nothing published yet — check back soon.</p>
+              <Link href="/contact" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
+                Got a story? Share it →
               </Link>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {latestNews.map((post) => (
+                <Link key={post.id} href={`/news#${post.slug}`} className="card p-6 block group">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl shrink-0">{post.emoji}</div>
+                    <div>
+                      <span className={`badge ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
+                        {post.category}
+                      </span>
+                      <h3
+                        className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug"
+                        style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                      >
+                        {post.title}
+                      </h3>
+                      <p className="text-[15px] text-stone-600 mb-2">
+                        {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
+                      </p>
+                      <p className="text-base text-stone-600">{post.excerpt}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

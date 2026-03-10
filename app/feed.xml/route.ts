@@ -1,19 +1,29 @@
 import { NextResponse } from 'next/server';
-import { newsPosts } from '@/lib/data';
+import { createServerClient } from '@/lib/supabase';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 export async function GET() {
-  const items = newsPosts
+  const supabase = createServerClient();
+  const { data: newsData } = await supabase
+    .from('news_posts')
+    .select('id, title, excerpt, slug, category, emoji, published_at')
+    .eq('published', true)
+    .order('published_at', { ascending: false })
+    .limit(20);
+
+  const posts = newsData ?? [];
+
+  const items = posts
     .map(post => {
-      const pubDate = new Date(post.publishedAt + 'T12:00:00-08:00').toUTCString();
+      const pubDate = new Date(post.published_at + 'T12:00:00-08:00').toUTCString();
       return `
     <item>
       <title><![CDATA[${post.title}]]></title>
       <link>${SITE_URL}/news#${post.slug}</link>
       <guid isPermaLink="true">${SITE_URL}/news#${post.slug}</guid>
       <pubDate>${pubDate}</pubDate>
-      <description><![CDATA[${post.excerpt}]]></description>
+      <description><![CDATA[${post.excerpt ?? ''}]]></description>
       <category><![CDATA[${post.category}]]></category>
       <author>WhidbeyWave</author>
     </item>`.trim();

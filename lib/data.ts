@@ -122,7 +122,9 @@ export const events: Event[] = [
   },
 ];
 
-// ── News ────────────────────────────────────────────────────────────────────
+// ── News (DEMO ONLY — not used in production paths) ──────────────────────────
+// Do NOT import this in server components or API routes that serve real users.
+// Use Supabase (news_posts table) for all live data.
 
 export const newsPosts: NewsPost[] = [
   {
