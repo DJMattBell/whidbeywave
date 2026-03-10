@@ -7,6 +7,7 @@ import { categoryColors } from '@/lib/data';
 import ShareButton from '@/components/ShareButton';
 import ListingOwnerActions from '@/components/ListingOwnerActions';
 import MarketplaceContactButton from '@/components/MarketplaceContactButton';
+import ImageGallery from '@/components/ImageGallery';
 
 export const revalidate = 60;
 
@@ -80,29 +81,7 @@ export default async function ListingDetailPage({
         {/* Photo gallery */}
         <div className={`rounded-2xl overflow-hidden mb-6 ${listing.sold ? 'grayscale opacity-60' : ''}`}>
           {photos.length > 0 ? (
-            <div>
-              <div className="aspect-[4/3] bg-stone-900">
-                <img
-                  src={photos[0]}
-                  alt={listing.title}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              {photos.length > 1 && (
-                <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
-                  {photos.map((src, i) => (
-                    <div key={i} className="shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-parchment-200">
-                      <img
-                        src={src}
-                        alt={`${listing.title} — photo ${i + 1}`}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ImageGallery photos={photos} alt={listing.title} />
           ) : (
             <div
               className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-amber-100 flex items-center justify-center text-8xl rounded-2xl"

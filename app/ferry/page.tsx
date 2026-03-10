@@ -70,21 +70,40 @@ function StatusBadge({ status }: { status: RouteStatus }) {
 function DepartureList({
   label,
   departures,
+  direction,
 }: {
   label: string;
   departures: Departure[];
+  direction: 'mainland' | 'whidbey';
 }) {
+  const pillCls = direction === 'mainland'
+    ? 'bg-sound-50 text-sound-800 rounded-lg px-2 py-1'
+    : 'bg-forest-50 text-forest-800 rounded-lg px-2 py-1';
+
+  const nextDep = departures.find(d => !d.isCancelled);
+
   return (
     <div>
-      <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">{label}</p>
+      <p className={`text-xs font-semibold uppercase tracking-wider mb-2 inline-block ${pillCls}`}>
+        {label}
+      </p>
+
+      {/* Next departure highlight */}
+      {nextDep && (
+        <div className="mb-3">
+          <p className="text-3xl font-bold text-stone-900 tabular-nums leading-none">{nextDep.time}</p>
+          <p className="text-xs text-stone-500 mt-0.5">Next sailing</p>
+        </div>
+      )}
+
       {departures.length === 0 ? (
         <p className="text-sm text-stone-600 italic">No upcoming departures found</p>
       ) : (
         <ol className="space-y-1.5">
           {departures.map((dep, i) => (
-            <li key={i} className="flex items-center gap-2 text-sm">
-              <span className="font-semibold text-stone-800 tabular-nums w-20 shrink-0">{dep.time}</span>
-              <span className="text-stone-500 truncate">{dep.vessel}</span>
+            <li key={i} className="flex items-start gap-2 text-sm">
+              <span className="font-semibold text-stone-800 tabular-nums w-16 shrink-0 pt-px">{dep.time}</span>
+              <span className="text-stone-500 text-xs leading-snug">{dep.vessel}</span>
               {dep.isCancelled && (
                 <span className="text-xs font-semibold text-red-600 shrink-0">CANCELLED</span>
               )}
@@ -229,9 +248,9 @@ export default async function FerryPage() {
                         </div>
                       )}
 
-                      <div className="grid sm:grid-cols-2 gap-5 border-t border-parchment-200 pt-5">
-                        <DepartureList label="From Mukilteo →" departures={r.fromMainland} />
-                        <DepartureList label="From Clinton →"   departures={r.fromWhidbey} />
+                      <div className="grid grid-cols-2 gap-3 sm:gap-5 border-t border-parchment-200 pt-5">
+                        <DepartureList label="From Mukilteo →" departures={r.fromMainland} direction="mainland" />
+                        <DepartureList label="From Clinton →"   departures={r.fromWhidbey} direction="whidbey" />
                       </div>
 
                       <p className="text-xs text-stone-600 mt-4">
@@ -276,9 +295,9 @@ export default async function FerryPage() {
                         </div>
                       )}
 
-                      <div className="grid sm:grid-cols-2 gap-5 border-t border-parchment-200 pt-5">
-                        <DepartureList label="From Port Townsend →" departures={r.fromMainland} />
-                        <DepartureList label="From Coupeville →"    departures={r.fromWhidbey} />
+                      <div className="grid grid-cols-2 gap-3 sm:gap-5 border-t border-parchment-200 pt-5">
+                        <DepartureList label="From Port Townsend →" departures={r.fromMainland} direction="mainland" />
+                        <DepartureList label="From Coupeville →"    departures={r.fromWhidbey} direction="whidbey" />
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
