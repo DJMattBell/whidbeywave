@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
      .required(town, 'Town')
      .oneOf(town, ALLOWED_TOWNS, 'Town')
      .oneOf(category, ALLOWED_EVENT_CATEGORIES, 'Category')
-     .required(submitter_name, 'Your name')
      .minLength(submitter_name, 2, 'Your name')
      .maxLength(submitter_name, 100, 'Your name')
      .required(submitter_email, 'Your email')
@@ -57,7 +56,7 @@ export async function POST(request: NextRequest) {
         title, date, time, location, town, category,
         description: description || null,
         tags: tags || [],
-        submitter_name,
+        submitter_name: submitter_name || null,
         submitter_email,
         status: 'pending',
       })

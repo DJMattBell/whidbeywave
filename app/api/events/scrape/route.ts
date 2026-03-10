@@ -3,11 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { scrapeWica } from '@/lib/scrapers/wica';
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
+import { scrapeOakHarborCityEvents } from '@/lib/scrapers/oak-harbor-events';
 import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
 import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
 import { scrapeSWParks } from '@/lib/scrapers/swparks';
 import { scrapeGreenbankFarm } from '@/lib/scrapers/greenbank';
 import { scrapeCoupevilleArts } from '@/lib/scrapers/coupeville-arts';
+import { scrapeBarringtons } from '@/lib/scrapers/barringtons';
+import { scrapeWickedTeuton } from '@/lib/scrapers/wicked-teuton';
+import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
+import { scrapePennCoveBrewing } from '@/lib/scrapers/penn-cove-brewing';
+import { scrapeDancingFish } from '@/lib/scrapers/dancing-fish';
+import { scrapeDoubleBluff } from '@/lib/scrapers/double-bluff';
+import { scrapeOakHarborChamber } from '@/lib/scrapers/oak-harbor-chamber';
+import { scrapeOakHarborMainStreet } from '@/lib/scrapers/oak-harbor-mainstreet';
+import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
+import { scrapeSkeinTipple } from '@/lib/scrapers/skein-tipple';
 
 export const runtime = 'nodejs';
 
@@ -50,32 +61,51 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Run scrapers in parallel — each has its own 6s timeout; failures return []
-  const [wicaEvents, oakHarborEvents, langleyLibEvents, coupevilleLibEvents, swParksEvents, greenbankEvents, coupevilleArtsEvents] = await Promise.all([
+  // Run all scrapers in parallel — each has its own 6s timeout; failures return []
+  const [
+    wicaEvents, oakHarborEvents, oakHarborCityEvents,
+    langleyLibEvents, coupevilleLibEvents,
+    swParksEvents, greenbankEvents, coupevilleArtsEvents,
+    barringtonsEvents, wickedTeutonEvents, thirstyCrabEvents,
+    pennCoveEvents, dancingFishEvents, doubleBluffEvents,
+    chamberEvents, mainStreetEvents, whidbeyTelEvents, skeinTippleEvents,
+  ] = await Promise.all([
     scrapeWica(),
     scrapeOakHarbor(),
+    scrapeOakHarborCityEvents(),
     scrapeLangleyLibrary(),
     scrapeCoupevilleLibrary(),
     scrapeSWParks(),
     scrapeGreenbankFarm(),
     scrapeCoupevilleArts(),
+    scrapeBarringtons(),
+    scrapeWickedTeuton(),
+    scrapeThirstyCrab(),
+    scrapePennCoveBrewing(),
+    scrapeDancingFish(),
+    scrapeDoubleBluff(),
+    scrapeOakHarborChamber(),
+    scrapeOakHarborMainStreet(),
+    scrapeWhidbeyTelecomEvents(),
+    scrapeSkeinTipple(),
   ]);
 
   const candidates = [
-    ...wicaEvents,
-    ...oakHarborEvents,
-    ...langleyLibEvents,
-    ...coupevilleLibEvents,
-    ...swParksEvents,
-    ...greenbankEvents,
-    ...coupevilleArtsEvents,
+    ...wicaEvents, ...oakHarborEvents, ...oakHarborCityEvents,
+    ...langleyLibEvents, ...coupevilleLibEvents,
+    ...swParksEvents, ...greenbankEvents, ...coupevilleArtsEvents,
+    ...barringtonsEvents, ...wickedTeutonEvents, ...thirstyCrabEvents,
+    ...pennCoveEvents, ...dancingFishEvents, ...doubleBluffEvents,
+    ...chamberEvents, ...mainStreetEvents, ...whidbeyTelEvents, ...skeinTippleEvents,
   ];
   console.log(
-    `[scrape] found ${candidates.length} candidate events` +
-    ` (WICA: ${wicaEvents.length}, OakHarbor: ${oakHarborEvents.length},` +
-    ` LangleyLib: ${langleyLibEvents.length}, CoupevilleLib: ${coupevilleLibEvents.length},` +
-    ` SWParks: ${swParksEvents.length}, Greenbank: ${greenbankEvents.length},` +
-    ` CoupevilleArts: ${coupevilleArtsEvents.length})`
+    `[scrape] found ${candidates.length} candidate events — ` +
+    `WICA:${wicaEvents.length} OakHarborGov:${oakHarborEvents.length} OakHarborCity:${oakHarborCityEvents.length} ` +
+    `LangleyLib:${langleyLibEvents.length} CoupevilleLib:${coupevilleLibEvents.length} ` +
+    `SWParks:${swParksEvents.length} Greenbank:${greenbankEvents.length} CoupevilleArts:${coupevilleArtsEvents.length} ` +
+    `Barringtons:${barringtonsEvents.length} WickedTeuton:${wickedTeutonEvents.length} ThirstyCrab:${thirstyCrabEvents.length} ` +
+    `PennCove:${pennCoveEvents.length} DancingFish:${dancingFishEvents.length} DoubleBluff:${doubleBluffEvents.length} ` +
+    `Chamber:${chamberEvents.length} MainStreet:${mainStreetEvents.length} WhidbeyTel:${whidbeyTelEvents.length} Skein:${skeinTippleEvents.length}`
   );
 
   // If all scrapers returned empty, send a warning email
