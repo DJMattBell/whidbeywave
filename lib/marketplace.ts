@@ -1,10 +1,10 @@
 export const MARKETPLACE_CATEGORIES = [
   'All',
+  'Free Stuff',
   'Furniture',
   'Electronics',
   'Clothing',
   'Tools',
-  'Free Stuff',
   'Housing',
   'Vehicles',
   'Services',

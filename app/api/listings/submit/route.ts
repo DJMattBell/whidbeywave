@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
     const {
       title, price, is_free, category, location,
       description, contact_method, contact_email, contact_phone, images,
+      bedrooms, bathrooms, neighborhood, available_date,
     } = await request.json();
 
     const v = new Validator();
@@ -91,6 +92,12 @@ export async function POST(request: NextRequest) {
           emoji: '🏷️',
           status: 'pending',
           user_id: user.id,
+          ...(category === 'Housing' && {
+            bedrooms:       bedrooms || null,
+            bathrooms:      bathrooms || null,
+            neighborhood:   neighborhood || null,
+            available_date: available_date || null,
+          }),
         })
         .select('id')
         .single();

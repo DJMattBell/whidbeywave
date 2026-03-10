@@ -50,6 +50,11 @@ export default function SubmitListingPage() {
     contact_method: 'Email',
     contact_email: '',
     contact_phone: '',
+    // Housing-specific fields
+    bedrooms: '',
+    bathrooms: '',
+    neighborhood: '',
+    available_date: '',
   });
 
   // Pre-fill contact email from authenticated user
@@ -143,6 +148,12 @@ export default function SubmitListingPage() {
           contact_email: form.contact_email,
           contact_phone: form.contact_phone || null,
           images: imageUrls,
+          ...(form.category === 'Housing' && {
+            bedrooms:       form.bedrooms || null,
+            bathrooms:      form.bathrooms || null,
+            neighborhood:   form.neighborhood || null,
+            available_date: form.available_date || null,
+          }),
         }),
       });
       const json = await res.json();
@@ -214,6 +225,7 @@ export default function SubmitListingPage() {
                   contact_method: 'Email',
                   contact_email: user.email ?? '',
                   contact_phone: '',
+                  bedrooms: '', bathrooms: '', neighborhood: '', available_date: '',
                 });
               }}
               className="btn-secondary"
@@ -389,6 +401,63 @@ export default function SubmitListingPage() {
                 </select>
               </div>
             </div>
+
+            {/* Housing-specific fields */}
+            {form.category === 'Housing' && (
+              <div className="space-y-4 pt-1 border-t border-parchment-200">
+                <p className="text-sm font-medium text-stone-600">Housing details <span className="font-normal text-stone-400">(optional)</span></p>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="ls-bedrooms" className={labelCls}>Bedrooms</label>
+                    <select
+                      id="ls-bedrooms"
+                      value={form.bedrooms}
+                      onChange={e => set('bedrooms', e.target.value)}
+                      className={inputCls}
+                    >
+                      <option value="">Select…</option>
+                      {['Studio', '1', '2', '3', '4+'].map(v => <option key={v}>{v}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="ls-bathrooms" className={labelCls}>Bathrooms</label>
+                    <select
+                      id="ls-bathrooms"
+                      value={form.bathrooms}
+                      onChange={e => set('bathrooms', e.target.value)}
+                      className={inputCls}
+                    >
+                      <option value="">Select…</option>
+                      {['1', '1.5', '2', '2.5', '3+'].map(v => <option key={v}>{v}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="ls-neighborhood" className={labelCls}>General area</label>
+                  <input
+                    id="ls-neighborhood"
+                    type="text"
+                    value={form.neighborhood}
+                    onChange={e => set('neighborhood', e.target.value)}
+                    placeholder="General area — no need for exact address"
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="ls-available-date" className={labelCls}>Available date</label>
+                  <input
+                    id="ls-available-date"
+                    type="date"
+                    value={form.available_date}
+                    onChange={e => set('available_date', e.target.value)}
+                    className={inputCls}
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <label htmlFor="ls-description" className={labelCls}>

@@ -32,11 +32,8 @@ export const ALLOWED_CONTACT_TOPICS = [
 ] as const;
 
 export const ALLOWED_LISTING_CATEGORIES = [
-  'Furniture', 'Tools & Equipment', 'Clothing & Accessories',
-  'Electronics', 'Books & Media', 'Sports & Outdoors',
-  'Garden & Plants', 'Home & Kitchen', 'Kids & Toys',
-  'Vehicles & Boats', 'Farm & Animals', 'Art & Collectibles',
-  'Services', 'Free Stuff', 'Other',
+  'Furniture', 'Electronics', 'Clothing', 'Tools',
+  'Free Stuff', 'Housing', 'Vehicles', 'Services', 'Other',
 ] as const;
 
 type ValidationError = { field: string; message: string };
