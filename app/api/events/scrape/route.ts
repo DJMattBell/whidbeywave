@@ -20,6 +20,8 @@ import { scrapeOakHarborMainStreet } from '@/lib/scrapers/oak-harbor-mainstreet'
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeSkeinTipple } from '@/lib/scrapers/skein-tipple';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
+import { scrapeOakHarborLibrary } from '@/lib/scrapers/oak-harbor-library';
+import { scrapeSouthWhidbeyLibrary } from '@/lib/scrapers/south-whidbey-library';
 
 export const runtime = 'nodejs';
 
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
     barringtonsEvents, wickedTeutonEvents, thirstyCrabEvents,
     pennCoveEvents, dancingFishEvents, doubleBluffEvents,
     chamberEvents, mainStreetEvents, whidbeyTelEvents, skeinTippleEvents,
-    whaleCenterEvents,
+    whaleCenterEvents, oakHarborLibEvents, southWhidbeyLibEvents,
   ] = await Promise.all([
     scrapeWica(),
     scrapeOakHarbor(),
@@ -91,6 +93,8 @@ export async function GET(request: NextRequest) {
     scrapeWhidbeyTelecomEvents(),
     scrapeSkeinTipple(),
     scrapeLangleyWhaleCenter(),
+    scrapeOakHarborLibrary(),
+    scrapeSouthWhidbeyLibrary(),
   ]);
 
   const candidates = [
@@ -100,7 +104,7 @@ export async function GET(request: NextRequest) {
     ...barringtonsEvents, ...wickedTeutonEvents, ...thirstyCrabEvents,
     ...pennCoveEvents, ...dancingFishEvents, ...doubleBluffEvents,
     ...chamberEvents, ...mainStreetEvents, ...whidbeyTelEvents, ...skeinTippleEvents,
-    ...whaleCenterEvents,
+    ...whaleCenterEvents, ...oakHarborLibEvents, ...southWhidbeyLibEvents,
   ];
   console.log(
     `[scrape] found ${candidates.length} candidate events — ` +
@@ -110,7 +114,8 @@ export async function GET(request: NextRequest) {
     `Barringtons:${barringtonsEvents.length} WickedTeuton:${wickedTeutonEvents.length} ThirstyCrab:${thirstyCrabEvents.length} ` +
     `PennCove:${pennCoveEvents.length} DancingFish:${dancingFishEvents.length} DoubleBluff:${doubleBluffEvents.length} ` +
     `Chamber:${chamberEvents.length} MainStreet:${mainStreetEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
-    `Skein:${skeinTippleEvents.length} WhaleCenter:${whaleCenterEvents.length}`
+    `Skein:${skeinTippleEvents.length} WhaleCenter:${whaleCenterEvents.length} ` +
+    `OakHarborLib:${oakHarborLibEvents.length} SouthWhidbeyLib:${southWhidbeyLibEvents.length}`
   );
 
   // If all scrapers returned empty, send a warning email
