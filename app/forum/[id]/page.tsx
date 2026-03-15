@@ -34,14 +34,15 @@ function formatShortDate(dateStr: string) {
   return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   if (!isConfigured) return { title: 'Forum Thread' };
+  const { id } = await params;
   const db = createServerClient();
-  const { data } = await db.from('forum_posts').select('*').eq('id', params.id).single();
+  const { data } = await db.from('forum_posts').select('*').eq('id', id).single();
   return { title: (data as any)?.title ?? 'Forum Thread' };
 }
 
-export default async function ForumThreadPage({ params }: { params: { id: string } }) {
+export default async function ForumThreadPage({ params }: { params: Promise<{ id: string }> }) {
   if (!isConfigured) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
@@ -53,11 +54,12 @@ export default async function ForumThreadPage({ params }: { params: { id: string
     );
   }
 
+  const { id } = await params;
   const db = createServerClient();
 
   const [postRes, repliesRes] = await Promise.all([
-    db.from('forum_posts').select('*, forum_categories(name, slug)').eq('id', params.id).single(),
-    db.from('forum_replies').select('*').eq('post_id', params.id).order('created_at', { ascending: true }),
+    db.from('forum_posts').select('*, forum_categories(name, slug)').eq('id', id).single(),
+    db.from('forum_replies').select('*').eq('post_id', id).order('created_at', { ascending: true }),
   ]);
 
   if (postRes.error || !postRes.data) notFound();
@@ -144,7 +146,7 @@ export default async function ForumThreadPage({ params }: { params: { id: string
 
       {/* Reply form */}
       <div className="mt-8">
-        <ReplyForm postId={params.id} />
+        <ReplyForm postId={id} />
       </div>
     </div>
   );

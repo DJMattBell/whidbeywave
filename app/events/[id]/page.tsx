@@ -37,8 +37,9 @@ async function getEvent(id: string) {
   return data ?? null;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const event = await getEvent(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) return { title: 'Event Not Found — WhidbeyWave' };
 
   const title = `${event.title} — WhidbeyWave`;
@@ -60,8 +61,9 @@ function formatLongDate(dateStr: string) {
   });
 }
 
-export default async function EventDetailPage({ params }: { params: { id: string } }) {
-  const event = await getEvent(params.id);
+export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) notFound();
 
   const emoji = CATEGORY_EMOJI[event.category] ?? '📅';
