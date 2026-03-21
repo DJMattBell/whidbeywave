@@ -25,9 +25,10 @@ async function getListing(id: string): Promise<MarketplaceListing | null> {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const listing = await getListing(params.id);
+  const { id } = await params;
+  const listing = await getListing(id);
   if (!listing) return { title: 'Listing Not Found' };
 
   const price = formatPrice(listing.price, listing.is_free);
@@ -51,9 +52,10 @@ export async function generateMetadata({
 export default async function ListingDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const listing = await getListing(params.id);
+  const { id } = await params;
+  const listing = await getListing(id);
   if (!listing) notFound();
 
   const priceLabel = formatPrice(listing.price, listing.is_free);

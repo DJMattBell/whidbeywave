@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -42,32 +43,32 @@ export async function POST(req: NextRequest) {
 
           <div style="background: #fafaf9; padding: 28px 32px; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 16px 16px;">
             <p style="margin: 0 0 20px; font-size: 15px; color: #57534e;">
-              Someone on WhidbeyWave is interested in your listing — <strong style="color: #1c1917;">${listing.title}</strong>.
+              Someone on WhidbeyWave is interested in your listing — <strong style="color: #1c1917;">${escapeHtml(listing.title)}</strong>.
             </p>
 
             <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px;">
               <tr style="border-bottom: 1px solid #e7e5e4;">
                 <td style="padding: 8px 0; color: #78716c; width: 110px;">From</td>
-                <td style="padding: 8px 0; color: #1c1917; font-weight: 600;">${buyerName}</td>
+                <td style="padding: 8px 0; color: #1c1917; font-weight: 600;">${escapeHtml(buyerName)}</td>
               </tr>
               <tr style="border-bottom: 1px solid #e7e5e4;">
                 <td style="padding: 8px 0; color: #78716c;">Email</td>
-                <td style="padding: 8px 0;"><a href="mailto:${buyerEmail}" style="color: #2d5016;">${buyerEmail}</a></td>
+                <td style="padding: 8px 0;"><a href="mailto:${escapeHtml(buyerEmail)}" style="color: #2d5016;">${escapeHtml(buyerEmail)}</a></td>
               </tr>
               ${buyerPhone ? `
               <tr style="border-bottom: 1px solid #e7e5e4;">
                 <td style="padding: 8px 0; color: #78716c;">Phone</td>
-                <td style="padding: 8px 0; color: #1c1917;">${buyerPhone}</td>
+                <td style="padding: 8px 0; color: #1c1917;">${escapeHtml(buyerPhone)}</td>
               </tr>` : ''}
             </table>
 
             <div style="background: white; border: 1px solid #e7e5e4; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
               <p style="margin: 0 0 6px; font-size: 12px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em;">Their message</p>
-              <p style="margin: 0; font-size: 15px; color: #292524; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+              <p style="margin: 0; font-size: 15px; color: #292524; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</p>
             </div>
 
             <p style="margin: 0 0 4px; font-size: 13px; color: #78716c;">
-              To reply, just respond to this email — it will go directly to ${buyerName}.
+              To reply, just respond to this email — it will go directly to ${escapeHtml(buyerName)}.
             </p>
             <p style="margin: 0; font-size: 13px; color: #a8a29e;">
               — The WhidbeyWave team

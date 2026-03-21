@@ -50,11 +50,14 @@ function parseDates(date: string, time?: string): {
 
   const [y, mo, d] = date.split('-').map(Number);
   const [sh, sm]   = startTime;
-  const [eh, em]   = endTime ?? [sh + 1, sm]; // default 1 hour if no end given
-  const fmt        = (h: number, min: number) =>
+  // Default 1 hour if no end given; clamp to 23:59 to avoid invalid T240000+
+  const [rawEh, rawEm] = endTime ?? [sh + 1, sm];
+  const eh = Math.min(rawEh, 23);
+  const em2 = rawEh > 23 ? 59 : rawEm;
+  const fmt  = (h: number, min: number) =>
     `${y}${pad(mo)}${pad(d)}T${pad(h)}${pad(min)}00`;
 
-  return { start: fmt(sh, sm), end: fmt(eh, em), allDay: false };
+  return { start: fmt(sh, sm), end: fmt(eh, em2), allDay: false };
 }
 
 export function googleCalendarUrl(event: CalendarEventInput): string {
@@ -83,8 +86,8 @@ export function generateIcs(event: CalendarEventInput): string {
     'BEGIN:VEVENT',
     `DTSTAMP:${now}`,
     `UID:${uid}`,
-    allDay ? `DTSTART;VALUE=DATE:${start}` : `DTSTART:${start}`,
-    allDay ? `DTEND;VALUE=DATE:${end}`     : `DTEND:${end}`,
+    allDay ? `DTSTART;VALUE=DATE:${start}` : `DTSTART;TZID=America/Los_Angeles:${start}`,
+    allDay ? `DTEND;VALUE=DATE:${end}`     : `DTEND;TZID=America/Los_Angeles:${end}`,
     `SUMMARY:${event.title}`,
   ];
 

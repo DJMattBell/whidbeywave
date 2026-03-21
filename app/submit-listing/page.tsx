@@ -303,7 +303,7 @@ export default function SubmitListingPage() {
                     </button>
                   )}
                 </div>
-                <p className="text-xs text-stone-400">Drag to reorder</p>
+                <p className="text-xs text-stone-400">First photo will be the cover image</p>
               </>
             )}
 

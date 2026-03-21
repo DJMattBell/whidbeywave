@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
               Someone replied to your question
             </h2>
             <p style="margin:0 0 20px;font-size:16px;color:#57534e;line-height:1.6;">
-              <strong>${displayName}</strong> added a reply to a question you posted on WhidbeyWave.
+              <strong>${escapeHtml(displayName)}</strong> added a reply to a question you posted on WhidbeyWave.
             </p>
 
             <!-- Post title + snippet block -->
@@ -118,13 +119,13 @@ export async function POST(request: NextRequest) {
                     Re: your question
                   </p>
                   <p style="margin:0 0 12px;font-size:16px;font-weight:bold;color:#1c3d2c;font-family:Georgia,serif;">
-                    ${post.title}
+                    ${escapeHtml(post.title)}
                   </p>
                   <p style="margin:0;font-size:15px;color:#57534e;line-height:1.6;font-style:italic;">
-                    "${snippet}"
+                    "${escapeHtml(snippet)}"
                   </p>
                   <p style="margin:8px 0 0;font-size:13px;color:#9ca3af;">
-                    — ${displayName}
+                    — ${escapeHtml(displayName)}
                   </p>
                 </td>
               </tr>

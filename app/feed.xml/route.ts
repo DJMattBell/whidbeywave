@@ -16,7 +16,8 @@ export async function GET() {
 
   const items = posts
     .map(post => {
-      const pubDate = new Date(post.published_at + 'T12:00:00-08:00').toUTCString();
+      // Use noon UTC as a stable approximation — avoids PST/PDT offset issues
+      const pubDate = new Date(post.published_at + 'T12:00:00Z').toUTCString();
       return `
     <item>
       <title><![CDATA[${post.title}]]></title>

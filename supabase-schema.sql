@@ -22,6 +22,7 @@ create table if not exists event_submissions (
   tags             text[] default '{}',
   submitter_name   text not null,
   submitter_email  text not null,
+  source           text not null default '',
   status           text not null default 'pending'
                      check (status in ('pending', 'approved', 'rejected')),
   admin_notes      text,
@@ -288,7 +289,7 @@ create policy "Whidbey locals can review"
   on reviews for insert
   with check (
     auth.uid() is not null
-    and zipcode in ('98239','98249','98250','98253','98260','98277','98278')
+    and zipcode in ('98236','98239','98249','98250','98253','98260','98277','98278')
   );
 
 create policy "Authors can update their own reviews"

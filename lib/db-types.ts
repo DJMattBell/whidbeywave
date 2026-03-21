@@ -131,6 +131,7 @@ export type EventSubmissionRow = {
   category: string;
   description: string | null;
   tags: string[];
+  source: string;
   status: 'pending' | 'approved' | 'rejected';
   admin_notes: string | null;
   reviewed_at: string | null;

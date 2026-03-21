@@ -17,8 +17,14 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
   { url: `${BASE}/newsletter`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
   { url: `${BASE}/about`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   { url: `${BASE}/contact`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
-  { url: `${BASE}/submit-event`,   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
-  { url: `${BASE}/submit-listing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+  { url: `${BASE}/submit-event`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+  { url: `${BASE}/submit-listing`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+  { url: `${BASE}/search`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+  { url: `${BASE}/how-it-works`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+  { url: `${BASE}/visit/ferry-guide`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE}/visit/this-weekend`, lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.6 },
+  { url: `${BASE}/visit/restaurants`,  lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.6 },
+  { url: `${BASE}/visit/farmers-markets`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

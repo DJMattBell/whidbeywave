@@ -13,8 +13,9 @@ export const revalidate = 60;
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: { q?: string; category?: string; location?: string };
+  searchParams: Promise<{ q?: string; category?: string; location?: string }>;
 }) {
+  const sp = await searchParams;
   const supabase = createServerClient();
 
   const now = new Date().toISOString();
@@ -27,15 +28,15 @@ export default async function MarketplacePage({
     .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('created_at', { ascending: false });
 
-  if (searchParams.category && searchParams.category !== 'All') {
-    query = query.eq('category', searchParams.category);
+  if (sp.category && sp.category !== 'All') {
+    query = query.eq('category', sp.category);
   }
-  if (searchParams.location && searchParams.location !== 'All Locations') {
-    query = query.eq('location', searchParams.location);
+  if (sp.location && sp.location !== 'All Locations') {
+    query = query.eq('location', sp.location);
   }
 
   // Full-text search via Supabase wfts (uses GIN indexes on title + description)
-  const q = searchParams.q?.trim();
+  const q = sp.q?.trim();
   if (q) {
     const ftsQ = q.replace(/[,()]/g, ' ').trim();
     query = query.or(`title.wfts(english).${ftsQ},description.wfts(english).${ftsQ}`);
@@ -58,8 +59,8 @@ export default async function MarketplacePage({
 
   const hasFilters = !!(
     q ||
-    (searchParams.category && searchParams.category !== 'All') ||
-    (searchParams.location && searchParams.location !== 'All Locations')
+    (sp.category && sp.category !== 'All') ||
+    (sp.location && sp.location !== 'All Locations')
   );
 
   return (
@@ -93,7 +94,7 @@ export default async function MarketplacePage({
               ))}
             </div>
           }>
-            <MarketplaceCategoryFilter current={searchParams.category} />
+            <MarketplaceCategoryFilter current={sp.category} />
           </Suspense>
         </div>
 
@@ -104,14 +105,14 @@ export default async function MarketplacePage({
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" aria-hidden="true">🔍</span>
               <input
                 type="search"
-                defaultValue={searchParams.q}
+                defaultValue={sp.q}
                 placeholder="Search listings…"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-parchment-300 text-sm bg-white text-stone-700 placeholder:text-stone-400"
                 readOnly
               />
             </div>
           }>
-            <MarketplaceSearch defaultValue={searchParams.q} />
+            <MarketplaceSearch defaultValue={sp.q} />
           </Suspense>
 
           <Suspense fallback={
@@ -119,7 +120,7 @@ export default async function MarketplacePage({
               {allLocations.map(loc => <option key={loc}>{loc}</option>)}
             </select>
           }>
-            <MarketplaceLocationFilter locations={allLocations} current={searchParams.location ?? 'All Locations'} />
+            <MarketplaceLocationFilter locations={allLocations} current={sp.location ?? 'All Locations'} />
           </Suspense>
 
           {hasFilters && (

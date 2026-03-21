@@ -1,75 +1,111 @@
-import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
 
-const WICA_URL = 'https://www.wicaonline.org/calendar';
+const WICA_URLS = [
+  'https://www.wicaonline.org/events-calendar?format=json',
+  'https://www.wicaonline.org/calendar?format=json',
+];
 
-/** Parse a date string like "March 8, 2026" → "2026-03-08" */
-function parseDate(raw: string): string | null {
-  const d = new Date(raw.trim());
-  if (isNaN(d.getTime())) return null;
+/** Strip HTML tags from a string */
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Convert ms timestamp to YYYY-MM-DD */
+function formatDate(ms: number): string {
+  const d = new Date(ms);
   const yyyy = d.getFullYear();
-  const mm   = String(d.getMonth() + 1).padStart(2, '0');
-  const dd   = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
 
-/** Normalise a time string — return null if empty/useless */
-function cleanTime(raw: string): string | null {
-  const t = raw.trim().replace(/\s+/g, ' ');
-  return t.length > 1 ? t : null;
+/** Convert ms timestamp to HH:MM AM/PM */
+function formatTime(ms: number): string {
+  const d = new Date(ms);
+  let hours = d.getHours();
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  return `${hours}:${minutes} ${ampm}`;
+}
+
+/** Build location string from Squarespace location object */
+function extractLocation(loc: Record<string, unknown> | null | undefined): string | null {
+  if (!loc) return null;
+  const parts: string[] = [];
+  if (loc.addressLine1) parts.push(String(loc.addressLine1));
+  if (loc.addressLine2) parts.push(String(loc.addressLine2));
+  if (loc.addressCity) parts.push(String(loc.addressCity));
+  const result = parts.join(', ').trim();
+  return result || null;
+}
+
+/** Fetch a single Squarespace JSON endpoint and return raw event items */
+async function fetchSquarespaceEvents(url: string): Promise<Record<string, unknown>[]> {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(6000),
+    headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
+  });
+  if (!res.ok) return [];
+
+  const json = await res.json() as Record<string, unknown>;
+
+  // Try "upcoming" first, fall back to "items"
+  const upcoming = json.upcoming;
+  if (Array.isArray(upcoming) && upcoming.length > 0) return upcoming;
+
+  const items = json.items;
+  if (Array.isArray(items) && items.length > 0) return items;
+
+  return [];
 }
 
 export async function scrapeWica(): Promise<ScrapedEvent[]> {
   try {
-    const res = await fetch(WICA_URL, {
-      signal: AbortSignal.timeout(6000),
-      headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
-    });
-    if (!res.ok) return [];
+    let rawEvents: Record<string, unknown>[] = [];
 
-    const html = await res.text();
-    const $    = cheerio.load(html);
+    for (const url of WICA_URLS) {
+      rawEvents = await fetchSquarespaceEvents(url);
+      if (rawEvents.length > 0) break;
+    }
+
+    if (rawEvents.length === 0) return [];
+
     const events: ScrapedEvent[] = [];
 
-    // WICA uses The Events Calendar plugin — standard WordPress structure
-    // Primary selector: article.type-tribe_events or .tribe-events-calendar-list__event
-    $('article.type-tribe_events, .tribe-event, .tribe-events-calendar-list__event-row').each((_, el) => {
-      const $el = $(el);
+    for (const item of rawEvents) {
+      const title = typeof item.title === 'string' ? item.title.trim() : '';
+      if (!title) continue;
 
-      const title = $el.find(
-        '.tribe-event-url, .tribe-events-list-event-title a, ' +
-        '.tribe-events-calendar-list__event-title-link, h2.tribe-events-list-event-title'
-      ).first().text().trim();
-      if (!title) return;
+      const startDate = typeof item.startDate === 'number' ? item.startDate : null;
+      if (!startDate) continue;
 
-      // Date — try multiple selectors used across plugin versions
-      const rawDate = $el.find(
-        'abbr.tribe-events-abbr, ' +
-        '.tribe-events-schedule abbr, ' +
-        '.tribe-event-date-start, ' +
-        '.tribe-events-calendar-list__event-datetime-wrapper time'
-      ).first().attr('title') ??
-      $el.find(
-        '.tribe-events-schedule, .tribe-events-calendar-list__event-datetime-wrapper'
-      ).first().text();
+      const date = formatDate(startDate);
+      const time = formatTime(startDate);
 
-      const date = parseDate(rawDate ?? '');
-      if (!date) return;
-
-      const time = cleanTime(
-        $el.find(
-          '.tribe-events-schedule__time, .tribe-events-calendar-list__event-datetime-wrapper'
-        ).first().text()
+      const location = extractLocation(
+        item.location as Record<string, unknown> | null | undefined
       );
 
-      const location = $el.find(
-        '.tribe-venue, .tribe-events-calendar-list__event-venue'
-      ).first().text().trim() || null;
-
-      const description = $el.find(
-        '.tribe-events-list-event-description p, ' +
-        '.tribe-events-calendar-list__event-description'
-      ).first().text().trim() || null;
+      // Prefer excerpt, fall back to body, strip HTML from either
+      let description: string | null = null;
+      if (typeof item.excerpt === 'string' && item.excerpt.trim()) {
+        description = stripHtml(item.excerpt);
+      } else if (typeof item.body === 'string' && item.body.trim()) {
+        description = stripHtml(item.body);
+      }
+      if (description) {
+        description = description.slice(0, 1000) || null;
+      }
 
       events.push({
         title,
@@ -78,10 +114,10 @@ export async function scrapeWica(): Promise<ScrapedEvent[]> {
         location,
         town: 'Langley',
         category: 'Arts & Culture',
-        description: description ? description.slice(0, 1000) : null,
+        description,
         source: 'WICA',
       });
-    });
+    }
 
     return events;
   } catch (err) {

@@ -1,146 +1,94 @@
 import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
 
-const OAK_HARBOR_URL = 'https://www.oakharbor.gov/Calendar.aspx';
+const RSS_URL =
+  'https://www.oakharbor.gov/RSSFeed.aspx?ModID=58&CID=All-0&ShowAll=True';
 
-const MONTH_MAP: Record<string, string> = {
-  january: '01', february: '02', march: '03',     april: '04',
-  may:     '05', june:     '06', july:  '07',     august: '08',
-  september: '09', october: '10', november: '11', december: '12',
-};
-
-/** Parse CivicEngage date strings like "March 8, 2026" or "3/8/2026" */
-function parseDate(raw: string): string | null {
-  const s = raw.trim();
-
-  // MM/DD/YYYY
-  const mdy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (mdy) {
-    const [, m, d, y] = mdy;
-    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-  }
-
-  // "Month D, YYYY"
-  const longDate = s.match(/^([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})$/);
-  if (longDate) {
-    const [, monthName, day, year] = longDate;
-    const mm = MONTH_MAP[monthName.toLowerCase()];
-    if (mm) return `${year}-${mm}-${day.padStart(2, '0')}`;
-  }
-
-  // Fall back to JS Date
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) {
-    const yyyy = d.getFullYear();
-    const mm   = String(d.getMonth() + 1).padStart(2, '0');
-    const dd   = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  return null;
+/**
+ * Parse an RSS pubDate (RFC-2822) into YYYY-MM-DD.
+ * Example input: "Mon, 10 Mar 2026 13:00:00 GMT"
+ */
+function toDateString(raw: string): string | null {
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return null;
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }
 
-function cleanText(raw: string): string {
-  return raw.replace(/\s+/g, ' ').trim();
+/**
+ * Try to extract a human-readable time string from text.
+ * Looks for patterns like "1:00 PM", "6:00 PM – 7:00 PM", "10:30 AM".
+ */
+function extractTime(text: string): string | null {
+  const match = text.match(
+    /\d{1,2}:\d{2}\s*[APap][Mm](?:\s*[–—-]\s*\d{1,2}:\d{2}\s*[APap][Mm])?/
+  );
+  return match ? match[0].trim() : null;
 }
 
+/**
+ * Strip HTML tags from a string and collapse whitespace.
+ */
+function stripHtml(raw: string): string {
+  const $ = cheerio.load(raw, { xml: false });
+  return $.text().replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Scrape upcoming city events from the Oak Harbor RSS feed.
+ */
 export async function scrapeOakHarbor(): Promise<ScrapedEvent[]> {
   try {
-    const res = await fetch(OAK_HARBOR_URL, {
+    const res = await fetch(RSS_URL, {
       signal: AbortSignal.timeout(6000),
       headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
     });
     if (!res.ok) return [];
 
-    const html = await res.text();
-    const $    = cheerio.load(html);
+    const xml = await res.text();
+    const $ = cheerio.load(xml, { xml: true });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const events: ScrapedEvent[] = [];
 
-    // CivicEngage / CivicPlus calendar uses various selectors depending on version:
-    // - .fc-event (FullCalendar widget)
-    // - .rgRow / .rgAltRow in a RadGrid
-    // - .cal_titlelink in classic CivicPlus
+    $('item').each((_, el) => {
+      const $item = $(el);
 
-    // Strategy 1: FullCalendar event items
-    $('.fc-event').each((_, el) => {
-      const $el  = $(el);
-      const title = cleanText($el.text());
+      const title = $item.find('title').text().trim();
       if (!title) return;
 
-      // FC stores date on the parent day cell's data-date attribute
-      const rawDate = $el.closest('[data-date]').attr('data-date') ??
-                      $el.attr('data-date') ?? '';
-      const date = parseDate(rawDate);
+      const pubDateRaw = $item.find('pubDate').text().trim();
+      const date = toDateString(pubDateRaw);
       if (!date) return;
+
+      // Only include future events (today or later)
+      if (new Date(date + 'T00:00:00') < today) return;
+
+      const descriptionRaw = $item.find('description').text().trim();
+      const descriptionText = descriptionRaw ? stripHtml(descriptionRaw) : null;
+
+      // Try to pull a time from the description first, then from pubDate
+      const time =
+        (descriptionText ? extractTime(descriptionText) : null) ??
+        extractTime(pubDateRaw);
+
+      const link = $item.find('link').text().trim() || null;
 
       events.push({
         title,
         date,
-        time: null,
-        location: 'Oak Harbor City Hall',
+        time,
+        location: null,
         town: 'Oak Harbor',
         category: 'Community & Social',
-        description: null,
-        source: 'Oak Harbor',
+        description: descriptionText || (link ? `Details: ${link}` : null),
+        source: 'City of Oak Harbor',
       });
     });
-
-    // Strategy 2: Classic CivicPlus list-view rows
-    if (events.length === 0) {
-      $('a.cal_titlelink').each((_, el) => {
-        const $el   = $(el);
-        const title = cleanText($el.text());
-        if (!title) return;
-
-        // Date is usually in a sibling td or a nearby .cal_date span
-        const $row  = $el.closest('tr');
-        const rawDate = cleanText(
-          $row.find('.cal_date, td:first-child').first().text()
-        );
-        const date = parseDate(rawDate);
-        if (!date) return;
-
-        const time = cleanText($row.find('.cal_time').text()) || null;
-
-        events.push({
-          title,
-          date,
-          time: time || null,
-          location: null,
-          town: 'Oak Harbor',
-          category: 'Community & Social',
-          description: null,
-          source: 'Oak Harbor',
-        });
-      });
-    }
-
-    // Strategy 3: RadGrid rows (another CivicEngage variant)
-    if (events.length === 0) {
-      $('.rgRow, .rgAltRow').each((_, el) => {
-        const $el    = $(el);
-        const tds    = $el.find('td');
-        if (tds.length < 2) return;
-
-        const rawDate = cleanText($(tds[0]).text());
-        const title   = cleanText($(tds[1]).text());
-        if (!title || !rawDate) return;
-
-        const date = parseDate(rawDate);
-        if (!date) return;
-
-        events.push({
-          title,
-          date,
-          time: null,
-          location: null,
-          town: 'Oak Harbor',
-          category: 'Community & Social',
-          description: null,
-          source: 'Oak Harbor',
-        });
-      });
-    }
 
     return events;
   } catch (err) {

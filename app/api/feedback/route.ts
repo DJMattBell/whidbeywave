@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -50,14 +51,14 @@ export async function POST(request: NextRequest) {
                   <tr>
                     <td style="padding:8px 0;color:#888;width:80px;vertical-align:top;">Page</td>
                     <td style="padding:8px 0;">
-                      <a href="${SITE_URL}${page || '/'}" style="color:#255c42;">
-                        ${SITE_URL}${page || '/'}
+                      <a href="${SITE_URL}${escapeHtml(page || '/')}" style="color:#255c42;">
+                        ${SITE_URL}${escapeHtml(page || '/')}
                       </a>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0;color:#888;vertical-align:top;">From</td>
-                    <td style="padding:8px 0;">${email?.trim() || 'Anonymous'}</td>
+                    <td style="padding:8px 0;">${escapeHtml(email?.trim() || 'Anonymous')}</td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0;color:#888;vertical-align:top;">When</td>
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
                   </tr>
                   <tr>
                     <td style="padding:8px 0;color:#888;vertical-align:top;">Message</td>
-                    <td style="padding:8px 0;white-space:pre-wrap;line-height:1.6;">${message.trim()}</td>
+                    <td style="padding:8px 0;white-space:pre-wrap;line-height:1.6;">${escapeHtml(message.trim())}</td>
                   </tr>
                 </table>
                 ${email?.trim() ? `<p style="font-size:13px;color:#a8a29e;margin-top:16px;">Reply to this email to respond directly.</p>` : ''}

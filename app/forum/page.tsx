@@ -81,9 +81,10 @@ async function getPosts(category: string | null): Promise<ForumPost[]> {
 export default async function ForumPage({
   searchParams,
 }: {
-  searchParams: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }) {
-  const activeCategory = searchParams.category ?? 'All';
+  const { category } = await searchParams;
+  const activeCategory = category ?? 'All';
   const posts = await getPosts(activeCategory);
 
   return (

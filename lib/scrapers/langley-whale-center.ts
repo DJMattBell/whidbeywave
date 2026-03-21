@@ -1,19 +1,30 @@
-import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
 
-// Orca Network / Langley Whale Center events — Squarespace site
-const WHALE_CENTER_URL = 'https://www.orcanetwork.org/events';
+// Orca Network / Langley Whale Center events — Squarespace JSON API
+const WHALE_CENTER_URL = 'https://www.orcanetwork.org/events?format=json';
 
-/** Parse ISO date from datetime attr or text like "April 11, 2026" */
-function parseDate(raw: string): string | null {
-  const iso = raw.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (iso) return iso[1];
-  const d = new Date(raw.trim());
-  if (isNaN(d.getTime())) return null;
+/** Strip HTML tags from a string */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+/** Convert ms timestamp to YYYY-MM-DD */
+function formatDate(ms: number): string {
+  const d = new Date(ms);
   const yyyy = d.getFullYear();
-  const mm   = String(d.getMonth() + 1).padStart(2, '0');
-  const dd   = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
+}
+
+/** Convert ms timestamp to HH:MM AM/PM */
+function formatTime(ms: number): string {
+  const d = new Date(ms);
+  let hours = d.getHours();
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  return `${hours}:${minutes} ${ampm}`;
 }
 
 export async function scrapeLangleyWhaleCenter(): Promise<ScrapedEvent[]> {
@@ -24,45 +35,51 @@ export async function scrapeLangleyWhaleCenter(): Promise<ScrapedEvent[]> {
     });
     if (!res.ok) return [];
 
-    const html = await res.text();
-    const $    = cheerio.load(html);
+    const data = await res.json();
+    const upcoming: unknown[] = data?.upcoming ?? [];
+
     const events: ScrapedEvent[] = [];
 
-    // Squarespace event list selectors
-    $('.eventlist-event, .eventlist--upcoming .eventlist-event').each((_, el) => {
-      const $el = $(el);
+    for (const item of upcoming) {
+      const evt = item as Record<string, unknown>;
 
-      const title = $el.find(
-        '.eventlist-title a, .eventlist-title'
-      ).first().text().trim();
-      if (!title) return;
+      const title = typeof evt.title === 'string' ? evt.title.trim() : '';
+      if (!title) continue;
 
-      const rawDate =
-        $el.find('time.dt-start, time[datetime]').first().attr('datetime') ??
-        $el.find('.event-date, .eventlist-meta-date').first().text();
+      const startDate = typeof evt.startDate === 'number' ? evt.startDate : null;
+      if (!startDate) continue;
 
-      const date = parseDate(rawDate ?? '');
-      if (!date) return;
+      const date = formatDate(startDate);
+      const time = formatTime(startDate);
 
-      const time = $el.find(
-        '.event-time-12hr, .eventlist-meta-time'
-      ).first().text().trim() || null;
+      // Build description from excerpt, stripped of HTML
+      let description: string | null = null;
+      if (typeof evt.excerpt === 'string' && evt.excerpt.trim()) {
+        description = stripHtml(evt.excerpt).slice(0, 1000) || null;
+      }
 
-      const description = $el.find(
-        '.eventlist-description p, .eventlist-excerpt p'
-      ).first().text().trim() || null;
+      // Build location string from location object if available
+      let location: string | null = 'Langley Whale Center';
+      if (evt.location && typeof evt.location === 'object') {
+        const loc = evt.location as Record<string, unknown>;
+        const parts: string[] = [];
+        if (typeof loc.addressLine1 === 'string' && loc.addressLine1) parts.push(loc.addressLine1);
+        if (typeof loc.addressLine2 === 'string' && loc.addressLine2) parts.push(loc.addressLine2);
+        if (typeof loc.addressCountry === 'string' && loc.addressCountry) parts.push(loc.addressCountry);
+        if (parts.length > 0) location = parts.join(', ');
+      }
 
       events.push({
         title,
         date,
-        time: time || null,
-        location: 'Langley Whale Center',
-        town:     'Langley',
+        time,
+        location,
+        town: 'Langley',
         category: 'Nature & Wildlife',
-        description: description ? description.slice(0, 1000) : null,
+        description,
         source: 'Langley Whale Center',
       });
-    });
+    }
 
     return events;
   } catch (err) {

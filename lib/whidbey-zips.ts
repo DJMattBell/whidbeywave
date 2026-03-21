@@ -3,6 +3,7 @@ export const WHIDBEY_ZIPS = new Set([
   '98236', // Clinton
   '98239', // Coupeville
   '98249', // Freeland
+  '98250', // Freeland / Langley (alternate)
   '98253', // Greenbank
   '98260', // Langley
   '98277', // Oak Harbor

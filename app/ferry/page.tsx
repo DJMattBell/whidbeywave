@@ -120,7 +120,7 @@ const CAMERAS = [
     terminal: 'Clinton Terminal',
     side:     'Island Side',
     emoji:    '🌲',
-    href:     'https://wsdot.com/ferries/vesselwatch/cameradetail.aspx?terminalid=3',
+    href:     'https://wsdot.com/ferries/vesselwatch/cameradetail.aspx?terminalid=5',
   },
   {
     terminal: 'Mukilteo Terminal',
@@ -132,7 +132,7 @@ const CAMERAS = [
     terminal: 'Coupeville Terminal',
     side:     'Island Side',
     emoji:    '🌲',
-    href:     'https://wsdot.com/ferries/vesselwatch/cameradetail.aspx?terminalid=4',
+    href:     'https://wsdot.com/ferries/vesselwatch/cameradetail.aspx?terminalid=11',
   },
   {
     terminal: 'Port Townsend Terminal',

@@ -3,27 +3,20 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { scrapeWica } from '@/lib/scrapers/wica';
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
-import { scrapeOakHarborCityEvents } from '@/lib/scrapers/oak-harbor-events';
 import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
 import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
-import { scrapeSWParks } from '@/lib/scrapers/swparks';
-import { scrapeGreenbankFarm } from '@/lib/scrapers/greenbank';
-import { scrapeCoupevilleArts } from '@/lib/scrapers/coupeville-arts';
-import { scrapeBarringtons } from '@/lib/scrapers/barringtons';
-import { scrapeWickedTeuton } from '@/lib/scrapers/wicked-teuton';
 import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
-import { scrapePennCoveBrewing } from '@/lib/scrapers/penn-cove-brewing';
-import { scrapeDancingFish } from '@/lib/scrapers/dancing-fish';
-import { scrapeDoubleBluff } from '@/lib/scrapers/double-bluff';
-import { scrapeOakHarborChamber } from '@/lib/scrapers/oak-harbor-chamber';
-import { scrapeOakHarborMainStreet } from '@/lib/scrapers/oak-harbor-mainstreet';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
-import { scrapeSkeinTipple } from '@/lib/scrapers/skein-tipple';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
 
 export const runtime = 'nodejs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+/** Normalize a title for dedup comparison: lowercase, collapse whitespace, strip punctuation edges */
+function normalizeTitle(title: string): string {
+  return title.toLowerCase().replace(/\s+/g, ' ').trim();
+}
 
 async function sendAdminEmail(subject: string, html: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -62,61 +55,45 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Per-source schedule: some scrapers only need to run monthly
+  const today = new Date();
+  const dayOfMonth = today.getDate();
+
+  // Whale Center only runs on the 1st of each month (events don't change often)
+  const runWhaleCenter = dayOfMonth === 1;
+
   // Run all scrapers in parallel — each has its own 6s timeout; failures return []
   const [
-    wicaEvents, oakHarborEvents, oakHarborCityEvents,
+    wicaEvents, oakHarborEvents,
     langleyLibEvents, coupevilleLibEvents,
-    swParksEvents, greenbankEvents, coupevilleArtsEvents,
-    barringtonsEvents, wickedTeutonEvents, thirstyCrabEvents,
-    pennCoveEvents, dancingFishEvents, doubleBluffEvents,
-    chamberEvents, mainStreetEvents, whidbeyTelEvents, skeinTippleEvents,
-    whaleCenterEvents,
+    thirstyCrabEvents, whidbeyTelEvents, whaleCenterEvents,
   ] = await Promise.all([
     scrapeWica(),
     scrapeOakHarbor(),
-    scrapeOakHarborCityEvents(),
     scrapeLangleyLibrary(),
     scrapeCoupevilleLibrary(),
-    scrapeSWParks(),
-    scrapeGreenbankFarm(),
-    scrapeCoupevilleArts(),
-    scrapeBarringtons(),
-    scrapeWickedTeuton(),
     scrapeThirstyCrab(),
-    scrapePennCoveBrewing(),
-    scrapeDancingFish(),
-    scrapeDoubleBluff(),
-    scrapeOakHarborChamber(),
-    scrapeOakHarborMainStreet(),
     scrapeWhidbeyTelecomEvents(),
-    scrapeSkeinTipple(),
-    scrapeLangleyWhaleCenter(),
+    runWhaleCenter ? scrapeLangleyWhaleCenter() : Promise.resolve([]),
   ]);
 
   const candidates = [
-    ...wicaEvents, ...oakHarborEvents, ...oakHarborCityEvents,
+    ...wicaEvents, ...oakHarborEvents,
     ...langleyLibEvents, ...coupevilleLibEvents,
-    ...swParksEvents, ...greenbankEvents, ...coupevilleArtsEvents,
-    ...barringtonsEvents, ...wickedTeutonEvents, ...thirstyCrabEvents,
-    ...pennCoveEvents, ...dancingFishEvents, ...doubleBluffEvents,
-    ...chamberEvents, ...mainStreetEvents, ...whidbeyTelEvents, ...skeinTippleEvents,
-    ...whaleCenterEvents,
+    ...thirstyCrabEvents, ...whidbeyTelEvents, ...whaleCenterEvents,
   ];
   console.log(
     `[scrape] found ${candidates.length} candidate events — ` +
-    `WICA:${wicaEvents.length} OakHarborGov:${oakHarborEvents.length} OakHarborCity:${oakHarborCityEvents.length} ` +
+    `WICA:${wicaEvents.length} OakHarbor:${oakHarborEvents.length} ` +
     `LangleyLib:${langleyLibEvents.length} CoupevilleLib:${coupevilleLibEvents.length} ` +
-    `SWParks:${swParksEvents.length} Greenbank:${greenbankEvents.length} CoupevilleArts:${coupevilleArtsEvents.length} ` +
-    `Barringtons:${barringtonsEvents.length} WickedTeuton:${wickedTeutonEvents.length} ThirstyCrab:${thirstyCrabEvents.length} ` +
-    `PennCove:${pennCoveEvents.length} DancingFish:${dancingFishEvents.length} DoubleBluff:${doubleBluffEvents.length} ` +
-    `Chamber:${chamberEvents.length} MainStreet:${mainStreetEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
-    `Skein:${skeinTippleEvents.length} WhaleCenter:${whaleCenterEvents.length}`
+    `ThirstyCrab:${thirstyCrabEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
+    `WhaleCenter:${whaleCenterEvents.length}`
   );
 
   // If all scrapers returned empty, send a warning email
   if (candidates.length === 0) {
     await sendAdminEmail(
-      '⚠️ WhidbeyWave scraper found 0 events',
+      'WhidbeyWave scraper found 0 events',
       `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#fdfaf3;">
           <div style="background:#1a4a33;padding:20px 28px;border-radius:12px 12px 0 0;">
@@ -126,8 +103,8 @@ export async function GET(request: NextRequest) {
           <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
             <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:18px;">Scraper ran but found 0 events</h2>
             <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0;">
-              The nightly event scraper ran successfully but returned no events from either source.
-              The sites may be blocking the scraper or their HTML structure has changed.
+              The nightly event scraper ran successfully but returned no events from any source.
+              The sites may be blocking the scraper or their data structure has changed.
             </p>
           </div>
         </div>
@@ -139,21 +116,25 @@ export async function GET(request: NextRequest) {
   const supabase = createClient(supabaseUrl, serviceKey);
 
   // Dedup: fetch existing submissions from the last 90 days
+  // Uses normalized title + date + source to catch duplicates even with
+  // minor whitespace/casing differences between scrape runs
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
   const cutoff = ninetyDaysAgo.toISOString().slice(0, 10); // YYYY-MM-DD
 
   const { data: existing } = await supabase
     .from('event_submissions')
-    .select('title, date')
+    .select('title, date, source')
     .gte('date', cutoff);
 
   const existingKeys = new Set(
-    (existing ?? []).map((e: { title: string; date: string }) => `${e.title}|${e.date}`)
+    (existing ?? []).map((e: { title: string; date: string; source?: string }) =>
+      `${normalizeTitle(e.title)}|${e.date}|${(e.source ?? '').toLowerCase()}`
+    )
   );
 
   const newEvents = candidates.filter(
-    e => !existingKeys.has(`${e.title}|${e.date}`)
+    e => !existingKeys.has(`${normalizeTitle(e.title)}|${e.date}|${e.source.toLowerCase()}`)
   );
 
   if (newEvents.length > 0) {
@@ -166,6 +147,7 @@ export async function GET(request: NextRequest) {
       category:        e.category,
       description:     e.description,
       tags:            [] as string[],
+      source:          e.source,
       submitter_name:  'Event Scraper',
       submitter_email: process.env.ADMIN_EMAIL ?? 'admin@whidbeywave.com',
       status:          'pending',

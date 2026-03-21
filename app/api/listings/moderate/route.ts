@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
                   Your listing for <strong>${listing.title}</strong> is now live on the WhidbeyWave marketplace.
                   Your neighbors can see it and get in touch with you directly.
                 </p>
-                <a href="https://whidbeywave.com/marketplace"
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com'}/marketplace"
                    style="display:inline-block;background:#2d5016;color:#fdfaf3;font-weight:600;font-size:15px;padding:12px 24px;border-radius:12px;text-decoration:none;margin-bottom:20px;">
                   View the Marketplace →
                 </a>

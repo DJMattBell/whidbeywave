@@ -250,17 +250,14 @@ export async function GET(request: NextRequest) {
   const isTest = request.nextUrl.searchParams.get('test') === 'true';
 
   // Auth: Vercel cron header OR CRON_SECRET bearer token
-  // Test mode skips auth (only sends to admin — no risk to subscribers)
-  if (!isTest) {
-    const isVercelCron   = request.headers.get('x-vercel-cron') === '1';
-    const cronSecret     = process.env.CRON_SECRET;
-    const hasValidSecret =
-      cronSecret &&
-      request.headers.get('authorization') === `Bearer ${cronSecret}`;
+  const isVercelCron   = request.headers.get('x-vercel-cron') === '1';
+  const cronSecret     = process.env.CRON_SECRET;
+  const hasValidSecret =
+    cronSecret &&
+    request.headers.get('authorization') === `Bearer ${cronSecret}`;
 
-    if (!isVercelCron && !hasValidSecret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!isVercelCron && !hasValidSecret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {

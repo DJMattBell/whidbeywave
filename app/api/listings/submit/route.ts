@@ -104,11 +104,13 @@ export async function POST(request: NextRequest) {
 
       if (error) {
         console.error('Supabase insert error:', error);
+        return NextResponse.json({ ok: false, error: 'Failed to save listing' }, { status: 500 });
       } else {
         insertedId = data?.id ?? null;
       }
     } catch (dbErr) {
       console.error('Supabase insert error:', dbErr);
+      return NextResponse.json({ ok: false, error: 'Failed to save listing' }, { status: 500 });
     }
 
     // Email admin
