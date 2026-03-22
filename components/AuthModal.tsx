@@ -133,9 +133,6 @@ export default function AuthModal({ onClose }: Props) {
               </svg>
               {googleLoading ? 'Redirecting…' : 'Continue with Google'}
             </button>
-            <p className="text-xs text-stone-400 text-center -mt-0.5">
-              Google may show &ldquo;Supabase&rdquo; — that&apos;s our secure sign-in provider. Your info stays with WhidbeyWave.
-            </p>
 
             {/* Divider */}
             <div className="flex items-center gap-3 my-1">
