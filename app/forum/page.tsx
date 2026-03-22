@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { createServerClient, isConfigured } from '@/lib/supabase';
 import type { ForumPost } from '@/lib/db-types';
 import NewPostForm from '@/components/forum/NewPostForm';
 import LocalBadge from '@/components/LocalBadge';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
+import QuickReactions from '@/components/QuickReactions';
+import { SkeletonFeed } from '@/components/SkeletonCard';
 
 export const metadata: Metadata = {
   title: 'Ask the Island — Whidbey Island Community Forum',
@@ -165,13 +168,12 @@ export default async function ForumPage({
               {posts.map(post => {
                 const catName = (post.forum_categories as any)?.name ?? 'General';
                 return (
-                  <Link
+                  <div
                     key={post.id}
-                    href={`/forum/${post.id}`}
                     role="listitem"
-                    className="block bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden p-5 group hover:border-forest-200 border border-transparent"
+                    className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden p-5 hover:border-forest-200 border border-transparent"
                   >
-                    <div className="flex items-start gap-4">
+                    <Link href={`/forum/${post.id}`} className="flex items-start gap-4 group">
                       {/* Reply count */}
                       <div
                         className="shrink-0 w-12 h-12 rounded-xl bg-parchment-100 border border-parchment-200 flex flex-col items-center justify-center"
@@ -204,8 +206,12 @@ export default async function ForumPage({
                         </p>
                       </div>
                       <span className="text-stone-300 group-hover:text-forest-400 transition-colors shrink-0 text-lg" aria-hidden="true">→</span>
+                    </Link>
+                    {/* #13 Quick reactions */}
+                    <div className="mt-3 pt-3 border-t border-parchment-100 pl-16">
+                      <QuickReactions postId={post.id} />
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
@@ -213,7 +219,7 @@ export default async function ForumPage({
             {/* Mobile FAB — scrolls to the ask section */}
             <a
               href="#ask"
-              className="fixed bottom-6 right-4 z-40 md:hidden btn-primary rounded-full w-14 h-14 text-2xl shadow-warm-lg flex items-center justify-center"
+              className="fixed bottom-[80px] right-4 z-40 md:hidden btn-primary rounded-full w-14 h-14 text-2xl shadow-warm-lg flex items-center justify-center"
               aria-label="Ask a question"
             >
               ✍️

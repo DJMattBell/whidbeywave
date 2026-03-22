@@ -6,6 +6,9 @@ import { AuthProvider } from '@/components/AuthProvider';
 import InstallPrompt from '@/components/InstallPrompt';
 import TextSizeToggle from '@/components/TextSizeToggle';
 import FeedbackButton from '@/components/FeedbackButton';
+import BottomTabBar from '@/components/BottomTabBar';
+import FloatingActionButton from '@/components/FloatingActionButton';
+import WelcomeSheet from '@/components/WelcomeSheet';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -79,7 +82,10 @@ export default function RootLayout({
           <Navbar />
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />
+          <BottomTabBar />
+          <FloatingActionButton />
           <InstallPrompt />
+          <WelcomeSheet />
         </AuthProvider>
         <TextSizeToggle />
         <FeedbackButton />

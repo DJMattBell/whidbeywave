@@ -8,6 +8,8 @@ import type { Event, EventTag } from '@/lib/data';
 import EventRsvpButton from '@/components/EventRsvpButton';
 import ShareButton from '@/components/ShareButton';
 import AddToCalendar from '@/components/AddToCalendar';
+import TimeWindowFilter, { getTimeWindowDates } from '@/components/TimeWindowFilter';
+import type { TimeWindow } from '@/components/TimeWindowFilter';
 
 const TAG_ICONS: Record<EventTag, string> = {
   'Kids Event':       '🧒',
@@ -35,14 +37,44 @@ const TOWNS = [
 
 const MOBILE_TAG_LIMIT = 5;
 
+function isHappeningNow(event: Event): boolean {
+  const now = new Date();
+  const today = now.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  if (event.date !== today) return false;
+  // Simple heuristic: if the event has a time and it includes a start time before now
+  if (!event.time) return false;
+  const match = event.time.match(/(\d{1,2}):?(\d{2})?\s*(am|pm)/i);
+  if (!match) return false;
+  let hours = parseInt(match[1]);
+  const minutes = parseInt(match[2] || '0');
+  const ampm = match[3].toLowerCase();
+  if (ampm === 'pm' && hours !== 12) hours += 12;
+  if (ampm === 'am' && hours === 12) hours = 0;
+  const eventStart = new Date(now);
+  eventStart.setHours(hours, minutes, 0, 0);
+  // Consider it "happening now" if it started within the last 4 hours
+  const fourHoursAgo = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+  return eventStart >= fourHoursAgo && eventStart <= now;
+}
+
+function isFreeEvent(event: Event): boolean {
+  const desc = (event.description ?? '').toLowerCase();
+  const title = event.title.toLowerCase();
+  return desc.includes('free') || title.includes('free') ||
+         desc.includes('no cost') || desc.includes('no charge') ||
+         desc.includes('donation') || title.includes('donation');
+}
+
 export default function EventsFilter({ events }: { events: Event[] }) {
   const searchParams = useSearchParams();
   const [activeTags, setActiveTags] = useState<EventTag[]>([]);
   const [activeTown, setActiveTown] = useState('All');
   const [showAllTags, setShowAllTags] = useState(false);
+  const [timeWindow, setTimeWindow] = useState<TimeWindow>('all');
 
   useEffect(() => {
     const town = searchParams.get('town');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (town) setActiveTown(town);
   }, [searchParams]);
 
@@ -55,35 +87,65 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   function clearAll() {
     setActiveTags([]);
     setActiveTown('All');
+    setTimeWindow('all');
   }
 
-  const hasFilters = activeTags.length > 0 || activeTown !== 'All';
+  const hasFilters = activeTags.length > 0 || activeTown !== 'All' || timeWindow !== 'all';
 
-  const filtered = events.filter((e) => {
+  // Apply time window filter
+  const { start, end } = getTimeWindowDates(timeWindow);
+  const timeFiltered = events.filter((e) => {
+    if (e.date < start) return false;
+    if (end && e.date > end) return false;
+    return true;
+  });
+
+  // Compute counts for each time window
+  const windowCounts: Partial<Record<TimeWindow, number>> = {};
+  (['today', 'tomorrow', 'weekend', 'week', 'all'] as TimeWindow[]).forEach((w) => {
+    const { start: s, end: e } = getTimeWindowDates(w);
+    windowCounts[w] = events.filter((ev) => {
+      if (ev.date < s) return false;
+      if (e && ev.date > e) return false;
+      return true;
+    }).length;
+  });
+
+  const filtered = timeFiltered.filter((e) => {
     if (activeTown !== 'All' && e.town !== activeTown) return false;
     if (activeTags.length > 0 && !activeTags.some((t) => e.tags.includes(t))) return false;
     return true;
   });
 
+  // Sort happening-now events to top (#6)
+  const sorted = [...filtered].sort((a, b) => {
+    const aNow = isHappeningNow(a) ? 0 : 1;
+    const bNow = isHappeningNow(b) ? 0 : 1;
+    return aNow - bNow;
+  });
+
   return (
     <div>
-      {/* ── Filter bars — sticky on mobile ──────────────────────── */}
-      <div className="mb-8 space-y-5 sticky top-[104px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 -mt-4 shadow-sm">
-        <div className="flex items-center justify-between mb-1">
+      {/* ── Filter section ──────────────────────── */}
+      <div className="mb-8 space-y-4 sticky top-[104px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 -mt-4 shadow-sm">
+        {/* #7 Time window filter — mobile first */}
+        <TimeWindowFilter active={timeWindow} onChange={setTimeWindow} counts={windowCounts} />
+
+        <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
-            Looking for something specific?
+            Filter
           </p>
           {hasFilters && (
             <button
               onClick={clearAll}
-              className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1 hover:bg-stone-200 transition-colors"
+              className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1.5 hover:bg-stone-200 transition-colors min-h-[36px]"
             >
-              Show everything
+              Clear all
             </button>
           )}
         </div>
 
-        {/* Town filter — scrollable on mobile */}
+        {/* Town filter */}
         <div>
           <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
           <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none sm:flex-wrap">
@@ -93,7 +155,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                 <button
                   key={town}
                   onClick={() => setActiveTown(town)}
-                  className={`inline-flex items-center shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                  className={`inline-flex items-center shrink-0 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
                     active
                       ? 'bg-sound-600 text-parchment-50 border-sound-600 shadow-warm scale-105'
                       : 'bg-sound-50 text-sound-700 border-sound-200 hover:bg-sound-100 hover:border-sound-300'
@@ -106,7 +168,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           </div>
         </div>
 
-        {/* Tag filter — collapsed on mobile */}
+        {/* Tag filter — #9 increased touch targets */}
         <div>
           <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
           <div className="flex flex-wrap gap-2">
@@ -117,7 +179,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all duration-150 ${
+                  className={`items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
                     active
                       ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
                       : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
@@ -131,7 +193,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
             {EVENT_TAGS.length > MOBILE_TAG_LIMIT && (
               <button
                 onClick={() => setShowAllTags(v => !v)}
-                className="inline-flex sm:hidden items-center px-4 py-2 rounded-full text-sm font-medium border border-parchment-300 bg-parchment-100 text-stone-500 hover:bg-parchment-200 transition-colors"
+                className="inline-flex sm:hidden items-center px-4 py-2.5 rounded-full text-sm font-medium border border-parchment-300 bg-parchment-100 text-stone-500 hover:bg-parchment-200 transition-colors min-h-[44px]"
               >
                 {showAllTags ? 'Show less' : `+${EVENT_TAGS.length - MOBILE_TAG_LIMIT} more`}
               </button>
@@ -157,7 +219,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       </div>
 
       {/* ── Event cards ─────────────────────────────────────────────── */}
-      {filtered.length === 0 ? (
+      {sorted.length === 0 ? (
         <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
           <div className="text-5xl mb-4">🌧️</div>
           <p className="text-lg font-semibold text-stone-700 mb-1"
@@ -171,83 +233,92 @@ export default function EventsFilter({ events }: { events: Event[] }) {
         </div>
       ) : (
         <div className="grid gap-6">
-          {filtered.map((event) => (
-            <Link key={event.id} href={`/events/${event.id}`} className="card flex flex-col md:flex-row group block">
-              {/* Date block */}
-              <div className="md:w-36 bg-gradient-to-br from-forest-600 to-sound-600 text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none shrink-0">
-                <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
-                  {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
-                </span>
-                <span className="text-5xl font-extrabold leading-none">
-                  {new Date(event.date + 'T12:00:00').getDate()}
-                </span>
-                <span className="text-xs opacity-70 mt-1">
-                  {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
-                </span>
-              </div>
+          {sorted.map((event) => {
+            const happeningNow = isHappeningNow(event);
+            const free = isFreeEvent(event);
 
-              {/* Content */}
-              <div className="flex-1 p-6">
-                <div className="flex flex-wrap items-start gap-2 mb-3">
-                  <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                    {event.category}
+            return (
+              <Link key={event.id} href={`/events/${event.id}`} className="card-pressable flex flex-col md:flex-row group block">
+                {/* Date block */}
+                <div className={`md:w-36 ${happeningNow ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-forest-600 to-sound-600'} text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none shrink-0`}>
+                  <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
+                    {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
                   </span>
-                  <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
+                  <span className="text-5xl font-extrabold leading-none">
+                    {new Date(event.date + 'T12:00:00').getDate()}
+                  </span>
+                  <span className="text-xs opacity-70 mt-1">
+                    {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
+                  </span>
                 </div>
 
-                <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
-                  <span>{event.emoji}</span>
-                  <span>{event.title}</span>
-                </h2>
-
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-600 mb-3">
-                  <span>🕐 {event.time}</span>
-                  <span>📍 {event.location}</span>
-                </div>
-
-                <p className="text-stone-600 leading-relaxed mb-4">{event.description}</p>
-
-                <AddToCalendar
-                  event={{
-                    title:       event.title,
-                    date:        event.date,
-                    time:        event.time,
-                    location:    event.location,
-                    description: event.description,
-                  }}
-                />
-
-                {/* Tags + RSVP + Share */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-wrap gap-1.5">
-                    {event.tags.map((tag) => (
-                      <button
-                        key={tag}
-                        onClick={() => { if (!activeTags.includes(tag)) toggleTag(tag); }}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                          activeTags.includes(tag)
-                            ? 'bg-forest-500 text-parchment-50'
-                            : 'bg-forest-50 text-forest-700 hover:bg-forest-100 border border-forest-200'
-                        }`}
-                        title={`Filter by ${tag}`}
-                      >
-                        <span>{TAG_ICONS[tag]}</span>
-                        <span>{tag}</span>
-                      </button>
-                    ))}
+                {/* Content */}
+                <div className="flex-1 p-6">
+                  <div className="flex flex-wrap items-start gap-2 mb-3">
+                    {/* #6 Happening Now badge */}
+                    {happeningNow && <span className="badge-now">Happening Now</span>}
+                    {/* #8 Free badge */}
+                    {free && <span className="badge-free">Free</span>}
+                    <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
+                      {event.category}
+                    </span>
+                    <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <ShareButton
-                      title={`${event.title} — WhidbeyWave`}
-                      text={`${event.emoji} ${event.title} · ${event.time} · ${event.location}`}
-                    />
-                    <EventRsvpButton eventId={event.id} />
+
+                  <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                    <span>{event.emoji}</span>
+                    <span>{event.title}</span>
+                  </h2>
+
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-stone-600 mb-3">
+                    <span>🕐 {event.time}</span>
+                    <span>📍 {event.location}</span>
+                  </div>
+
+                  <p className="text-stone-600 leading-relaxed mb-4">{event.description}</p>
+
+                  <AddToCalendar
+                    event={{
+                      title:       event.title,
+                      date:        event.date,
+                      time:        event.time,
+                      location:    event.location,
+                      description: event.description,
+                    }}
+                  />
+
+                  {/* Tags + actions — #9 increased tag size */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex flex-wrap gap-1.5">
+                      {event.tags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => { if (!activeTags.includes(tag)) toggleTag(tag); }}
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors min-h-[36px] ${
+                            activeTags.includes(tag)
+                              ? 'bg-forest-500 text-parchment-50'
+                              : 'bg-forest-50 text-forest-700 hover:bg-forest-100 border border-forest-200'
+                          }`}
+                          title={`Filter by ${tag}`}
+                        >
+                          <span>{TAG_ICONS[tag]}</span>
+                          <span>{tag}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <ShareButton
+                        title={`${event.title} — WhidbeyWave`}
+                        text={`${event.emoji} ${event.title} · ${event.time} · ${event.location}`}
+                      />
+                      <EventRsvpButton eventId={event.id} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

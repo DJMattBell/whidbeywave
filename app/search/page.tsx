@@ -128,9 +128,20 @@ function SearchBody() {
         </div>
       </form>
 
-      {/* Loading */}
+      {/* #5 Loading skeleton */}
       {loading && currentQ && (
-        <p className="text-sm text-stone-500 mb-6">Searching…</p>
+        <div className="space-y-6 mb-6">
+          <p className="text-sm text-stone-500">Searching...</p>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="animate-pulse">
+              <div className="h-4 bg-parchment-200 rounded-full w-32 mb-3" />
+              <div className="bg-parchment-50 rounded-2xl border border-parchment-200 p-4 space-y-3">
+                <div className="h-4 bg-parchment-200 rounded-full w-3/4" />
+                <div className="h-3 bg-parchment-200 rounded-full w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Result count */}

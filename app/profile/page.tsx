@@ -128,6 +128,7 @@ export default function ProfilePage() {
   }
 
   const displayName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Islander';
+  const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   return (
     <>
@@ -150,6 +151,21 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {/* Admin Banner */}
+      {isAdmin && (
+        <div className="bg-forest-50 border-b border-forest-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+            <span className="text-sm text-forest-700 font-medium">You&apos;re signed in as admin</span>
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-forest-600 text-parchment-50 text-sm font-semibold hover:bg-forest-700 transition-colors"
+            >
+              Admin Dashboard →
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 

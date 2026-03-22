@@ -34,7 +34,7 @@ export default function TextSizeToggle() {
       onClick={toggle}
       title="Text size"
       aria-label={large ? 'Reset text size' : 'Increase text size'}
-      className={`md:hidden fixed bottom-6 right-4 z-40 w-[52px] h-[52px] rounded-full shadow-warm-md flex items-center justify-center transition-colors duration-200 ${
+      className={`md:hidden fixed bottom-[80px] left-4 z-40 w-[52px] h-[52px] rounded-full shadow-warm-md flex items-center justify-center transition-colors duration-200 ${
         large ? 'bg-amber-500 text-white' : 'bg-forest-700 text-parchment-50'
       }`}
     >

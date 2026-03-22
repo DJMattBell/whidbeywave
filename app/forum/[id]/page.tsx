@@ -6,6 +6,7 @@ import type { ForumPost, ForumReply } from '@/lib/db-types';
 import ReplyForm from '@/components/forum/ReplyForm';
 import LocalBadge from '@/components/LocalBadge';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
+import BackLink from '@/components/BackLink';
 
 export const revalidate = 30;
 
@@ -72,13 +73,10 @@ export default async function ForumThreadPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
 
-      {/* Back link */}
-      <Link
-        href={`/forum?category=${encodeURIComponent(catName)}`}
-        className="inline-flex items-center gap-1.5 text-sm text-forest-600 hover:text-forest-800 mb-8 font-medium"
-      >
-        ← Back to {catName}
-      </Link>
+      {/* #3 Back link */}
+      <div className="mb-6">
+        <BackLink href={`/forum?category=${encodeURIComponent(catName)}`} label={catName} />
+      </div>
 
       {/* Original post */}
       <article className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md p-7 mb-8">

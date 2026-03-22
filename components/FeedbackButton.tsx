@@ -52,10 +52,11 @@ export default function FeedbackButton() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open feedback panel"
-        className="fixed right-0 top-1/2 -translate-y-1/2 sm:top-1/2 top-2/3 z-50
+        className="fixed right-0 top-1/3 sm:top-1/2 -translate-y-1/2 z-50
+                   hidden sm:flex
                    bg-forest-700 hover:bg-forest-600 text-parchment-50
                    w-[38px] h-[120px] rounded-l-xl
-                   flex items-center justify-center
+                   items-center justify-center
                    shadow-warm-md transition-colors duration-200
                    select-none"
         style={{ writingMode: 'vertical-rl', transform: 'translateY(-50%) rotate(180deg)' }}

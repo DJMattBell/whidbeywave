@@ -25,7 +25,7 @@
     font-size: max(16px, 1em);
   }
 
-  /* Minimum touch target on icon-only interactive elements */
+  /* #9 Minimum touch target hint — applied via utility, not globally */
 }
 
 /* Restore Tailwind's default rem base on desktop */
@@ -98,5 +98,62 @@ html.text-large h3 { font-size: 1.4rem; }
   }
   .badge {
     @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+  }
+
+  /* #10 Card press feedback — subtle scale on active state */
+  .card-pressable {
+    @apply card cursor-pointer;
+    transition: transform 150ms ease, box-shadow 300ms ease;
+  }
+  .card-pressable:active {
+    transform: scale(0.98);
+  }
+
+  /* #8 Free badge */
+  .badge-free {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
+    @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
+  }
+
+  /* #6 Happening Now pulse */
+  .badge-now {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold;
+    @apply bg-red-100 text-red-700 border border-red-200;
+  }
+  .badge-now::before {
+    content: '';
+    @apply w-2 h-2 rounded-full bg-red-500 inline-block;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+}
+
+/* Animations */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slideUp {
+  animation: slideUp 300ms ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 200ms ease-out;
+}
+
+/* Bottom tab bar safe spacing — add padding to footer/body on mobile */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
   }
 }
