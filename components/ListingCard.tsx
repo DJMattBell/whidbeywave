@@ -68,7 +68,7 @@ export default function ListingCard({
       </div>
 
       {/* Card body */}
-      <div className="flex-1 p-3">
+      <div className="flex-1 min-w-0 p-3">
         {/* Category badge — mobile only */}
         <div className="sm:hidden mb-1">
           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>

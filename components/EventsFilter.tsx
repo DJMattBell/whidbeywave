@@ -253,7 +253,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 p-6">
+                <div className="flex-1 min-w-0 p-6">
                   <div className="flex flex-wrap items-start gap-2 mb-3">
                     {/* #6 Happening Now badge */}
                     {happeningNow && <span className="badge-now">Happening Now</span>}
