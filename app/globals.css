@@ -8,11 +8,13 @@
   html {
     scroll-behavior: smooth;
     font-size: 18px; /* accessible mobile base — restored to 16px at md+ */
+    overflow-x: hidden; /* prevent horizontal page scroll from any child */
   }
 
   body {
     @apply bg-parchment-50 text-stone-800 font-sans;
     line-height: 1.7;
+    overflow-x: hidden;
   }
 
   /* All headings use Playfair Display */

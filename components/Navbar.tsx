@@ -414,10 +414,10 @@ export default function Navbar() {
         </div>
 
         {/* Community strip — mobile (always visible, horizontal scroll) */}
-        <div className="md:hidden bg-forest-50 border-b border-parchment-200 relative">
+        <div className="md:hidden bg-forest-50 border-b border-parchment-200 relative overflow-x-auto overflow-y-hidden scrollbar-none">
           {/* Right-edge fade to signal scrollability */}
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-forest-50 to-transparent pointer-events-none z-10" aria-hidden="true" />
-          <nav className="flex items-center gap-1 px-4 h-10 w-max min-w-full overflow-x-auto" aria-label="Community navigation">
+          <nav className="flex items-center gap-1 px-4 h-10 w-max" aria-label="Community navigation">
             {/* Search — pinned first, visually distinct pill */}
             <Link
               href="/search"
