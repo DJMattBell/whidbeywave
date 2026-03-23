@@ -95,9 +95,13 @@ export default function Footer() {
 
         <div className="border-t border-forest-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-forest-300">
           <p>&copy; {new Date().getFullYear()} WhidbeyWave.com &nbsp;·&nbsp; Whidbey Island, WA</p>
-          <Link href="/contact" className="hover:text-parchment-300 transition-colors">
-            Something not right? Let us know →
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/privacy" className="hover:text-parchment-300 transition-colors">Privacy</Link>
+            <span className="text-forest-700">·</span>
+            <Link href="/terms" className="hover:text-parchment-300 transition-colors">Terms</Link>
+            <span className="text-forest-700">·</span>
+            <Link href="/contact" className="hover:text-parchment-300 transition-colors">Contact</Link>
+          </div>
         </div>
       </div>
     </footer>
