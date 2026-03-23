@@ -94,7 +94,7 @@ export default function PersonaSelector() {
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-24 text-center">
         <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-6 border border-parchment-50/20">
-          <span>🌊</span>
+          <img src="/logo.png" alt="" className="w-5 h-5 rounded-full object-cover" />
           <span className="text-parchment-200">Whidbey Island, Washington</span>
         </div>
 

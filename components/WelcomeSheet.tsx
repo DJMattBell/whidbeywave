@@ -79,7 +79,7 @@ export default function WelcomeSheet() {
 
           <div className="px-5 pb-6 pt-2">
             <div className="text-center mb-5">
-              <span className="text-4xl block mb-2">🌊</span>
+              <img src="/logo.png" alt="" aria-hidden="true" className="w-14 h-14 rounded-full object-cover mx-auto mb-2" />
               <h2
                 className="text-xl font-bold text-stone-800"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}

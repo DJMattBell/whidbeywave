@@ -187,7 +187,7 @@ export default function AdminEventsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
-          <span className="text-2xl">🌊</span>
+          <img src="/logo.png" alt="" aria-hidden="true" className="w-8 h-8 rounded-full object-cover" />
           <h1 className="text-3xl text-stone-900"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
             Event Submissions

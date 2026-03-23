@@ -85,7 +85,7 @@ export default function InstallPrompt() {
 
         {/* Header row */}
         <div className="flex items-start gap-3 mb-1">
-          <span className="text-3xl leading-none shrink-0 mt-0.5" aria-hidden="true">🌊</span>
+          <img src="/logo.png" alt="" aria-hidden="true" className="w-9 h-9 rounded-full object-cover shrink-0 mt-0.5" />
           <p className="flex-1 text-base font-semibold text-parchment-50 leading-snug">
             Add WhidbeyWave to your home screen for quick access to ferry status and island events
           </p>

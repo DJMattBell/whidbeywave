@@ -62,7 +62,7 @@ export default function Navbar() {
 
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2 group">
-                <span className="text-2xl" aria-hidden="true">🌊</span>
+                <img src="/logo.png" alt="" aria-hidden="true" className="w-8 h-8 rounded-full object-cover" />
                 <span className="text-xl font-bold text-forest-600 group-hover:text-forest-500 transition-colors">
                   WhidbeyWave
                 </span>
