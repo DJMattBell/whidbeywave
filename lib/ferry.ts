@@ -66,7 +66,7 @@ async function fetchAlerts(): Promise<{ data: any[]; success: boolean }> {
   const key = process.env.WSDOT_API_KEY;
   if (!isFerryConfigured()) return { data: [], success: false };
   try {
-    const res = await fetch(`${BASE}/alerts?apiaccesscode=${key}`, { next: { revalidate: 300 } });
+    const res = await fetch(`${BASE}/alerts?apiaccesscode=${key}`, { next: { revalidate: 120 } });
     if (!res.ok) return { data: [], success: false };
     const raw = await res.json();
     return { data: Array.isArray(raw) ? raw : [], success: true };

@@ -4,8 +4,9 @@ import { cache } from 'react';
 import { fetchFerryPageData } from '@/lib/ferry';
 import type { RouteStatus, Departure } from '@/lib/ferry';
 import ShareButton from '@/components/ShareButton';
+import FerryAutoRefresh from '@/components/FerryAutoRefresh';
 
-export const revalidate = 300; // 5 minutes
+export const revalidate = 120; // 2 minutes server-side, client refreshes every 5
 
 const getCachedFerry = cache(fetchFerryPageData);
 
@@ -160,14 +161,17 @@ export default async function FerryPage() {
             Ferry Status
           </h1>
           <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
-            Live status for both Whidbey Island ferry routes — updated every 5 minutes.
+            Live status for both Whidbey Island ferry routes — auto-refreshes every 5 minutes.
           </p>
           {ferry.lastUpdated && (
             <p className="text-sound-400 text-sm mt-3">
               Last checked: {ferry.lastUpdated}
             </p>
           )}
-          <div className="mt-5">
+          <div className="mt-4">
+            <FerryAutoRefresh />
+          </div>
+          <div className="mt-4">
             <ShareButton title="Whidbey Island Ferry Status — WhidbeyWave" />
           </div>
         </div>
