@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { cache } from 'react';
 import { fetchFerryPageData } from '@/lib/ferry';
-import type { RouteStatus, Departure } from '@/lib/ferry';
+import type { RouteStatus } from '@/lib/ferry';
 import ShareButton from '@/components/ShareButton';
-import FerryAutoRefresh from '@/components/FerryAutoRefresh';
+import FerryLiveBoard from '@/components/FerryLiveBoard';
 
-export const revalidate = 120; // 2 minutes server-side, client refreshes every 5
+export const revalidate = 60;
 
 const getCachedFerry = cache(fetchFerryPageData);
 
@@ -38,83 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: RouteStatus }) {
-  if (status === 'cancelled') {
-    return (
-      <span
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold"
-        style={{ background: '#FEE2E2', color: '#991B1B' }}
-      >
-        <span>✕</span> CANCELLED
-      </span>
-    );
-  }
-  if (status === 'delays') {
-    return (
-      <span
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold"
-        style={{ background: '#FEF3C7', color: '#B45309' }}
-      >
-        <span>⚠</span> DELAYS
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-forest-100 text-forest-700">
-      <span>✓</span> On Schedule
-    </span>
-  );
-}
-
-function DepartureList({
-  label,
-  departures,
-  direction,
-}: {
-  label: string;
-  departures: Departure[];
-  direction: 'mainland' | 'whidbey';
-}) {
-  const pillCls = direction === 'mainland'
-    ? 'bg-sound-50 text-sound-800 rounded-lg px-2 py-1'
-    : 'bg-forest-50 text-forest-800 rounded-lg px-2 py-1';
-
-  const nextDep = departures.find(d => !d.isCancelled);
-
-  return (
-    <div>
-      <p className={`text-xs font-semibold uppercase tracking-wider mb-2 inline-block ${pillCls}`}>
-        {label}
-      </p>
-
-      {/* Next departure highlight */}
-      {nextDep && (
-        <div className="mb-3">
-          <p className="text-3xl font-bold text-stone-900 tabular-nums leading-none">{nextDep.time}</p>
-          <p className="text-xs text-stone-500 mt-0.5">Next sailing</p>
-        </div>
-      )}
-
-      {departures.length === 0 ? (
-        <p className="text-sm text-stone-600 italic">No upcoming departures found</p>
-      ) : (
-        <ol className="space-y-1.5">
-          {departures.map((dep, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm">
-              <span className="font-semibold text-stone-800 tabular-nums w-16 shrink-0 pt-px">{dep.time}</span>
-              <span className="text-stone-500 text-xs leading-snug">{dep.vessel}</span>
-              {dep.isCancelled && (
-                <span className="text-xs font-semibold text-red-600 shrink-0">CANCELLED</span>
-              )}
-            </li>
-          ))}
-        </ol>
-      )}
-    </div>
-  );
-}
+// ── Static data ──────────────────────────────────────────────────────────────
 
 const CAMERAS = [
   {
@@ -143,7 +66,7 @@ const CAMERAS = [
   },
 ];
 
-// ── Page ───────────────────────────────────────────────────────────────────
+// ── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function FerryPage() {
   const ferry = await getCachedFerry();
@@ -161,16 +84,8 @@ export default async function FerryPage() {
             Ferry Status
           </h1>
           <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
-            Live status for both Whidbey Island ferry routes — auto-refreshes every 5 minutes.
+            Live status for both Whidbey Island ferry routes — updates every minute.
           </p>
-          {ferry.lastUpdated && (
-            <p className="text-sound-400 text-sm mt-3">
-              Last checked: {ferry.lastUpdated}
-            </p>
-          )}
-          <div className="mt-4">
-            <FerryAutoRefresh />
-          </div>
           <div className="mt-4">
             <ShareButton title="Whidbey Island Ferry Status — WhidbeyWave" />
           </div>
@@ -179,7 +94,7 @@ export default async function FerryPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-16">
 
-        {/* ── Section A: Live Status Cards ──────────────────────────────── */}
+        {/* ── Section A: Live Status (client component) ───────────────── */}
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"
@@ -187,158 +102,10 @@ export default async function FerryPage() {
           >
             Live Route Status
           </h2>
-
-          {/* Not configured */}
-          {!ferry.configured && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-              <p className="text-2xl mb-3">🔑</p>
-              <p className="font-semibold text-amber-800 mb-1">WSDOT API key not configured</p>
-              <p className="text-amber-700 text-sm">
-                Add your key from{' '}
-                <span className="font-mono bg-amber-100 px-1 rounded">wsdot.wa.gov/traffic/api/</span>{' '}
-                to <span className="font-mono bg-amber-100 px-1 rounded">.env.local</span> as{' '}
-                <span className="font-mono bg-amber-100 px-1 rounded">WSDOT_API_KEY</span>.
-              </p>
-            </div>
-          )}
-
-          {/* Configured but API failed */}
-          {ferry.configured && !ferry.mukilteoCliton && !ferry.ptCoupeville && (
-            <div className="bg-parchment-100 border border-parchment-300 rounded-2xl p-6 text-center">
-              <p className="text-2xl mb-3">🌧️</p>
-              <p className="font-semibold text-stone-700 mb-1">Live data temporarily unavailable</p>
-              <p className="text-stone-500 text-sm">
-                Could not reach the WSDOT API. Try refreshing, or check{' '}
-                <a
-                  href="https://www.wsdot.wa.gov/ferries/alerts/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-forest-600 hover:text-forest-800 underline underline-offset-2"
-                >
-                  wsdot.wa.gov/ferries/alerts
-                </a>{' '}
-                directly.
-              </p>
-            </div>
-          )}
-
-          {/* Route cards */}
-          {(ferry.mukilteoCliton || ferry.ptCoupeville) && (
-            <div className="grid md:grid-cols-2 gap-6">
-
-              {/* Mukilteo / Clinton */}
-              {ferry.mukilteoCliton && (() => {
-                const r = ferry.mukilteoCliton!;
-                return (
-                  <article className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md overflow-hidden">
-                    <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <p className="text-xs font-semibold text-stone-600 uppercase tracking-wide mb-0.5">Route</p>
-                          <h3
-                            className="text-xl font-semibold text-stone-900"
-                            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                          >
-                            🚢 Mukilteo / Clinton
-                          </h3>
-                        </div>
-                        <StatusBadge status={r.status} />
-                      </div>
-
-                      {r.alertText && r.status !== 'on-schedule' && (
-                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-5 text-sm text-amber-800 leading-relaxed">
-                          {r.alertText}
-                        </div>
-                      )}
-
-                      <div className="grid grid-cols-2 gap-3 sm:gap-5 border-t border-parchment-200 pt-5">
-                        <DepartureList label="From Mukilteo →" departures={r.fromMainland} direction="mainland" />
-                        <DepartureList label="From Clinton →"   departures={r.fromWhidbey} direction="whidbey" />
-                      </div>
-
-                      <p className="text-xs text-stone-600 mt-4">
-                        Updated {r.lastUpdated} ·{' '}
-                        <a
-                          href="https://www.wsdot.wa.gov/ferries/vesselwatch/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-forest-600 hover:text-forest-800"
-                        >
-                          Track vessels →
-                        </a>
-                      </p>
-                    </div>
-                  </article>
-                );
-              })()}
-
-              {/* Port Townsend / Coupeville */}
-              {ferry.ptCoupeville && (() => {
-                const r = ferry.ptCoupeville!;
-                return (
-                  <article className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md overflow-hidden">
-                    <div className="h-1.5 bg-gradient-to-r from-terra-400 to-amber-500" />
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <p className="text-xs font-semibold text-stone-600 uppercase tracking-wide mb-0.5">Route</p>
-                          <h3
-                            className="text-xl font-semibold text-stone-900"
-                            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                          >
-                            ⛴ Port Townsend / Coupeville
-                          </h3>
-                        </div>
-                        <StatusBadge status={r.status} />
-                      </div>
-
-                      {r.alertText && r.status !== 'on-schedule' && (
-                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-5 text-sm text-amber-800 leading-relaxed">
-                          {r.alertText}
-                        </div>
-                      )}
-
-                      <div className="grid grid-cols-2 gap-3 sm:gap-5 border-t border-parchment-200 pt-5">
-                        <DepartureList label="From Port Townsend →" departures={r.fromMainland} direction="mainland" />
-                        <DepartureList label="From Coupeville →"    departures={r.fromWhidbey} direction="whidbey" />
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-                        <p className="text-xs text-stone-600">
-                          Updated {r.lastUpdated}
-                        </p>
-                        <a
-                          href="https://secureapps.wsdot.wa.gov/ferries/reservations/vehicle/default.aspx"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-semibold text-forest-600 hover:text-forest-800 flex items-center gap-1 transition-colors"
-                        >
-                          🎫 Reserve a spot →
-                        </a>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })()}
-            </div>
-          )}
-
-          {/* WSDOT alerts link */}
-          <p className="text-sm text-stone-600 mt-4 text-center">
-            Full alerts and sailing updates:{' '}
-            <a
-              href="https://www.wsdot.wa.gov/ferries/alerts/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-forest-600 hover:text-forest-800 underline underline-offset-2"
-            >
-              wsdot.wa.gov/ferries/alerts
-            </a>
-          </p>
+          <FerryLiveBoard initial={ferry} />
         </section>
 
-        {/* ── Section B: Terminal Cameras ───────────────────────────────── */}
+        {/* ── Section B: Terminal Cameras ─────────────────────────────── */}
         <section>
           <div className="mb-6">
             <h2
@@ -379,7 +146,7 @@ export default async function FerryPage() {
           </div>
         </section>
 
-        {/* ── Section C: Vessel Watch ────────────────────────────────── */}
+        {/* ── Section C: Vessel Watch ─────────────────────────────────── */}
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"
@@ -416,7 +183,7 @@ export default async function FerryPage() {
           </a>
         </section>
 
-        {/* ── Section D: Helpful Links Row ──────────────────────────────── */}
+        {/* ── Section D: Helpful Links Row ────────────────────────────── */}
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"

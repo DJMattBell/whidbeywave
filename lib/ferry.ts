@@ -11,6 +11,7 @@ export type Departure = {
   time: string;       // "10:15 AM"
   vessel: string;
   isCancelled: boolean;
+  epochMs: number;    // UTC ms — for client-side relative-time countdown
 };
 
 export type RouteBarStatus = {
@@ -62,11 +63,14 @@ function formatTime(d: Date): string {
 }
 
 // Returns { data, success } so callers can distinguish "no alerts" from "API failed"
-async function fetchAlerts(): Promise<{ data: any[]; success: boolean }> {
+async function fetchAlerts(fresh = false): Promise<{ data: any[]; success: boolean }> {
   const key = process.env.WSDOT_API_KEY;
   if (!isFerryConfigured()) return { data: [], success: false };
   try {
-    const res = await fetch(`${BASE}/alerts?apiaccesscode=${key}`, { next: { revalidate: 120 } });
+    const opts: RequestInit = fresh
+      ? { cache: 'no-store' }
+      : { next: { revalidate: 60 } };
+    const res = await fetch(`${BASE}/alerts?apiaccesscode=${key}`, opts);
     if (!res.ok) return { data: [], success: false };
     const raw = await res.json();
     return { data: Array.isArray(raw) ? raw : [], success: true };
@@ -75,14 +79,17 @@ async function fetchAlerts(): Promise<{ data: any[]; success: boolean }> {
   }
 }
 
-async function fetchScheduleData(routeId: number): Promise<any | null> {
+async function fetchScheduleData(routeId: number, fresh = false): Promise<any | null> {
   const key = process.env.WSDOT_API_KEY;
   if (!isFerryConfigured()) return null;
   try {
-    // OnlyRemainingTimes=true returns only future sailings, reducing payload size
-    const res = await fetch(`${BASE}/scheduletoday/${routeId}/true?apiaccesscode=${key}`, {
-      next: { revalidate: 300 },
-    });
+    const opts: RequestInit = fresh
+      ? { cache: 'no-store' }
+      : { next: { revalidate: 60 } };
+    const res = await fetch(
+      `${BASE}/scheduletoday/${routeId}/true?apiaccesscode=${key}`,
+      opts,
+    );
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -150,6 +157,7 @@ function extractDepartures(
       time:        formatTime(dt),
       vessel:      t.VesselName ?? 'Ferry',
       isCancelled: t.IsCancelled ?? false,
+      epochMs:     dt.getTime(),
     });
     if (results.length >= limit) break;
   }
@@ -169,8 +177,9 @@ export async function fetchFerryBarStatus(): Promise<FerryBarData> {
   };
 }
 
-/** Full data — alerts + schedules. Used by the /ferry page and API route. */
-export async function fetchFerryPageData(): Promise<FerryPageData> {
+/** Full data — alerts + schedules. Used by the /ferry page and API route.
+ *  Pass fresh=true to bypass the Next.js fetch data cache (used by client-polling API route). */
+export async function fetchFerryPageData(fresh = false): Promise<FerryPageData> {
   const configured = isFerryConfigured();
 
   const lastUpdated = new Date().toLocaleTimeString('en-US', {
@@ -183,9 +192,9 @@ export async function fetchFerryPageData(): Promise<FerryPageData> {
   }
 
   const [{ data: alerts, success }, mukData, ptData] = await Promise.all([
-    fetchAlerts(),
-    fetchScheduleData(7),
-    fetchScheduleData(8),
+    fetchAlerts(fresh),
+    fetchScheduleData(7, fresh),
+    fetchScheduleData(8, fresh),
   ]);
 
   if (!success) {
@@ -201,15 +210,15 @@ export async function fetchFerryPageData(): Promise<FerryPageData> {
     mukilteoCliton: {
       status:       mukAlert.status,
       alertText:    mukAlert.alertText,
-      fromMainland: extractDepartures(mukData, 'Mukilteo'),
-      fromWhidbey:  extractDepartures(mukData, 'Clinton'),
+      fromMainland: extractDepartures(mukData, 'Mukilteo', 6),
+      fromWhidbey:  extractDepartures(mukData, 'Clinton', 6),
       lastUpdated,
     },
     ptCoupeville: {
       status:       ptAlert.status,
       alertText:    ptAlert.alertText,
-      fromMainland: extractDepartures(ptData, 'Port Townsend'),
-      fromWhidbey:  extractDepartures(ptData, 'Coupeville'),
+      fromMainland: extractDepartures(ptData, 'Port Townsend', 6),
+      fromWhidbey:  extractDepartures(ptData, 'Coupeville', 6),
       lastUpdated,
     },
   };
