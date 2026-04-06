@@ -61,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const upcoming  = allEvents.filter(e => new Date(e.date + 'T23:59:59') >= new Date());
 
   let description =
-    "Find out what's happening on Whidbey Island — festivals, markets, outdoor adventures, arts, live music, and more.";
+    'Find events happening this week on Whidbey Island — Oak Harbor, Langley, Coupeville, Freeland & Greenbank. Concerts, markets, classes, and community gatherings.';
   if (upcoming.length > 0) {
     const count    = upcoming.length;
     const nameList = upcoming.slice(0, 2).map(e => e.title).join(' and ');
@@ -69,6 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const title = "What's On Whidbey Island This Weekend — WhidbeyWave";
+  const ogImage = `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Whidbey Island Events')}`;
   return {
     title,
     description,
@@ -77,9 +78,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: 'WhidbeyWave',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
-    twitter: { card: 'summary_large_image', title, description, images: ['/og-default.png'] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
   };
 }
 

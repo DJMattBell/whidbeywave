@@ -35,7 +35,6 @@ const TOWNS = [
   'Clinton',
 ] as const;
 
-const MOBILE_TAG_LIMIT = 5;
 
 function isHappeningNow(event: Event): boolean {
   const now = new Date();
@@ -69,7 +68,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   const searchParams = useSearchParams();
   const [activeTags, setActiveTags] = useState<EventTag[]>([]);
   const [activeTown, setActiveTown] = useState('All');
-  const [showAllTags, setShowAllTags] = useState(false);
+
   const [timeWindow, setTimeWindow] = useState<TimeWindow>('all');
 
   useEffect(() => {
@@ -171,33 +170,24 @@ export default function EventsFilter({ events }: { events: Event[] }) {
         {/* Tag filter — #9 increased touch targets */}
         <div>
           <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
-          <div className="flex flex-wrap gap-2">
-            {EVENT_TAGS.map((tag, i) => {
+          <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none pb-1 sm:flex-wrap">
+            {EVENT_TAGS.map((tag) => {
               const active = activeTags.includes(tag);
-              const hiddenOnMobile = !showAllTags && i >= MOBILE_TAG_LIMIT;
               return (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
                     active
                       ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
                       : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
-                  } ${hiddenOnMobile ? 'hidden sm:inline-flex' : 'inline-flex'}`}
+                  }`}
                 >
                   <span>{TAG_ICONS[tag]}</span>
                   <span>{tag}</span>
                 </button>
               );
             })}
-            {EVENT_TAGS.length > MOBILE_TAG_LIMIT && (
-              <button
-                onClick={() => setShowAllTags(v => !v)}
-                className="inline-flex sm:hidden items-center px-4 py-2.5 rounded-full text-sm font-medium border border-parchment-300 bg-parchment-100 text-stone-500 hover:bg-parchment-200 transition-colors min-h-[44px]"
-              >
-                {showAllTags ? 'Show less' : `+${EVENT_TAGS.length - MOBILE_TAG_LIMIT} more`}
-              </button>
-            )}
           </div>
         </div>
 
@@ -238,7 +228,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
             const free = isFreeEvent(event);
 
             return (
-              <Link key={event.id} href={`/events/${event.id}`} className="card-pressable flex flex-col md:flex-row group block">
+              <Link key={event.id} href={`/events/${event.id}`} className="card-pressable flex flex-col md:flex-row group block hover:shadow-warm-md hover:-translate-y-0.5 transition-all duration-200">
                 {/* Date block */}
                 <div className={`md:w-36 ${happeningNow ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-forest-600 to-sound-600'} text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none shrink-0`}>
                   <span className="text-xs font-semibold uppercase tracking-widest opacity-80">

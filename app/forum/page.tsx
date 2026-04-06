@@ -11,18 +11,18 @@ import { SkeletonFeed } from '@/components/SkeletonCard';
 
 export const metadata: Metadata = {
   title: 'Ask the Island — Whidbey Island Community Forum',
-  description: 'Ask questions of Whidbey Island locals. Get answers from neighbors who know the island — recommendations, events, local life, and more.',
+  description: 'Ask Whidbey Island locals anything — recommendations, island life questions, events, lost & found, and newcomer tips from your neighbors.',
   openGraph: {
     title: 'Ask the Island — Whidbey Island Community Forum',
-    description: 'Ask questions of Whidbey Island locals. Get answers from neighbors who know the island.',
+    description: 'Ask Whidbey Island locals anything — recommendations, island life questions, events, lost & found, and newcomer tips from your neighbors.',
     siteName: 'WhidbeyWave',
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `/api/og?title=${encodeURIComponent('Ask the Island')}&subtitle=${encodeURIComponent('Whidbey Island Community Forum')}`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Ask the Island — Whidbey Island Community Forum',
-    description: 'Ask questions of Whidbey Island locals.',
-    images: ['/og-default.png'],
+    description: 'Ask Whidbey Island locals anything — recommendations, island life, and more.',
+    images: [`/api/og?title=${encodeURIComponent('Ask the Island')}&subtitle=${encodeURIComponent('Community Forum')}`],
   },
 };
 

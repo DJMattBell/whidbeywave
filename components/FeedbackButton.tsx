@@ -48,22 +48,17 @@ export default function FeedbackButton() {
 
   return (
     <>
-      {/* Tab trigger */}
+      {/* Floating feedback button */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open feedback panel"
-        className="fixed right-0 top-1/3 sm:top-1/2 -translate-y-1/2 z-50
-                   hidden sm:flex
-                   bg-forest-700 hover:bg-forest-600 text-parchment-50
-                   w-[38px] h-[120px] rounded-l-xl
-                   items-center justify-center
-                   shadow-warm-md transition-colors duration-200
-                   select-none"
-        style={{ writingMode: 'vertical-rl', transform: 'translateY(-50%) rotate(180deg)' }}
+        aria-label="Send feedback"
+        className="fixed bottom-20 right-4 z-50 bg-forest-600 text-white
+                   rounded-full w-12 h-12 flex items-center justify-center
+                   shadow-lg hover:bg-forest-500 transition-colors md:bottom-6 md:right-6"
       >
-        <span className="text-[13px] font-semibold tracking-wide" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-          Feedback
-        </span>
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+        </svg>
       </button>
 
       {/* Backdrop (mobile) */}

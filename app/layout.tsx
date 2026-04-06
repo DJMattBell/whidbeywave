@@ -9,6 +9,7 @@ import FeedbackButton from '@/components/FeedbackButton';
 import BottomTabBar from '@/components/BottomTabBar';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import WelcomeSheet from '@/components/WelcomeSheet';
+import BackToTop from '@/components/BackToTop';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     template: '%s | WhidbeyWave.com',
   },
   description:
-    'Your local guide to Whidbey Island. Discover events, read the latest news, browse the marketplace, and connect with the community.',
+    'WhidbeyWave is the community hub for Whidbey Island, WA — events in Oak Harbor, Langley, Coupeville & Freeland, local news, ferry schedules, tides, and the island marketplace.',
   keywords: [
     'Whidbey Island events',
     'Whidbey Island news',
@@ -86,6 +87,7 @@ export default function RootLayout({
           <FloatingActionButton />
           <InstallPrompt />
           <WelcomeSheet />
+          <BackToTop />
         </AuthProvider>
         <TextSizeToggle />
         <FeedbackButton />

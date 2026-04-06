@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <img src="/logo.png" alt="" aria-hidden="true" className="w-8 h-8 rounded-full object-cover" />
+              <img src="/logo.png" alt="" aria-hidden="true" role="presentation" className="w-8 h-8 rounded-full object-cover" />
               <span
                 className="text-xl font-bold text-parchment-100"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}

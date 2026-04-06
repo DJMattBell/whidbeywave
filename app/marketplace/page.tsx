@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { createServerClient } from '@/lib/supabase';
@@ -9,6 +10,17 @@ import MarketplaceGrid from '@/components/MarketplaceGrid';
 import ListingAlertSubscription from '@/components/ListingAlertSubscription';
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: 'Island Marketplace — Buy & Sell on Whidbey Island',
+  description: 'Buy, sell, and trade locally on Whidbey Island. Find furniture, tools, clothing, farm goods, and free stuff from your neighbors.',
+  openGraph: {
+    title: 'Island Marketplace — Buy & Sell on Whidbey Island',
+    description: 'Buy, sell, and trade locally on Whidbey Island.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: `/api/og?title=${encodeURIComponent('Island Marketplace')}&subtitle=${encodeURIComponent('Buy & Sell on Whidbey Island')}`, width: 1200, height: 630 }],
+  },
+};
 
 export default async function MarketplacePage({
   searchParams,
@@ -154,9 +166,14 @@ export default async function MarketplacePage({
               </>
             ) : (
               <>
-                <p className="text-lg text-stone-700 mb-2 font-semibold">No listings yet</p>
-                <p className="text-stone-600 text-sm mb-5">Be the first to post something for sale!</p>
-                <Link href="/submit-listing" className="btn-primary">List Something →</Link>
+                <p className="text-lg text-stone-700 mb-2 font-semibold">Be the first to post something!</p>
+                <p className="text-stone-600 text-sm mb-5 max-w-sm mx-auto">
+                  WhidbeyWave Marketplace is brand new. Help get it started by posting
+                  something you&apos;d like to sell, trade, or give away.
+                </p>
+                <Link href="/submit-listing" className="inline-block bg-forest-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-forest-500 transition-colors">
+                  + Post a Free Listing
+                </Link>
               </>
             )}
           </div>

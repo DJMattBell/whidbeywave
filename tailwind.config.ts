@@ -81,6 +81,15 @@ const config: Config = {
         'warm-md': '0 4px 16px rgba(101,65,20,0.11), 0 2px 4px rgba(101,65,20,0.07)',
         'warm-lg': '0 10px 32px rgba(101,65,20,0.14), 0 4px 10px rgba(101,65,20,0.08)',
       },
+      animation: {
+        'scroll-left': 'scroll-left 25s linear infinite',
+      },
+      keyframes: {
+        'scroll-left': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
     },
   },
   plugins: [],

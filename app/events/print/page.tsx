@@ -129,7 +129,7 @@ export default async function PrintPage() {
         {/* Header */}
         <div className="mb-8 border-b-2 border-stone-800 pb-6">
           <div className="flex items-center gap-2 mb-1">
-            <img src="/logo.png" alt="" className="w-8 h-8 rounded-full object-cover no-print" />
+            <img src="/logo.png" alt="WhidbeyWave logo" className="w-8 h-8 rounded-full object-cover no-print" />
             <span className="text-2xl font-bold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
               WhidbeyWave
             </span>

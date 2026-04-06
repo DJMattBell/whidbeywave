@@ -52,7 +52,16 @@ export default async function FerryAlerts() {
     return null;
   }
 
-  if (alerts.length === 0) return null;
+  // Filter out stale alerts older than 30 days
+  const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+  const now = new Date();
+  const freshAlerts = alerts.filter(alert => {
+    const posted = parseMsDate(alert.PublishDate);
+    if (!posted) return true; // keep if we can't parse the date
+    return now.getTime() - posted.getTime() < THIRTY_DAYS_MS;
+  });
+
+  if (freshAlerts.length === 0) return null;
 
   return (
     <section className="bg-sound-50 border-y border-sound-200">
@@ -77,7 +86,7 @@ export default async function FerryAlerts() {
 
         {/* Alert list */}
         <div className="space-y-3">
-          {alerts.map(alert => {
+          {freshAlerts.map(alert => {
             const routes  = affectedRouteLabels(alert);
             const pubDate = parseMsDate(alert.PublishDate);
 

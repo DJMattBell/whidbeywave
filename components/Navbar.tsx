@@ -62,7 +62,7 @@ export default function Navbar() {
 
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2 group">
-                <img src="/logo.png" alt="" aria-hidden="true" className="w-8 h-8 rounded-full object-cover" />
+                <img src="/logo.png" alt="WhidbeyWave logo" className="w-8 h-8 rounded-full object-cover" />
                 <span className="text-xl font-bold text-forest-600 group-hover:text-forest-500 transition-colors">
                   WhidbeyWave
                 </span>
@@ -273,9 +273,39 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Mobile menu */}
+            {/* Mobile drawer overlay */}
             {menuOpen && (
-              <nav id="mobile-menu" className="md:hidden pb-4 border-t border-parchment-200 pt-3 flex flex-col gap-1">
+              <div
+                className="fixed inset-0 z-[60] bg-black/50 md:hidden"
+                aria-hidden="true"
+                onClick={() => setMenuOpen(false)}
+              />
+            )}
+
+            {/* Mobile slide-in drawer */}
+            <nav
+              id="mobile-menu"
+              className={`fixed top-0 right-0 h-full w-[280px] bg-white z-[70] shadow-2xl md:hidden
+                         flex flex-col transition-transform duration-300 ease-in-out
+                         ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+              aria-label="Mobile navigation"
+            >
+              {/* Drawer header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-parchment-200">
+                <span className="text-lg font-bold text-forest-600">Menu</span>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Close menu"
+                  className="p-2 rounded-lg text-stone-500 hover:bg-parchment-100 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Drawer body */}
+              <div className="flex-1 overflow-y-auto py-3">
                 {[...mainLinks, contactLink].map(({ href, label }) => {
                   const active = pathname === href;
                   return (
@@ -284,10 +314,10 @@ export default function Navbar() {
                       href={href}
                       onClick={() => setMenuOpen(false)}
                       aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-4 rounded-lg text-base font-medium transition-colors ${
+                      className={`block px-5 py-3 text-base font-medium transition-colors ${
                         active
-                          ? 'bg-forest-500 text-parchment-50'
-                          : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
+                          ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-500'
+                          : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                       }`}
                     >
                       {label}
@@ -297,11 +327,10 @@ export default function Navbar() {
                 <Link
                   href={searchLink.href}
                   onClick={() => setMenuOpen(false)}
-                  aria-current={pathname === searchLink.href ? 'page' : undefined}
-                  className={`px-4 py-4 rounded-lg text-base font-medium transition-colors flex items-center gap-2 ${
+                  className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors ${
                     pathname === searchLink.href
-                      ? 'bg-forest-500 text-parchment-50'
-                      : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
+                      ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-500'
+                      : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                   }`}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -310,12 +339,10 @@ export default function Navbar() {
                   Search
                 </Link>
 
-                {/* Visit Whidbey — flat indented sub-links */}
-                <div className="mt-1 border-t border-parchment-200 pt-2">
-                  <p className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider ${
-                    visitActive ? 'text-forest-700' : 'text-stone-600'
-                  }`}>
-                    🗺️ Visit Whidbey
+                {/* Visit Whidbey */}
+                <div className="mt-2 border-t border-parchment-200 pt-2">
+                  <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                    Visit Whidbey
                   </p>
                   {visitLinks.map(({ href, label }) => {
                     const active = href === '/visit'
@@ -326,11 +353,10 @@ export default function Navbar() {
                         key={href}
                         href={href}
                         onClick={() => setMenuOpen(false)}
-                        aria-current={active ? 'page' : undefined}
-                        className={`block pl-8 pr-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                        className={`block pl-7 pr-5 py-2.5 text-sm font-medium transition-colors ${
                           active
-                            ? 'bg-forest-500 text-parchment-50'
-                            : 'text-stone-600 hover:bg-parchment-200 hover:text-forest-600'
+                            ? 'bg-forest-50 text-forest-700'
+                            : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
                         }`}
                       >
                         {label}
@@ -339,47 +365,49 @@ export default function Navbar() {
                   })}
                 </div>
 
-                {/* Submit shortcuts */}
-                <div className="px-4 pt-3 pb-2 flex flex-col gap-2">
-                  <Link
-                    href="/submit-event"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 py-3 rounded-xl text-base font-semibold bg-forest-500 text-parchment-50 hover:bg-forest-600 transition-colors min-h-[48px]"
-                  >
-                    <span aria-hidden="true">📅</span> Submit an Event
-                  </Link>
-                  <Link
-                    href="/submit-listing"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 py-3 rounded-xl text-base font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-50 transition-colors min-h-[48px]"
-                  >
-                    <span aria-hidden="true">🏷️</span> Post a Listing
-                  </Link>
+                {/* Quick Links */}
+                <div className="mt-2 border-t border-parchment-200 pt-2">
+                  <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                    Quick Links
+                  </p>
+                  {communityLinks.map(({ href, label }) => {
+                    const active = pathname === href || pathname.startsWith(href + '/');
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setMenuOpen(false)}
+                        className={`block px-5 py-2.5 text-sm font-medium transition-colors ${
+                          active
+                            ? 'bg-forest-50 text-forest-700'
+                            : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                        }`}
+                      >
+                        {label}
+                      </Link>
+                    );
+                  })}
                 </div>
+              </div>
 
-                <div className="px-4 pt-1 pb-1 text-xs font-semibold text-stone-600 uppercase tracking-wider">
-                  Community
-                </div>
-                {communityLinks.map(({ href, label }) => {
-                  const active = pathname === href || pathname.startsWith(href + '/');
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
-                      aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-4 rounded-lg text-base font-medium transition-colors ${
-                        active
-                          ? 'bg-forest-500 text-parchment-50'
-                          : 'text-stone-700 hover:bg-parchment-200 hover:text-forest-600'
-                      }`}
-                    >
-                      {label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
+              {/* Drawer footer — submit + auth */}
+              <div className="border-t border-parchment-200 px-5 py-4 space-y-2">
+                <Link
+                  href="/submit-event"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-forest-500 text-parchment-50 hover:bg-forest-600 transition-colors"
+                >
+                  <span aria-hidden="true">📅</span> Submit an Event
+                </Link>
+                <Link
+                  href="/submit-listing"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-50 transition-colors"
+                >
+                  <span aria-hidden="true">🏷️</span> Post a Listing
+                </Link>
+              </div>
+            </nav>
           </div>
         </div>
 

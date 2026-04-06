@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const { firstName, email, tags, frequency, weekendDigest } = await request.json();
 
-    if (!firstName?.trim() || !email?.trim()) {
+    if (!email?.trim()) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const { error: insertError } = await supabase
       .from('newsletter_subscribers')
       .insert({
-        first_name:          firstName.trim(),
+        first_name:          firstName?.trim() || 'Friend',
         email:               normalEmail,
         tags:                tags ?? [],
         frequency:           frequency ?? 'weekly',
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           </div>
           <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
             <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">
-              One last step, ${firstName.trim()}.
+              One last step${firstName?.trim() ? `, ${firstName.trim()}` : ''}.
             </h2>
             <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 20px;">
               Click the button below to confirm your subscription to the WhidbeyWave Weekly.

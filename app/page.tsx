@@ -11,6 +11,7 @@ import PersonaSelector, { PersonaBar } from '@/components/PersonaSelector';
 import type { Persona } from '@/components/PersonaSelector';
 import FerryStatusPill from '@/components/FerryStatusPill';
 import { Suspense } from 'react';
+import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 300; // 5 minutes
 
@@ -80,6 +81,34 @@ export default async function HomePage() {
     id: string; title: string; price: number | null; is_free: boolean;
     category: string; location: string; emoji: string; images: string[];
   }[];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: 'WhidbeyWave',
+        url: 'https://www.whidbeywave.com',
+        description: 'Community hub for Whidbey Island, WA — events, news, marketplace, ferry info, and more.',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://www.whidbeywave.com/search?q={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      },
+      {
+        '@type': 'LocalBusiness',
+        name: 'WhidbeyWave',
+        url: 'https://www.whidbeywave.com',
+        logo: 'https://www.whidbeywave.com/logo.png',
+        areaServed: {
+          '@type': 'Place',
+          name: 'Whidbey Island, Washington, USA',
+        },
+        serviceType: 'Community News and Events Platform',
+      },
+    ],
+  };
 
   // ── Section builders ──────────────────────────────────────────────────────
 
@@ -382,9 +411,15 @@ export default async function HomePage() {
             🏷️ Post a Listing
           </Link>
         </div>
-        <Link href="/contact" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
-          Or just say hello →
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <Link href="/contact" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
+            Or just say hello →
+          </Link>
+          <span className="text-parchment-500 hidden sm:inline">·</span>
+          <Link href="/newsletter" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
+            Sign up for the weekly newsletter →
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -395,6 +430,7 @@ export default async function HomePage() {
   if (!persona) {
     return (
       <>
+        <JsonLd data={jsonLd} />
         <PersonaSelector />
         {mobileQuickAccess}
         {desktopQuickLinks}
@@ -413,6 +449,7 @@ export default async function HomePage() {
   if (persona === 'visitor') {
     return (
       <>
+        <JsonLd data={jsonLd} />
         <PersonaBar persona={persona} />
         {heroSection}
         {mobileQuickAccess}
@@ -432,6 +469,7 @@ export default async function HomePage() {
   // (persona === 'local' or 'ferry' or 'dashboard' that somehow landed here)
   return (
     <>
+      <JsonLd data={jsonLd} />
       <PersonaBar persona={persona} />
       {heroSection}
       {mobileQuickAccess}

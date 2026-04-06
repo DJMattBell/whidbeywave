@@ -4,9 +4,15 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Visiting Whidbey Island — Travel Guide & Local Tips',
   description:
-    'Everything you need to know before visiting Whidbey Island, WA — how to get here, what to see, where to eat, and tips from locals.',
+    'Visiting Whidbey Island? Find things to do, restaurants, farmers markets, ferry info, and weekend events on Washington\'s longest island.',
   keywords:
     'whidbey island travel guide, visiting whidbey island, whidbey island things to do, ferry to whidbey island',
+  openGraph: {
+    title: 'Visiting Whidbey Island — Travel Guide & Local Tips',
+    description: 'Visiting Whidbey Island? Find things to do, restaurants, farmers markets, ferry info, and weekend events.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: `/api/og?title=${encodeURIComponent('Visit Whidbey Island')}&subtitle=${encodeURIComponent('Travel Guide & Local Tips')}`, width: 1200, height: 630 }],
+  },
 };
 
 // ── Sub-components ────────────────────────────────────────────────────────────

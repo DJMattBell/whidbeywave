@@ -43,8 +43,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const title       = 'Whidbey Island News — WhidbeyWave';
   const description = latest
     ? `${latest.title} — ${latest.excerpt?.slice(0, 120) ?? ''}…`
-    : 'Stay up to date with the latest from Whidbey Island — local stories on community, nature, arts, transportation, and island life.';
+    : 'Local news and community stories from Whidbey Island, WA — covering Oak Harbor, Langley, Coupeville, Freeland, and all island towns.';
   const ogDesc = latest?.excerpt ?? 'Local stories from Whidbey Island.';
+  const ogImage = `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Island News')}`;
 
   return {
     title,
@@ -54,13 +55,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description: ogDesc,
       siteName: 'WhidbeyWave',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
     twitter: {
       card:        'summary_large_image',
       title,
       description: ogDesc,
-      images:      ['/og-default.png'],
+      images:      [ogImage],
     },
   };
 }

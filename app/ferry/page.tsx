@@ -20,10 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
   if (ferry.ptCoupeville)   parts.push(`PT/Coupeville: ${statusLabel(ferry.ptCoupeville.status)}`);
 
   const description = parts.length > 0
-    ? parts.join(' · ')
-    : 'Live Mukilteo/Clinton and Port Townsend/Coupeville ferry status, departure times, and terminal cameras.';
+    ? `Live Whidbey Island ferry status — ${parts.join(' · ')}. Schedules, alerts, and real-time updates from WSDOT.`
+    : 'Live Whidbey Island ferry status — Mukilteo/Clinton and Port Townsend/Coupeville routes. Schedules, alerts, and real-time updates from WSDOT.';
 
   const title = 'Whidbey Island Ferry Status — Live Updates — WhidbeyWave';
+  const ogImage = `/api/og?title=${encodeURIComponent('Ferry Status')}&subtitle=${encodeURIComponent('Live Whidbey Island Updates')}`;
   return {
     title,
     description,
@@ -31,9 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: 'WhidbeyWave',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
-    twitter: { card: 'summary_large_image', title, description, images: ['/og-default.png'] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
   };
 }
 

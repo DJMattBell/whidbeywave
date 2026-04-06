@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 
 export type Persona = 'local' | 'visitor' | 'ferry' | 'dashboard';
@@ -94,7 +95,7 @@ export default function PersonaSelector() {
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-24 text-center">
         <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-6 border border-parchment-50/20">
-          <img src="/logo.png" alt="" className="w-5 h-5 rounded-full object-cover" />
+          <img src="/logo.png" alt="WhidbeyWave logo" className="w-5 h-5 rounded-full object-cover" />
           <span className="text-parchment-200">Whidbey Island, Washington</span>
         </div>
 
@@ -131,12 +132,14 @@ export default function PersonaSelector() {
           ))}
         </div>
 
+        <NewsletterStrip />
+
         <button
           onClick={() => {
             setPersonaCookie('local');
             router.refresh();
           }}
-          className="text-sm text-parchment-400 hover:text-parchment-200 transition-colors"
+          className="mt-2 text-sm sm:text-xs text-parchment-200 underline underline-offset-2 py-2 px-4 block text-center hover:text-parchment-100 transition-colors"
         >
           Just browsing — skip this
         </button>
@@ -197,5 +200,66 @@ export function PersonaBar({ persona }: { persona: Persona }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function NewsletterStrip() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !email.includes('@')) return;
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      setStatus(res.ok || res.status === 409 ? 'success' : 'error');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <div className="text-center text-parchment-200 text-sm py-3 mt-4">
+        Check your inbox to confirm your subscription.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-4 mb-2 px-4">
+      <p className="text-parchment-300 text-sm text-center mb-2">
+        Get weekly island updates — free
+      </p>
+      <div className="flex gap-2 max-w-sm mx-auto">
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className="flex-1 rounded-lg px-3 py-2 text-sm text-stone-800
+                     bg-parchment-50/90 border border-parchment-300
+                     focus:outline-none focus:ring-2 focus:ring-forest-400"
+          required
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="bg-forest-500 hover:bg-forest-400 text-white text-sm
+                     font-medium px-4 py-2 rounded-lg transition-colors
+                     disabled:opacity-50 whitespace-nowrap"
+        >
+          {status === 'loading' ? '...' : 'Subscribe'}
+        </button>
+      </div>
+      {status === 'error' && (
+        <p className="text-red-300 text-xs text-center mt-1">Something went wrong. Try again.</p>
+      )}
+    </form>
   );
 }
