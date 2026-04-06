@@ -137,5 +137,26 @@ export type EventSubmissionRow = {
   reviewed_at: string | null;
   submitter_name: string;
   submitter_email: string;
+  recurring_event_id: string | null;
   created_at: string;
+};
+
+export type RecurringEventRow = {
+  id: string;
+  title: string;
+  time: string;
+  location: string;
+  town: string;
+  category: string;
+  description: string | null;
+  tags: string[];
+  recurrence_type: 'weekly' | 'biweekly' | 'monthly' | 'custom';
+  day_of_week: number | null;
+  day_of_month: number | null;
+  custom_interval_days: number | null;
+  start_date: string;
+  end_date: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 };

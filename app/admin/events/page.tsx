@@ -197,6 +197,8 @@ export default function AdminEventsPage() {
         <div className="mt-3 flex gap-4 text-sm flex-wrap">
           <span className="text-stone-400 font-medium">Events</span>
           <span className="text-stone-300">|</span>
+          <Link href="/admin/events/recurring" className="text-forest-600 hover:text-forest-800 font-medium">Recurring</Link>
+          <span className="text-stone-300">|</span>
           <Link href="/admin/news"     className="text-forest-600 hover:text-forest-800 font-medium">News Posts</Link>
           <span className="text-stone-300">|</span>
           <Link href="/admin/listings" className="text-forest-600 hover:text-forest-800 font-medium">Marketplace</Link>

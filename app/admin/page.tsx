@@ -252,6 +252,7 @@ export default function AdminDashboard() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             <QuickLink href="/admin/news" emoji="✏️" label="Write a News Post" />
+            <QuickLink href="/admin/events/recurring" emoji="🔄" label="Manage Recurring Events" />
             <QuickLink href="/submit-event" emoji="📅" label="Submit an Event" />
             <QuickLink href="/submit-listing" emoji="🏷️" label="Post a Listing" />
             <QuickLink href="/newsletter" emoji="📬" label="Newsletter Settings" />
