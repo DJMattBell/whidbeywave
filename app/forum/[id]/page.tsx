@@ -10,15 +10,7 @@ import BackLink from '@/components/BackLink';
 
 export const revalidate = 30;
 
-const CATEGORY_COLORS: Record<string, string> = {
-  General:             'bg-stone-100 text-stone-700',
-  Recommendations:     'bg-amber-100 text-amber-800',
-  'Island Life':       'bg-forest-100 text-forest-800',
-  Events:              'bg-sound-100 text-sound-800',
-  'Lost & Found':      'bg-terra-100 text-terra-700',
-  'For Sale / Free':   'bg-amber-100 text-amber-900',
-  'Welcome Newcomers': 'bg-forest-50 text-forest-700',
-};
+import { FORUM_CATEGORY_COLORS as CATEGORY_COLORS } from '@/lib/constants';
 
 function formatFullDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {

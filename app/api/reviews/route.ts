@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
+import { verifyUserRequest } from '@/lib/userAuth';
 
 export async function POST(request: NextRequest) {
   let recommendationId: string, rating: number, body: string, zip: string;
@@ -39,27 +39,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validate the user via Bearer token
-  const token = request.headers.get('authorization')?.replace('Bearer ', '').trim() ?? '';
-  if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const supabaseUser = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { headers: { Authorization: `Bearer ${token}` } } }
-  );
-
-  const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const displayName =
-    user.user_metadata?.full_name ??
-    user.email?.split('@')[0] ??
-    'Anonymous';
+  const auth = await verifyUserRequest(request);
+  if ('error' in auth) return auth.error;
+  const { user, displayName, supabase: supabaseUser } = auth;
 
   const { data: review, error: insertError } = await supabaseUser
     .from('reviews')

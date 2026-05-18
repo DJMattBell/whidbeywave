@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateDates } from '@/lib/recurring';
+import { verifyCronRequest } from '@/lib/cronAuth';
 
 /** Cron endpoint — tops up generated events for all active recurring templates (90-day window) */
 export async function GET(request: NextRequest) {
-  // Auth: Vercel cron header OR CRON_SECRET bearer token
-  const isVercelCron = request.headers.get('x-vercel-cron') === '1';
-  const cronSecret = process.env.CRON_SECRET;
-  const hasValidSecret =
-    cronSecret &&
-    request.headers.get('authorization') === `Bearer ${cronSecret}`;
-
-  if (!isVercelCron && !hasValidSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const authError = verifyCronRequest(request);
+  if (authError) return authError;
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

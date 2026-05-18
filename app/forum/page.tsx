@@ -28,26 +28,10 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-const CATEGORIES = [
-  'All',
-  'General',
-  'Recommendations',
-  'Island Life',
-  'Events',
-  'Lost & Found',
-  'For Sale / Free',
-  'Welcome Newcomers',
-];
+import { FORUM_CATEGORIES, FORUM_CATEGORY_COLORS } from '@/lib/constants';
 
-const CATEGORY_COLORS: Record<string, string> = {
-  General:              'bg-stone-100 text-stone-700',
-  Recommendations:      'bg-amber-100 text-amber-800',
-  'Island Life':        'bg-forest-100 text-forest-800',
-  Events:               'bg-sound-100 text-sound-800',
-  'Lost & Found':       'bg-terra-100 text-terra-700',
-  'For Sale / Free':    'bg-amber-100 text-amber-900',
-  'Welcome Newcomers':  'bg-forest-50 text-forest-700',
-};
+const CATEGORIES = FORUM_CATEGORIES;
+const CATEGORY_COLORS = FORUM_CATEGORY_COLORS;
 
 function formatPostDate(dateStr: string) {
   const date = new Date(dateStr);
@@ -166,7 +150,7 @@ export default async function ForumPage({
           <>
             <div className="space-y-3" role="list">
               {posts.map(post => {
-                const catName = (post.forum_categories as any)?.name ?? 'General';
+                const catName = (post.forum_categories as { name?: string } | null)?.name ?? 'General';
                 return (
                   <div
                     key={post.id}

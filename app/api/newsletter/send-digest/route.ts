@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { unsubscribeUrl } from '@/lib/newsletter';
+import { verifyCronRequest } from '@/lib/cronAuth';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -39,18 +41,7 @@ type NewsPostRow = {
 
 // ── Helpers ──────────────────────────────────────────────────
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':     '🌿',
-  'Arts & Culture':        '🎨',
-  'Farmers Market':        '🥕',
-  'Music & Performance':   '🎵',
-  'Outdoors & Recreation': '🌲',
-  'Film & Media':          '🎬',
-  'Community & Social':    '🤝',
-  'Classes & Workshops':   '📚',
-  'Food & Drink':          '🍽️',
-  'Sports & Fitness':      '🏃',
-};
+// CATEGORY_EMOJI is imported from @/lib/constants
 
 function mondayDateLabel() {
   return new Date().toLocaleDateString('en-US', {
@@ -250,16 +241,8 @@ function buildDigestHtml(
 export async function GET(request: NextRequest) {
   const isTest = request.nextUrl.searchParams.get('test') === 'true';
 
-  // Auth: Vercel cron header OR CRON_SECRET bearer token
-  const isVercelCron   = request.headers.get('x-vercel-cron') === '1';
-  const cronSecret     = process.env.CRON_SECRET;
-  const hasValidSecret =
-    cronSecret &&
-    request.headers.get('authorization') === `Bearer ${cronSecret}`;
-
-  if (!isVercelCron && !hasValidSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const authError = verifyCronRequest(request);
+  if (authError) return authError;
 
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return NextResponse.json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }, { status: 500 });

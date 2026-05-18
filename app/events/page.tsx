@@ -3,27 +3,12 @@ import Link from 'next/link';
 import { cache, Suspense } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { events as fallbackEvents, categoryColors } from '@/lib/data';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 import type { Event } from '@/lib/data';
 import EventsFilter from '@/components/EventsFilter';
 import ShareButton from '@/components/ShareButton';
 
 export const revalidate = 300; // re-fetch every 5 minutes
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':    '🌿',
-  'Arts & Culture':       '🎨',
-  'Farmers Market':       '🥕',
-  'Music & Performance':  '🎵',
-  'Outdoors & Recreation':'🌲',
-  'Film & Media':         '🎬',
-  'Community & Social':   '🤝',
-  'Classes & Workshops':  '📚',
-  'Food & Drink':         '🍽️',
-  'Sports & Fitness':     '🏃',
-  'Other':                '📅',
-  // legacy
-  'Nature': '🌿', 'Arts': '🎨', 'Market': '🥕', 'Film': '🎬', 'Outdoors': '🌲',
-};
 
 async function getApprovedEvents(): Promise<Event[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -39,7 +24,7 @@ async function getApprovedEvents(): Promise<Event[]> {
 
   if (!data || data.length === 0) return fallbackEvents;
 
-  return data.map((row: any): Event => ({
+  return data.map((row): Event => ({
     id:          row.id,
     title:       row.title,
     date:        row.date,

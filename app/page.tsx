@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { formatShortDate, categoryColors } from '@/lib/data';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 import { formatPrice } from '@/lib/marketplace';
 import { createServerClient } from '@/lib/supabase';
 import WeatherTideWidget from '@/components/WeatherTideWidget';
@@ -14,19 +15,6 @@ import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 300; // 5 minutes
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':     '🌿',
-  'Arts & Culture':        '🎨',
-  'Farmers Market':        '🥕',
-  'Music & Performance':   '🎵',
-  'Outdoors & Recreation': '🌲',
-  'Film & Media':          '🎬',
-  'Community & Social':    '🤝',
-  'Classes & Workshops':   '📚',
-  'Food & Drink':          '🍽️',
-  'Sports & Fitness':      '🏃',
-};
 
 const VALID_PERSONAS = new Set(['local', 'visitor', 'ferry', 'dashboard']);
 

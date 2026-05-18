@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { verifyUserRequest } from '@/lib/userAuth';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -27,29 +28,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Reply must be 10,000 characters or fewer' }, { status: 400 });
   }
 
-  // Validate the user via their Bearer token
-  const authHeader = request.headers.get('authorization');
-  const token = authHeader?.replace('Bearer ', '').trim() ?? '';
-
-  if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const supabaseUser = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { headers: { Authorization: `Bearer ${token}` } } }
-  );
-
-  const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const displayName =
-    user.user_metadata?.full_name ??
-    user.email?.split('@')[0] ??
-    'Anonymous';
+  const auth = await verifyUserRequest(request);
+  if ('error' in auth) return auth.error;
+  const { user, displayName, supabase: supabaseUser } = auth;
 
   // Insert the reply (RLS requires auth.uid() is not null — satisfied by the token override)
   const { error: insertError } = await supabaseUser.from('forum_replies').insert({

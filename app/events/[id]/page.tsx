@@ -2,24 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 import AddToCalendar from '@/components/AddToCalendar';
 import ShareButton from '@/components/ShareButton';
 
 export const revalidate = 300;
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':    '🌿',
-  'Arts & Culture':       '🎨',
-  'Farmers Market':       '🥕',
-  'Music & Performance':  '🎵',
-  'Outdoors & Recreation':'🌲',
-  'Film & Media':         '🎬',
-  'Community & Social':   '🤝',
-  'Classes & Workshops':  '📚',
-  'Food & Drink':         '🍽️',
-  'Sports & Fitness':     '🏃',
-  'Other':                '📅',
-};
 
 async function getEvent(id: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

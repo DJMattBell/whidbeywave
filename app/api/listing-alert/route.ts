@@ -22,6 +22,13 @@ type WebhookPayload = {
 };
 
 export async function POST(request: NextRequest) {
+  // Verify webhook origin — require CRON_SECRET as bearer token
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get('authorization');
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const payload: WebhookPayload = await request.json();
     const listing = payload?.record;

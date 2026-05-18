@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { verifyCronRequest } from '@/lib/cronAuth';
 import { scrapeWica } from '@/lib/scrapers/wica';
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
 import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
@@ -35,16 +36,8 @@ async function sendAdminEmail(subject: string, html: string) {
 }
 
 export async function GET(request: NextRequest) {
-  // Auth: Vercel cron header OR CRON_SECRET bearer token
-  const isVercelCron = request.headers.get('x-vercel-cron') === '1';
-  const cronSecret   = process.env.CRON_SECRET;
-  const hasValidSecret =
-    cronSecret &&
-    request.headers.get('authorization') === `Bearer ${cronSecret}`;
-
-  if (!isVercelCron && !hasValidSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const authError = verifyCronRequest(request);
+  if (authError) return authError;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;

@@ -13,6 +13,9 @@ export async function POST(request: NextRequest) {
     if (!message?.trim()) {
       return NextResponse.json({ error: 'Message required' }, { status: 400 });
     }
+    if (message.length > 5000) {
+      return NextResponse.json({ error: 'Message must be 5,000 characters or fewer' }, { status: 400 });
+    }
 
     // Insert into site_feedback (anon key — table allows public inserts)
     const supabase = createClient(
