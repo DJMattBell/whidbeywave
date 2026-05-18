@@ -28,7 +28,7 @@ export const ALLOWED_EVENT_TAGS = [
 ] as const;
 
 export const ALLOWED_CONTACT_TOPICS = [
-  'event', 'news', 'listing', 'advertising', 'general',
+  'event', 'news', 'listing', 'advertising', 'feedback', 'general', 'phone',
 ] as const;
 
 export const ALLOWED_LISTING_CATEGORIES = [

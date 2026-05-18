@@ -48,3 +48,21 @@ npm run lint      — lint check
 - Ferry, weather, tides all fail silently
 - RLS is enabled on all Supabase tables
 - Admin email: use ADMIN_EMAIL env variable
+
+## Event Scraper Strategy
+When adding a new event source, choose the best
+approach in this priority order:
+1. **Fix HTML selectors** — if the site serves
+   events in static HTML, use cheerio with the
+   correct CSS selectors for that specific site
+2. **Platform API** — if the site is Squarespace
+   (append ?format=json), WordPress with The Events
+   Calendar (/wp-json/tribe/events/v1/events), or
+   has another structured JSON/RSS endpoint, prefer
+   that over HTML scraping
+3. **iCal/ICS feed** — if available, parse the
+   .ics feed (most reliable of all)
+Never copy-paste selectors from one scraper to
+another — always inspect the actual site first.
+Wix sites render client-side and cannot be scraped
+without a headless browser; skip them.

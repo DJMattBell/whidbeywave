@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { unsubscribeUrl } from '@/lib/newsletter';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -230,7 +231,7 @@ function buildDigestHtml(
               You&rsquo;re receiving this because you signed up at
               <a href="${SITE_URL}" style="color:#255c42;text-decoration:none;">WhidbeyWave.com</a>.
               &nbsp;&middot;&nbsp; Whidbey Island, WA &nbsp;&middot;&nbsp;
-              <a href="${SITE_URL}/newsletter" style="color:#255c42;text-decoration:none;">Unsubscribe</a>
+              <a href="${unsubscribeUrl(sub.email)}" style="color:#255c42;text-decoration:none;">Unsubscribe</a>
               <br/>
               <span style="font-size:11px;color:#c4bdb0;">WhidbeyWave.com — Written for Whidbey, by Whidbey</span>
             </p>

@@ -2,13 +2,12 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { isConfigured } from '@/lib/supabase';
-import { events, newsPosts } from '@/lib/data';
 
 function ConfirmBanner() {
   const params = useSearchParams();
-  const confirmed = params.get('confirmed');
-  const error     = params.get('error');
+  const confirmed    = params.get('confirmed');
+  const unsubscribed = params.get('unsubscribed');
+  const error        = params.get('error');
 
   if (confirmed === 'true') {
     return (
@@ -26,13 +25,29 @@ function ConfirmBanner() {
     );
   }
 
+  if (unsubscribed === 'true') {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-6 py-5 flex items-start gap-4">
+          <span className="text-3xl shrink-0" aria-hidden="true">👋</span>
+          <div>
+            <p className="font-semibold text-amber-800 text-base">You&apos;ve been unsubscribed.</p>
+            <p className="text-amber-700 text-sm mt-0.5">
+              We&apos;ve removed you from the mailing list. You&apos;re always welcome back if you change your mind.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
         <div className="bg-red-50 border border-red-200 rounded-2xl px-6 py-5 flex items-start gap-4">
           <span className="text-3xl shrink-0" aria-hidden="true">🌧️</span>
           <div>
-            <p className="font-semibold text-red-800 text-base">That confirmation link didn&apos;t work.</p>
+            <p className="font-semibold text-red-800 text-base">That link didn&apos;t work.</p>
             <p className="text-red-700 text-sm mt-0.5">
               It may have already been used or expired. Sign up again below and we&apos;ll send a fresh one.
             </p>
@@ -56,6 +71,32 @@ const NEWSLETTER_TAGS = [
   'Food & Dining',
 ];
 
+// Inline sample data for the preview (avoids importing the entire lib/data module)
+const sampleEvents = [
+  {
+    id: 'sample-1',
+    title: 'Langley Whale Center Open House',
+    date: '2026-03-01',
+    time: '10:00 AM – 4:00 PM',
+    town: 'Langley',
+    emoji: '🐋',
+  },
+  {
+    id: 'sample-2',
+    title: 'Coupeville Arts & Crafts Festival',
+    date: '2026-03-07',
+    time: '9:00 AM – 5:00 PM',
+    town: 'Coupeville',
+    emoji: '🎨',
+  },
+];
+
+const sampleNews = {
+  emoji: '👨‍🍳',
+  title: 'Michelin-Starred Chef Johnny Spero to Open "Passage" at the Inn at Langley',
+  excerpt: 'The D.C. chef behind Reverie is bringing a multicourse tasting menu to Langley\'s waterfront when the renovated Inn reopens May 17.',
+};
+
 export default function NewsletterPage() {
   const [firstName, setFirstName]         = useState('');
   const [email, setEmail]                 = useState('');
@@ -73,45 +114,39 @@ export default function NewsletterPage() {
     if (!firstName.trim() || !email.trim()) return;
     setStatus('loading');
 
-    if (!isConfigured) {
-      await new Promise(r => setTimeout(r, 800));
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          email:     email.trim().toLowerCase(),
+          tags,
+          frequency,
+          weekendDigest,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        if (data.error === 'duplicate') { setStatus('duplicate'); return; }
+        setStatus('error');
+        return;
+      }
+
       setStatus('success');
-      return;
-    }
-
-    const res = await fetch('/api/newsletter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName: firstName.trim(),
-        email:     email.trim().toLowerCase(),
-        tags,
-        frequency,
-        weekendDigest,
-      }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      if (data.error === 'duplicate') { setStatus('duplicate'); return; }
+    } catch {
       setStatus('error');
-      return;
     }
-
-    setStatus('success');
   }
-
-  const sampleEvent  = events[0];
-  const sampleEvent2 = events[1];
-  const sampleNews   = newsPosts[0];
 
   return (
     <>
       {/* Header */}
       <div className="bg-gradient-to-br from-forest-800 to-amber-800 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">📬 Weekly Digest</p>
+          <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">Weekly Digest</p>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
             The WhidbeyWave Weekly
           </h1>
@@ -127,10 +162,6 @@ export default function NewsletterPage() {
       </Suspense>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-        {/*
-          Mobile: form appears first (order-first), sample below.
-          Desktop: two columns, sample left, form right (sticky).
-        */}
         <div className="grid lg:grid-cols-2 gap-14 items-start">
 
           {/* ── Right: Signup Form — first on mobile ────────────────── */}
@@ -269,7 +300,7 @@ export default function NewsletterPage() {
                       className="mt-0.5 h-4 w-4 rounded border-amber-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
                     />
                     <label htmlFor="nl-weekend" className="text-sm text-stone-700 leading-snug cursor-pointer select-none">
-                      <span className="font-semibold">📅 This Weekend digest</span>
+                      <span className="font-semibold">This Weekend digest</span>
                       <span className="text-stone-500 font-normal"> (Thursdays)</span>
                       <br />
                       <span className="text-stone-600 text-xs">A short email every Thursday with what&apos;s happening that Friday–Sunday.</span>
@@ -336,7 +367,7 @@ export default function NewsletterPage() {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-widest text-forest-600 mb-3">📅 Coming Up</p>
                   <div className="space-y-3">
-                    {[sampleEvent, sampleEvent2].map(ev => (
+                    {sampleEvents.map(ev => (
                       <div key={ev.id} className="flex gap-3 items-start p-3 bg-parchment-50 rounded-lg border border-parchment-200">
                         <div className="shrink-0 w-10 h-10 bg-forest-600 text-parchment-50 rounded-lg flex flex-col items-center justify-center" aria-hidden="true">
                           <span className="text-xs font-bold leading-none">

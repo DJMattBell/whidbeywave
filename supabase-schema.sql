@@ -360,6 +360,9 @@ create unique index if not exists newsletter_subscribers_confirmation_token_idx
   on newsletter_subscribers(confirmation_token)
   where confirmation_token is not null;
 
+-- 6. Allow service-role unsubscribe (service key bypasses RLS, but document intent)
+-- No additional policy needed — service role key used by /api/newsletter/unsubscribe.
+
 
 -- ──────────────────────────────────────────────
 -- MARKETPLACE LISTINGS

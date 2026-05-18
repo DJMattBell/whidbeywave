@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         title, date, time, location, town, category,
         description: description || null,
         tags: tags || [],
-        submitter_name: submitter_name || null,
+        submitter_name: submitter_name?.trim() || 'Anonymous',
         submitter_email,
         status: 'pending',
       })
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
                 <tr><td style="padding:8px 0;color:#888;">Category</td><td style="padding:8px 0;">${escapeHtml(category)}</td></tr>
                 <tr><td style="padding:8px 0;color:#888;">Tags</td><td style="padding:8px 0;">${escapeHtml((tags || []).join(', ') || 'None')}</td></tr>
                 <tr><td style="padding:8px 0;color:#888;">Description</td><td style="padding:8px 0;">${escapeHtml(description || '—')}</td></tr>
-                <tr><td style="padding:8px 0;color:#888;">Submitted by</td><td style="padding:8px 0;">${escapeHtml(submitter_name)} &lt;${escapeHtml(submitter_email)}&gt;</td></tr>
+                <tr><td style="padding:8px 0;color:#888;">Submitted by</td><td style="padding:8px 0;">${escapeHtml(submitter_name?.trim() || 'Anonymous')} &lt;${escapeHtml(submitter_email)}&gt;</td></tr>
               </table>
               <div style="margin-top:24px;">
                 <a href="${adminUrl}" style="background:#255c42;color:#fdfaf3;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:bold;display:inline-block;">
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
               <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
             </div>
             <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks, ${escapeHtml(submitter_name)}!</h2>
+              <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks${submitter_name?.trim() ? `, ${escapeHtml(submitter_name.trim())}` : ''}!</h2>
               <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 20px;">
                 We received your event submission and will review it shortly.
                 You'll get another email from us once it's approved and live on the calendar —

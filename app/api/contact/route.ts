@@ -10,7 +10,9 @@ const TOPIC_LABELS: Record<string, string> = {
   news:        'News Tip',
   listing:     'Marketplace Listing',
   advertising: 'Working Together',
+  feedback:    'Website Feedback',
   general:     'Just Saying Hello',
+  phone:       'Prefers to Call',
 };
 
 export async function POST(request: NextRequest) {
