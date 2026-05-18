@@ -23,11 +23,15 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    await supabase.from('site_feedback').insert({
+    const { error: insertError } = await supabase.from('site_feedback').insert({
       message: message.trim(),
       email:   email?.trim() || null,
       page:    page || '/',
     });
+
+    if (insertError) {
+      console.error('[feedback] DB insert error:', insertError);
+    }
 
     // Notify admin via email (non-fatal)
     const adminEmail = process.env.ADMIN_EMAIL;
@@ -83,7 +87,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error('[feedback] unexpected error:', err);
     // Always return ok — don't surface errors to users for minor feedback submissions
     return NextResponse.json({ ok: true });
   }

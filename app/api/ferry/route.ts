@@ -5,6 +5,10 @@ import { fetchFerryPageData } from '@/lib/ferry';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const data = await fetchFerryPageData(true);
-  return NextResponse.json(data);
+  try {
+    const data = await fetchFerryPageData(true);
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json({ schedules: [], alerts: [] });
+  }
 }

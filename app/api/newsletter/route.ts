@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { randomUUID } from 'crypto';
+import { isValidEmail } from '@/lib/validate';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -15,6 +16,10 @@ export async function POST(request: NextRequest) {
     }
 
     const normalEmail = email.trim().toLowerCase();
+
+    if (!isValidEmail(normalEmail)) {
+      return NextResponse.json({ error: 'Please enter a valid email address' }, { status: 400 });
+    }
 
     // Insert subscriber with confirmed: false — awaits confirmation click
     const supabase = createClient(

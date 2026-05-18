@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     const topicLabel = TOPIC_LABELS[topic] ?? 'General';
 
-    await resend.emails.send({
+    const { error: emailError } = await resend.emails.send({
       from: 'WhidbeyWave <hello@whidbeywave.com>',
       to: adminEmail,
       replyTo: email.trim(),
@@ -118,6 +118,11 @@ export async function POST(request: NextRequest) {
         </html>
       `,
     });
+
+    if (emailError) {
+      console.error('Contact email send error:', emailError);
+      return NextResponse.json({ error: 'Failed to send your message. Please try again.' }, { status: 500 });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

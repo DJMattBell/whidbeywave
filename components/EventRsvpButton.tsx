@@ -25,20 +25,20 @@ export default function EventRsvpButton({ eventId }: { eventId: string }) {
   }, [eventId, user?.email]);
 
   async function toggle() {
-    if (busy || !user || !isConfigured) return;
+    if (busy || !user?.email || !isConfigured) return;
     setBusy(true);
     if (going) {
       await supabase
         .from('event_rsvps')
         .delete()
         .eq('event_id', eventId)
-        .eq('user_email', user.email!);
+        .eq('user_email', user.email);
       setGoing(false);
       setCount(c => Math.max(0, c - 1));
     } else {
       const { error } = await supabase
         .from('event_rsvps')
-        .insert({ event_id: eventId, user_email: user.email! });
+        .insert({ event_id: eventId, user_email: user.email });
       if (!error) {
         setGoing(true);
         setCount(c => c + 1);

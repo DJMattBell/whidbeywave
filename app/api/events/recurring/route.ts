@@ -122,10 +122,21 @@ export async function PATCH(request: NextRequest) {
   if ('error' in auth) return auth.error;
 
   const body = await request.json();
-  const { id, ...updates } = body;
+  const { id } = body;
 
   if (!id) {
     return NextResponse.json({ error: 'id is required' }, { status: 400 });
+  }
+
+  // Whitelist allowed fields to prevent arbitrary column updates
+  const allowedFields = [
+    'title', 'time', 'location', 'town', 'category', 'description', 'tags',
+    'recurrence_type', 'day_of_week', 'day_of_month', 'custom_interval_days',
+    'start_date', 'end_date', 'is_active',
+  ] as const;
+  const updates: Record<string, unknown> = {};
+  for (const key of allowedFields) {
+    if (key in body) updates[key] = body[key];
   }
 
   const supabase = getSupabase();

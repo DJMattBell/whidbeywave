@@ -33,6 +33,7 @@ function affectedRouteLabels(alert: WsfAlert): string[] {
 
 async function getWhidbeyAlerts(): Promise<WsfAlert[]> {
   const key = process.env.WSDOT_API_KEY;
+  if (!key) return [];
   const res = await fetch(
     `https://www.wsdot.wa.gov/ferries/api/schedule/rest/alerts?apiaccesscode=${key}`,
     { next: { revalidate: 300 } }

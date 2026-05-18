@@ -97,7 +97,7 @@ export default function VisitPage() {
                 accent:  'text-sound-700',
               },
             ].map(({ href, emoji, title, desc, bg, accent }) => (
-              <a
+              <Link
                 key={href}
                 href={href}
                 className={`rounded-2xl border p-5 flex flex-col gap-3 hover:-translate-y-0.5 transition-all duration-200 shadow-warm-sm hover:shadow-warm ${bg}`}
@@ -113,7 +113,7 @@ export default function VisitPage() {
                   <p className="text-sm text-stone-600 leading-relaxed">{desc}</p>
                 </div>
                 <span className={`text-sm font-semibold mt-auto ${accent}`}>Explore →</span>
-              </a>
+              </Link>
             ))}
           </div>
         </section>

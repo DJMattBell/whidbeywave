@@ -16,22 +16,18 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-/** Guess a category from the event title. */
+/** Guess a category from the event title — must match ALLOWED_EVENT_CATEGORIES. */
 function guessCategory(title: string): string {
   const t = title.toLowerCase();
   if (/\bmusic\b|\blive\b|\bband\b|\bjam\b|\bopen mic\b|\bconcert\b/.test(t))
-    return 'Live Music';
-  if (/\btrivia\b/.test(t)) return 'Trivia';
-  if (/\bbingo\b/.test(t)) return 'Bingo';
-  if (/\bkaraoke\b/.test(t)) return 'Karaoke';
-  if (/\bcomedy\b|\bstand-up\b/.test(t)) return 'Comedy';
-  if (/\bquiz\b/.test(t)) return 'Trivia';
-  if (/\btasting\b|\bbeer\b|\bbrew\b|\bcider\b/.test(t)) return 'Tasting';
-  if (/\bfood truck\b|\bdinner\b|\bbrunch\b/.test(t)) return 'Food & Drink';
-  if (/\bmarket\b|\bvendor\b|\bcraft\b/.test(t)) return 'Market';
-  if (/\bfundraiser\b|\bcharity\b|\bbenefit\b/.test(t)) return 'Fundraiser';
-  if (/\bkids\b|\bfamily\b|\bchildren\b/.test(t)) return 'Family Event';
-  if (/\bclass\b|\bworkshop\b|\blesson\b/.test(t)) return 'Class';
+    return 'Music & Performance';
+  if (/\btrivia\b|\bbingo\b|\bkaraoke\b|\bquiz\b/.test(t)) return 'Community & Social';
+  if (/\bcomedy\b|\bstand-up\b/.test(t)) return 'Arts & Culture';
+  if (/\btasting\b|\bbeer\b|\bbrew\b|\bcider\b|\bfood truck\b|\bdinner\b|\bbrunch\b/.test(t)) return 'Food & Drink';
+  if (/\bmarket\b|\bvendor\b|\bcraft\b/.test(t)) return 'Farmers Market';
+  if (/\bfundraiser\b|\bcharity\b|\bbenefit\b/.test(t)) return 'Community & Social';
+  if (/\bkids\b|\bfamily\b|\bchildren\b/.test(t)) return 'Community & Social';
+  if (/\bclass\b|\bworkshop\b|\blesson\b/.test(t)) return 'Classes & Workshops';
   return 'Community & Social';
 }
 

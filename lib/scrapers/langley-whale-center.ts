@@ -8,23 +8,16 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').trim();
 }
 
-/** Convert ms timestamp to YYYY-MM-DD */
+/** Convert ms timestamp to YYYY-MM-DD in Pacific time */
 function formatDate(ms: number): string {
-  const d = new Date(ms);
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  return new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 }
 
-/** Convert ms timestamp to HH:MM AM/PM */
+/** Convert ms timestamp to HH:MM AM/PM in Pacific time */
 function formatTime(ms: number): string {
-  const d = new Date(ms);
-  let hours = d.getHours();
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
-  return `${hours}:${minutes} ${ampm}`;
+  return new Date(ms).toLocaleTimeString('en-US', {
+    timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true,
+  });
 }
 
 export async function scrapeLangleyWhaleCenter(): Promise<ScrapedEvent[]> {

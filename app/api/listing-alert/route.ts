@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { verifyCronRequest } from '@/lib/cronAuth';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -22,12 +23,8 @@ type WebhookPayload = {
 };
 
 export async function POST(request: NextRequest) {
-  // Verify webhook origin — require CRON_SECRET as bearer token
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get('authorization');
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const authError = verifyCronRequest(request);
+  if (authError) return authError;
 
   try {
     const payload: WebhookPayload = await request.json();

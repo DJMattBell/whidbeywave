@@ -40,9 +40,9 @@ export function generateDates(
         while (refDate.getDay() !== dow) {
           refDate.setDate(refDate.getDate() + 1);
         }
-        const diffWeeks = Math.round(
-          (cur.getTime() - refDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
-        );
+        // Use calendar day diff to avoid DST hour shifts
+        const daysDiff = Math.round((cur.getTime() - refDate.getTime()) / (24 * 60 * 60 * 1000));
+        const diffWeeks = Math.floor(daysDiff / 7);
         if (diffWeeks % 2 !== 0) {
           cur.setDate(cur.getDate() + 7);
         }

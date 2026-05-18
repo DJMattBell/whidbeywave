@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
     const { inserted, skipped } = await seedFarmersMarkets(supabase);
     console.log(`[seed-markets] inserted ${inserted}, skipped ${skipped} existing`);
     return NextResponse.json({ ok: true, inserted, skipped });
-  } catch (err: any) {
+  } catch (err) {
     console.error('[seed-markets] error:', err);
-    return NextResponse.json({ error: err.message ?? 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to seed markets' }, { status: 500 });
   }
 }

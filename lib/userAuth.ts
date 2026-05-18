@@ -28,10 +28,8 @@ type UserAuthFail = {
 export async function verifyUserRequest(
   request: NextRequest
 ): Promise<UserAuthOk | UserAuthFail> {
-  const token = request.headers
-    .get('authorization')
-    ?.replace('Bearer ', '')
-    .trim() ?? '';
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
 
   if (!token) {
     return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };

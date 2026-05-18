@@ -44,10 +44,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: v.firstError() }, { status: 400 });
     }
 
-    // Save to Supabase
+    // Save to Supabase (service role — RLS blocks anon inserts)
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
     const { data: submission, error: dbError } = await supabase
@@ -68,11 +68,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to save submission' }, { status: 500 });
     }
 
-    const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/admin/events`;
+    const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com'}/admin/events`;
     const adminEmail = process.env.ADMIN_EMAIL;
 
-    // Email admin
+    // Email admin (non-fatal — submission is already saved)
     if (adminEmail) {
+      try {
       await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
         to: adminEmail,
@@ -104,6 +105,9 @@ export async function POST(request: NextRequest) {
           </div>
         `,
       });
+      } catch {
+        // Non-fatal — submission is already saved
+      }
     }
 
     // Email the submitter a receipt so they know it was received

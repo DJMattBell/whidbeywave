@@ -62,7 +62,7 @@ function guessCategory(title: string): string {
   if (/market|bazaar|craft|vendor/.test(t))                     return 'Farmers Market';
   if (/parade|festival|fair|fest\b/.test(t))                    return 'Arts & Culture';
   if (/class|workshop|lesson|seminar/.test(t))                  return 'Classes & Workshops';
-  if (/kids|children|youth|family/.test(t))                     return 'Family & Kids';
+  if (/kids|children|youth|family/.test(t))                     return 'Community & Social';
   if (/st\.?\s*patrick|holiday|halloween|christmas/.test(t))    return 'Community & Social';
   return 'Community & Social';
 }
@@ -163,7 +163,7 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
         date,
         time,
         location,
-        town: 'Whidbey Island',
+        town: 'Other',
         category: guessCategory(title),
         description,
         source: 'Whidbey Telecom Events',

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   // Server-side zip validation — cannot be bypassed client-side
   if (!isWhidbeyLocal(zip.trim())) {
     return NextResponse.json(
-      { error: 'Reviews require a valid Whidbey Island zip code (98236, 98239, 98249, 98253, 98260, 98277, or 98278).' },
+      { error: 'Reviews require a valid Whidbey Island zip code (98236, 98239, 98249, 98250, 98253, 98260, 98277, or 98278).' },
       { status: 422 }
     );
   }

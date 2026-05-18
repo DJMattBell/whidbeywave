@@ -40,25 +40,27 @@ function fmt(dateStr: string) {
   });
 }
 
-const EMPTY_FORM = {
-  title:        '',
-  slug:         '',
-  emoji:        '📰',
-  category:     'Community',
-  read_minutes: '3',
-  excerpt:      '',
-  body:         '',
-  author:       'WhidbeyWave',
-  published_at: new Date().toISOString().split('T')[0],
-  published:    true,
-};
+function freshForm() {
+  return {
+    title:        '',
+    slug:         '',
+    emoji:        '📰',
+    category:     'Community',
+    read_minutes: '3',
+    excerpt:      '',
+    body:         '',
+    author:       'WhidbeyWave',
+    published_at: new Date().toISOString().split('T')[0],
+    published:    true,
+  };
+}
 
 export default function AdminNewsPage() {
   const { user, loading } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
 
   // Form state
-  const [form, setForm]         = useState(EMPTY_FORM);
+  const [form, setForm]         = useState(freshForm);
   const [slugEdited, setSlugEdited] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'ok' | 'error'>('idle');
@@ -128,7 +130,7 @@ export default function AdminNewsPage() {
 
     setSubmitStatus('ok');
     setNewId(data.id);
-    setForm(EMPTY_FORM);
+    setForm(freshForm());
     setSlugEdited(false);
     setSubmitting(false);
     loadPosts();

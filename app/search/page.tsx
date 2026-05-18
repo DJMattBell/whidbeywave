@@ -40,7 +40,8 @@ function SearchBody() {
     }
 
     setLoading(true);
-    const term = q.trim();
+    // Escape PostgREST special characters for LIKE patterns
+    const term = q.trim().replace(/[%_\\]/g, c => `\\${c}`);
     const today = new Date().toLocaleDateString('en-CA');
 
     Promise.all([

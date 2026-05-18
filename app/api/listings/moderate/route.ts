@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyAdminRequest } from '@/lib/adminAuth';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -54,9 +55,9 @@ export async function POST(request: NextRequest) {
                 <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
               </div>
               <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-                <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Great news, ${listing.seller_name}!</h2>
+                <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Great news, ${escapeHtml(listing.seller_name)}!</h2>
                 <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">
-                  Your listing for <strong>${listing.title}</strong> is now live on the WhidbeyWave marketplace.
+                  Your listing for <strong>${escapeHtml(listing.title)}</strong> is now live on the WhidbeyWave marketplace.
                   Your neighbors can see it and get in touch with you directly.
                 </p>
                 <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com'}/marketplace"
