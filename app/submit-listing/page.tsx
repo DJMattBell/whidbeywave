@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/AuthProvider';
@@ -56,12 +56,8 @@ export default function SubmitListingPage() {
     available_date: '',
   });
 
-  // Pre-fill contact email from authenticated user
-  useEffect(() => {
-    if (user?.email) {
-      setForm(p => ({ ...p, contact_email: user.email ?? '' }));
-    }
-  }, [user?.email]);
+  // Contact email: prefer user-typed value, fall back to auth email
+  const effectiveEmail = form.contact_email || user?.email || '';
 
   const [photos, setPhotos] = useState<File[]>([]);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'loading' | 'success' | 'error'>('idle');
@@ -144,7 +140,7 @@ export default function SubmitListingPage() {
           location: form.location,
           description: form.description,
           contact_method: form.contact_method,
-          contact_email: form.contact_email,
+          contact_email: effectiveEmail,
           contact_phone: form.contact_phone || null,
           images: imageUrls,
           ...(form.category === 'Housing' && {
@@ -507,7 +503,7 @@ export default function SubmitListingPage() {
                   id="ls-contact-email"
                   type="email"
                   required
-                  value={form.contact_email}
+                  value={effectiveEmail}
                   onChange={e => set('contact_email', e.target.value)}
                   placeholder="jane@example.com"
                   className={inputCls}

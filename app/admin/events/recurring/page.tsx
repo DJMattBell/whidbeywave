@@ -109,8 +109,15 @@ export default function RecurringEventsPage() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin) loadTemplates();
-  }, [isAdmin, loadTemplates]);
+    if (!isAdmin) return;
+    let cancelled = false;
+    apiFetch('GET').then(data => {
+      if (!cancelled) {
+        setTemplates(data.templates ?? []);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [isAdmin]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
