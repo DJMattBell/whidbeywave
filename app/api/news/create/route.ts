@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('News create error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true, id: data.id });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { escapeHtml } from '@/lib/escapeHtml';
 import { scrapeWica } from '@/lib/scrapers/wica';
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
 import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
@@ -133,8 +134,13 @@ export async function GET(request: NextRequest) {
     )
   );
 
+  // Locations that no longer exist — skip events tied to them
+  const blockedLocations = ['greenbank cidery'];
+
   const newEvents = candidates.filter(
-    e => !existingKeys.has(`${normalizeTitle(e.title)}|${e.date}|${e.source.toLowerCase()}`)
+    e =>
+      !existingKeys.has(`${normalizeTitle(e.title)}|${e.date}|${e.source.toLowerCase()}`) &&
+      !blockedLocations.some(bl => (e.location ?? '').toLowerCase().includes(bl))
   );
 
   if (newEvents.length > 0) {
@@ -157,7 +163,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('[scrape] insert error:', error);
       return NextResponse.json(
-        { error: 'DB insert failed', detail: error.message },
+        { error: 'DB insert failed' },
         { status: 500 }
       );
     }
@@ -165,10 +171,10 @@ export async function GET(request: NextRequest) {
     // Build event list rows for email
     const eventRows = newEvents.map(e => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;font-weight:600;color:#1c3d2c;">${e.title}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#57534e;">${e.date}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#57534e;">${e.town}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#888;font-size:13px;">${e.source}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;font-weight:600;color:#1c3d2c;">${escapeHtml(e.title)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#57534e;">${escapeHtml(e.date)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#57534e;">${escapeHtml(e.town)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8dfc8;color:#888;font-size:13px;">${escapeHtml(e.source)}</td>
       </tr>
     `).join('');
 

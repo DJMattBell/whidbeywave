@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { isValidEmail } from '@/lib/validate';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,6 +12,12 @@ export async function POST(req: NextRequest) {
 
     if (!listingId || !buyerName?.trim() || !buyerEmail?.trim() || !message?.trim()) {
       return NextResponse.json({ ok: false, error: 'Missing required fields' }, { status: 400 });
+    }
+    if (!isValidEmail(buyerEmail.trim())) {
+      return NextResponse.json({ ok: false, error: 'Invalid email address' }, { status: 400 });
+    }
+    if (message.length > 5000) {
+      return NextResponse.json({ ok: false, error: 'Message must be 5,000 characters or fewer' }, { status: 400 });
     }
 
     // Fetch listing to get seller email + title

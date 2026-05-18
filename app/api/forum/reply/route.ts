@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
   if (!body || typeof body !== 'string' || !body.trim()) {
     return NextResponse.json({ error: 'Reply body is required' }, { status: 400 });
   }
+  if (body.length > 10000) {
+    return NextResponse.json({ error: 'Reply must be 10,000 characters or fewer' }, { status: 400 });
+  }
 
   // Validate the user via their Bearer token
   const authHeader = request.headers.get('authorization');

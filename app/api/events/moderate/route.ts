@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { verifyAdminRequest } from '@/lib/adminAuth';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -63,18 +64,18 @@ export async function POST(request: NextRequest) {
                     <td style="padding:32px;">
                       <h1 style="font-size:22px;color:#1c3d2c;margin:0 0 12px;">Your event is live! 🌿</h1>
                       <p style="font-size:15px;color:#57534e;line-height:1.7;margin:0 0 20px;">
-                        Good news, ${submission.submitter_name} — your event has been approved
+                        Good news, ${escapeHtml(submission.submitter_name)} — your event has been approved
                         and is now showing on the WhidbeyWave events calendar.
                       </p>
                       <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdfaf3;border-radius:10px;border:1px solid #e8dfc8;margin-bottom:24px;">
                         <tr><td style="padding:20px 24px;">
-                          <p style="font-size:18px;font-weight:bold;color:#1c3d2c;margin:0 0 8px;">${submission.title}</p>
-                          <p style="font-size:14px;color:#57534e;margin:0 0 4px;">📅 ${eventDate}</p>
-                          <p style="font-size:14px;color:#57534e;margin:0 0 4px;">🕐 ${submission.time}</p>
-                          <p style="font-size:14px;color:#57534e;margin:0;">📍 ${submission.location}, ${submission.town}</p>
+                          <p style="font-size:18px;font-weight:bold;color:#1c3d2c;margin:0 0 8px;">${escapeHtml(submission.title)}</p>
+                          <p style="font-size:14px;color:#57534e;margin:0 0 4px;">📅 ${escapeHtml(eventDate)}</p>
+                          <p style="font-size:14px;color:#57534e;margin:0 0 4px;">🕐 ${escapeHtml(submission.time)}</p>
+                          <p style="font-size:14px;color:#57534e;margin:0;">📍 ${escapeHtml(submission.location)}, ${escapeHtml(submission.town)}</p>
                         </td></tr>
                       </table>
-                      ${admin_notes ? `<p style="font-size:14px;color:#57534e;background:#f7f0e2;padding:12px 16px;border-radius:8px;margin-bottom:20px;"><strong>Note from our team:</strong> ${admin_notes}</p>` : ''}
+                      ${admin_notes ? `<p style="font-size:14px;color:#57534e;background:#f7f0e2;padding:12px 16px;border-radius:8px;margin-bottom:20px;"><strong>Note from our team:</strong> ${escapeHtml(admin_notes)}</p>` : ''}
                       <table cellpadding="0" cellspacing="0">
                         <tr><td style="background:#255c42;border-radius:10px;padding:12px 24px;">
                           <a href="${siteUrl}/events" style="color:#fdfaf3;text-decoration:none;font-size:14px;font-weight:bold;">

@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
   if (!body || typeof body !== 'string' || !body.trim()) {
     return NextResponse.json({ error: 'Review body is required' }, { status: 400 });
   }
+  if (body.length > 5000) {
+    return NextResponse.json({ error: 'Review must be 5,000 characters or fewer' }, { status: 400 });
+  }
   if (!zip || typeof zip !== 'string' || !zip.trim()) {
     return NextResponse.json({ error: 'Zip code is required' }, { status: 400 });
   }
