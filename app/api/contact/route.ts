@@ -17,7 +17,16 @@ const TOPIC_LABELS: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, topic, phone, message } = await request.json();
+    const body = await request.json();
+    const { name, email, topic, phone, message } = body;
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+
+    // Honeypot — bots fill hidden fields; real users never will.
+    // Return a fake 200 so the bot thinks it succeeded.
+    if (body.website || body.url_field || body._gotcha) {
+      console.warn('[contact] honeypot tripped', { ip });
+      return NextResponse.json({ ok: true });
+    }
 
     const v = new Validator();
     v.required(name, 'Name')
@@ -32,7 +41,24 @@ export async function POST(request: NextRequest) {
      .oneOf(topic, ALLOWED_CONTACT_TOPICS, 'Topic');
 
     if (!v.ok()) {
-      return NextResponse.json({ error: v.firstError() }, { status: 400 });
+      // Log the reason server-side but don't expose it to the client
+      const reason = !name?.trim() || !email?.trim() || !message?.trim()
+        ? 'missing_field'
+        : !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email?.trim?.() ?? '')
+          ? 'invalid_email'
+          : message?.trim()?.length < 10
+            ? 'message_too_short'
+            : topic && !ALLOWED_CONTACT_TOPICS.includes(topic)
+              ? 'topic_not_allowed'
+              : 'validation_failed';
+      console.warn('[contact] validation failed', {
+        reason,
+        ip,
+        topic,
+        hasEmail: !!email,
+        hasMessage: !!message,
+      });
+      return NextResponse.json({ error: 'Invalid submission' }, { status: 400 });
     }
 
     const adminEmail = process.env.ADMIN_EMAIL;

@@ -7,7 +7,7 @@ const inputCls =
 
 export default function ContactPage() {
   const [form, setForm] = useState({
-    name: '', email: '', topic: '', phone: '', message: '',
+    name: '', email: '', topic: '', phone: '', message: '', website: '',
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
@@ -107,7 +107,7 @@ export default function ContactPage() {
                     We&apos;ll read it and get back to you — usually within a day or two.
                   </p>
                   <button
-                    onClick={() => { setForm({ name: '', email: '', topic: '', phone: '', message: '' }); setStatus('idle'); }}
+                    onClick={() => { setForm({ name: '', email: '', topic: '', phone: '', message: '', website: '' }); setStatus('idle'); }}
                     className="mt-6 btn-secondary"
                   >
                     Send another message
@@ -212,10 +212,20 @@ export default function ContactPage() {
                         />
                       </div>
 
-                      {/* Honeypot */}
+                      {/* Honeypot fields — invisible to humans, bots fill them */}
                       <div className="hidden" aria-hidden="true">
                         <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" />
                       </div>
+                      <input
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={form.website}
+                        onChange={e => set('website', e.target.value)}
+                        style={{ position: 'absolute', left: '-10000px', width: 0, height: 0, overflow: 'hidden' }}
+                        aria-hidden="true"
+                      />
 
                       {status === 'error' && (
                         <p className="text-red-500 text-base" role="alert">{errorMsg}</p>

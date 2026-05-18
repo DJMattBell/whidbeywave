@@ -103,10 +103,26 @@ export default function NewsletterPage() {
   const [tags, setTags]                   = useState<string[]>([]);
   const [frequency, setFrequency]         = useState<'weekly' | 'immediate'>('weekly');
   const [weekendDigest, setWeekendDigest] = useState(true);
-  const [status, setStatus]               = useState<'idle' | 'loading' | 'success' | 'duplicate' | 'error'>('idle');
+  const [status, setStatus]               = useState<'idle' | 'loading' | 'success' | 'duplicate' | 'unconfirmed' | 'error'>('idle');
+  const [resendStatus, setResendStatus]   = useState<'idle' | 'loading' | 'sent'>('idle');
 
   function toggleTag(tag: string) {
     setTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  }
+
+  async function handleResend() {
+    if (resendStatus !== 'idle' || !email.trim()) return;
+    setResendStatus('loading');
+    try {
+      await fetch('/api/newsletter/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+    } catch {
+      // Silently succeed — the API always returns 200
+    }
+    setResendStatus('sent');
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -130,6 +146,7 @@ export default function NewsletterPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        if (data.error === 'unconfirmed') { setResendStatus('idle'); setStatus('unconfirmed'); return; }
         if (data.error === 'duplicate') { setStatus('duplicate'); return; }
         setStatus('error');
         return;
@@ -179,6 +196,43 @@ export default function NewsletterPage() {
                   <p className="text-stone-500 text-base leading-relaxed">
                     We sent a confirmation link to <strong>{email}</strong>. Click it to complete your signup — then you&rsquo;re on the list.
                   </p>
+                  <p className="text-stone-400 text-sm mt-4">
+                    Didn&apos;t get it?{' '}
+                    {resendStatus === 'sent' ? (
+                      <span className="text-forest-600 font-medium">Sent — check your spam folder.</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={resendStatus === 'loading'}
+                        className="text-forest-600 hover:text-forest-800 underline font-medium disabled:opacity-60"
+                      >
+                        {resendStatus === 'loading' ? 'Sending…' : 'Resend confirmation email'}
+                      </button>
+                    )}
+                  </p>
+                </div>
+              ) : status === 'unconfirmed' ? (
+                <div className="text-center py-10">
+                  <div className="text-6xl mb-4" aria-hidden="true">📧</div>
+                  <h3 className="text-xl font-bold text-amber-700 mb-2">You signed up but haven&apos;t confirmed yet.</h3>
+                  <p className="text-stone-500 text-base leading-relaxed mb-4">
+                    We sent a confirmation link to <strong>{email}</strong> earlier. Check your inbox (and spam folder).
+                  </p>
+                  {resendStatus === 'sent' ? (
+                    <p className="text-forest-600 font-medium text-sm">
+                      Fresh confirmation email sent — check your inbox and spam folder.
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={resendStatus === 'loading'}
+                      className="btn-primary py-2.5 text-sm disabled:opacity-60"
+                    >
+                      {resendStatus === 'loading' ? 'Sending…' : 'Resend Confirmation Email'}
+                    </button>
+                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>

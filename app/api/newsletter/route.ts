@@ -38,6 +38,16 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       if (insertError.code === '23505') {
+        // Check if the existing subscriber is unconfirmed — they may need a resend
+        const { data: existing } = await supabase
+          .from('newsletter_subscribers')
+          .select('confirmed')
+          .eq('email', normalEmail)
+          .single();
+
+        if (existing && !existing.confirmed) {
+          return NextResponse.json({ error: 'unconfirmed' }, { status: 409 });
+        }
         return NextResponse.json({ error: 'duplicate' }, { status: 409 });
       }
       console.error('Newsletter insert error:', insertError);

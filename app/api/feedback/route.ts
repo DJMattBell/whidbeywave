@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
           from:    'WhidbeyWave <hello@whidbeywave.com>',
           to:      adminEmail,
           replyTo: email?.trim() || undefined,
-          subject: `New site feedback from ${page || '/'} — WhidbeyWave`,
+          subject: `[WhidbeyWave] New site feedback from ${page || '/'}`,
           html: `
             <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
               <div style="background:#1a4a33;padding:20px 28px;border-radius:12px 12px 0 0;">

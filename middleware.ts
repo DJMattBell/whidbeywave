@@ -38,14 +38,15 @@ function isAllowed(key: string, max: number, windowMs: number): boolean {
 
 // ── Route config ────────────────────────────────────────────────────────────
 const LIMITS: Record<string, { max: number; windowMs: number }> = {
-  '/api/events/submit':    { max: 3,  windowMs: 60 * 60 * 1000 }, // 3 / hour
-  '/api/contact':          { max: 5,  windowMs: 60 * 60 * 1000 }, // 5 / hour
-  '/api/newsletter':       { max: 3,  windowMs: 60 * 60 * 1000 }, // 3 / hour
-  '/api/reviews':          { max: 10, windowMs: 60 * 60 * 1000 }, // 10 / hour
-  '/api/forum/reply':      { max: 20, windowMs: 60 * 60 * 1000 }, // 20 / hour
-  '/api/listings/submit':  { max: 5,  windowMs: 60 * 60 * 1000 }, // 5 / hour
-  '/api/feedback':         { max: 5,  windowMs: 60 * 60 * 1000 }, // 5 / hour
-  '/api/listings/contact': { max: 10, windowMs: 60 * 60 * 1000 }, // 10 / hour
+  '/api/events/submit':      { max: 3,  windowMs: 60 * 60 * 1000 },  // 3 / hour
+  '/api/contact':            { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
+  '/api/newsletter':         { max: 3,  windowMs: 60 * 60 * 1000 },  // 3 / hour
+  '/api/newsletter/resend':  { max: 2,  windowMs: 10 * 60 * 1000 },  // 2 / 10 min
+  '/api/reviews':            { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
+  '/api/forum/reply':        { max: 20, windowMs: 60 * 60 * 1000 },  // 20 / hour
+  '/api/listings/submit':    { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
+  '/api/feedback':           { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
+  '/api/listings/contact':   { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
 };
 
 // ── Middleware ───────────────────────────────────────────────────────────────
@@ -80,6 +81,7 @@ export const config = {
     '/api/events/submit',
     '/api/contact',
     '/api/newsletter',
+    '/api/newsletter/resend',
     '/api/reviews',
     '/api/forum/reply',
     '/api/listings/submit',
