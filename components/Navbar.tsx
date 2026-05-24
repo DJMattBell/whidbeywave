@@ -11,6 +11,7 @@ const mainLinks = [
   { href: '/about',   label: 'About' },
   { href: '/events',  label: "What's Going On" },
   { href: '/news',    label: 'Island News' },
+  { href: '/guides',  label: 'Guides' },
 ];
 
 const contactLink = { href: '/contact', label: 'Say Hello' };

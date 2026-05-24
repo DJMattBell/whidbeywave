@@ -35,6 +35,7 @@ async function getApprovedEvents(): Promise<Event[]> {
     description: row.description ?? '',
     emoji:       CATEGORY_EMOJI[row.category] ?? '📅',
     tags:        (row.tags ?? []) as Event['tags'],
+    recurring_event_id: row.recurring_event_id ?? null,
   }));
 }
 

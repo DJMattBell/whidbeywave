@@ -146,6 +146,7 @@ export default async function HomePage() {
         {[
           { emoji: '📅', label: "What's On",   href: '/events'      },
           { emoji: '📰', label: 'Island News',  href: '/news'        },
+          { emoji: '📖', label: 'Guides',        href: '/guides'      },
           { emoji: '🛒', label: 'Buy & Sell',   href: '/marketplace' },
           { emoji: '🚢', label: 'Ferry',         href: '/ferry'       },
           { emoji: '🌊', label: 'Tides',         href: '/tides'       },
@@ -172,10 +173,11 @@ export default async function HomePage() {
 
   const desktopQuickLinks = (
     <section key="desktop-quick" className="hidden md:block bg-parchment-50 border-b border-parchment-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           { emoji: '📅', label: "What's Going On", href: '/events',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
           { emoji: '📰', label: 'Island News',      href: '/news',        color: 'bg-sound-50 text-sound-700 hover:bg-sound-100' },
+          { emoji: '📖', label: 'Guides',           href: '/guides',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
           { emoji: '🛒', label: 'Buy & Sell',       href: '/marketplace', color: 'bg-amber-50 text-amber-800 hover:bg-amber-100' },
           { emoji: '💬', label: 'Ask the Island',   href: '/forum',       color: 'bg-terra-50 text-terra-800 hover:bg-terra-100' },
         ].map(({ emoji, label, href, color }) => (

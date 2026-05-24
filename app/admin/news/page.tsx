@@ -14,9 +14,14 @@ async function getToken(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-const CATEGORIES = [
+const NEWS_CATEGORIES = [
   'Transportation', 'Arts & Culture', 'Agriculture', 'Community',
   'Nature', 'Events', 'Business', 'Health', 'Other',
+];
+
+const GUIDE_CATEGORIES = [
+  'Getting Around', 'Island Living', 'Seasonal', 'Food & Farms',
+  'History & Culture', 'Nature', 'Community', 'Other',
 ];
 
 type Post = {
@@ -28,6 +33,9 @@ type Post = {
   read_minutes: number;
   published: boolean;
   published_at: string;
+  post_type: string;
+  image_url: string | null;
+  tags: string[];
 };
 
 function toSlug(title: string) {
@@ -38,6 +46,11 @@ function fmt(dateStr: string) {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   });
+}
+
+function calcReadMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
 }
 
 function freshForm() {
@@ -52,6 +65,9 @@ function freshForm() {
     author:       'WhidbeyWave',
     published_at: new Date().toISOString().split('T')[0],
     published:    true,
+    post_type:    'news' as 'news' | 'guide',
+    image_url:    '',
+    tags:         '',
   };
 }
 
@@ -81,7 +97,7 @@ export default function AdminNewsPage() {
     );
     const { data } = await supabase
       .from('news_posts')
-      .select('id, title, slug, emoji, category, read_minutes, published, published_at')
+      .select('id, title, slug, emoji, category, read_minutes, published, published_at, post_type, image_url, tags')
       .order('published_at', { ascending: false });
     setPosts((data ?? []) as Post[]);
     setLoadingPosts(false);
@@ -118,7 +134,10 @@ export default function AdminNewsPage() {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body:    JSON.stringify({ ...form, read_minutes: Number(form.read_minutes) }),
+      body:    JSON.stringify({
+        ...form,
+        read_minutes: Number(form.read_minutes) || calcReadMinutes(form.body),
+      }),
     });
     const data = await res.json();
 
@@ -206,7 +225,7 @@ export default function AdminNewsPage() {
           <span className="text-2xl">📰</span>
           <h1 className="text-3xl text-stone-900"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
-            News Posts
+            News & Guides
           </h1>
         </div>
         <p className="text-stone-500 text-sm">Signed in as {user.email}</p>
@@ -225,7 +244,7 @@ export default function AdminNewsPage() {
       <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6 mb-10">
         <h2 className="text-xl font-semibold text-stone-800 mb-5"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-          Write a new post
+          {form.post_type === 'guide' ? 'Write a new guide' : 'Write a new post'}
         </h2>
 
         {submitStatus === 'ok' && (
@@ -243,6 +262,29 @@ export default function AdminNewsPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Post type toggle */}
+          <div className="flex gap-2">
+            {(['news', 'guide'] as const).map(t => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setForm(f => ({
+                  ...f,
+                  post_type: t,
+                  emoji: t === 'guide' && f.emoji === '📰' ? '📖' : t === 'news' && f.emoji === '📖' ? '📰' : f.emoji,
+                  category: t === 'guide' && NEWS_CATEGORIES.includes(f.category) ? 'Island Living' : t === 'news' && GUIDE_CATEGORIES.includes(f.category) && !NEWS_CATEGORIES.includes(f.category) ? 'Community' : f.category,
+                }))}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  form.post_type === t
+                    ? 'bg-forest-500 text-parchment-50'
+                    : 'bg-parchment-200 text-stone-600 hover:bg-parchment-300'
+                }`}
+              >
+                {t === 'news' ? '📰 News Article' : '📖 Community Guide'}
+              </button>
+            ))}
+          </div>
 
           {/* Title + Slug */}
           <div className="grid sm:grid-cols-2 gap-4">
@@ -295,7 +337,7 @@ export default function AdminNewsPage() {
                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
               >
-                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                {(form.post_type === 'guide' ? GUIDE_CATEGORIES : NEWS_CATEGORIES).map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
@@ -308,6 +350,9 @@ export default function AdminNewsPage() {
                 onChange={e => setForm(f => ({ ...f, read_minutes: e.target.value }))}
                 className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
               />
+              {form.body.trim() && (
+                <p className="text-[11px] text-stone-400 mt-1">Auto: ~{calcReadMinutes(form.body)} min</p>
+              )}
             </div>
           </div>
 
@@ -327,14 +372,50 @@ export default function AdminNewsPage() {
           {/* Body */}
           <div>
             <label className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">
-              Body <span className="text-stone-400 font-normal normal-case ml-1">— separate paragraphs with a blank line</span>
+              Body <span className="text-stone-400 font-normal normal-case ml-1">— supports markdown: **bold**, *italic*, ## headings, - lists, [links](url)</span>
             </label>
             <textarea
-              rows={10}
+              rows={14}
               value={form.body}
               onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
-              placeholder="Write the full article here..."
-              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-y"
+              placeholder={form.post_type === 'guide'
+                ? "Write your guide here... Use markdown for formatting:\n\n## Getting Started\n\nWhidbey Island has **two ferry routes**...\n\n- Clinton/Mukilteo (south)\n- Coupeville/Port Townsend (central)"
+                : "Write the full article here..."
+              }
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-y font-mono"
+            />
+          </div>
+
+          {/* Featured image */}
+          <div>
+            <label className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">
+              Featured Image URL <span className="text-stone-400 font-normal normal-case ml-1">— optional</span>
+            </label>
+            <input
+              type="url"
+              value={form.image_url}
+              onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+              placeholder="https://example.com/photo.jpg"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+            />
+            {form.image_url && (
+              <div className="mt-2 rounded-xl overflow-hidden border border-parchment-200 max-h-40">
+                <img src={form.image_url} alt="Preview" className="w-full h-40 object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">
+              Tags <span className="text-stone-400 font-normal normal-case ml-1">— comma-separated, e.g. ferries, housing, south whidbey</span>
+            </label>
+            <input
+              type="text"
+              value={form.tags}
+              onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+              placeholder="ferries, housing, south whidbey"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
             />
           </div>
 
@@ -418,7 +499,11 @@ export default function AdminNewsPage() {
                     {post.title}
                   </p>
                   <p className="text-xs text-stone-400 mt-0.5">
-                    {post.category} · {fmt(post.published_at)} · {post.read_minutes} min read
+                    <span className={`font-semibold ${post.post_type === 'guide' ? 'text-sound-600' : 'text-stone-500'}`}>
+                      {post.post_type === 'guide' ? '📖 Guide' : '📰 News'}
+                    </span>
+                    {' · '}{post.category} · {fmt(post.published_at)} · {post.read_minutes} min read
+                    {post.tags?.length > 0 && <span className="text-stone-300"> · {post.tags.join(', ')}</span>}
                   </p>
                 </div>
                 <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-semibold ${

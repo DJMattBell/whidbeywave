@@ -25,6 +25,7 @@ export type Event = {
   description: string;
   emoji: string;
   tags: EventTag[];
+  recurring_event_id?: string | null;
 };
 
 export type NewsPost = {
@@ -38,6 +39,9 @@ export type NewsPost = {
   category: string;
   readMinutes: number;
   emoji: string;
+  postType: 'news' | 'guide';
+  imageUrl: string | null;
+  tags: string[];
 };
 
 export type Listing = {
@@ -139,6 +143,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Business',
     readMinutes: 3,
     emoji: '👨‍🍳',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['business', 'langley', 'restaurants'],
   },
   {
     id: 'n2',
@@ -152,6 +159,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Transportation',
     readMinutes: 3,
     emoji: '⛴️',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['ferries', 'transportation', 'legislation'],
   },
   {
     id: 'n3',
@@ -165,6 +175,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Community',
     readMinutes: 4,
     emoji: '🏡',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['housing', 'langley', 'community'],
   },
   {
     id: 'n4',
@@ -178,6 +191,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Community',
     readMinutes: 4,
     emoji: '🏗️',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['development', 'south whidbey'],
   },
   {
     id: 'n5',
@@ -191,6 +207,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Health',
     readMinutes: 4,
     emoji: '🏥',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['health', 'whidbeyhealth'],
   },
   {
     id: 'n6',
@@ -204,6 +223,9 @@ export const newsPosts: NewsPost[] = [
     category: 'Community',
     readMinutes: 3,
     emoji: '📚',
+    postType: 'news',
+    imageUrl: null,
+    tags: ['libraries', 'taxes', 'island county'],
   },
 ];
 
@@ -297,4 +319,10 @@ export const categoryColors: Record<string, string> = {
   Events:    'bg-amber-100 text-amber-800',
   Business:  'bg-stone-100 text-stone-700',
   Health:    'bg-rose-100 text-rose-800',
+  // Guide categories
+  'Getting Around':  'bg-blue-100 text-blue-800',
+  'Island Living':   'bg-green-100 text-green-800',
+  'Seasonal':        'bg-amber-100 text-amber-800',
+  'Food & Farms':    'bg-orange-100 text-orange-800',
+  'History & Culture': 'bg-purple-100 text-purple-800',
 };

@@ -153,6 +153,71 @@ html.text-large h3 { font-size: 1.4rem; }
   animation: fadeIn 200ms ease-out;
 }
 
+/* ── Markdown prose styles (used by MarkdownBody) ── */
+.prose-ww {
+  @apply text-stone-700 leading-relaxed text-base;
+}
+.prose-ww h1 {
+  @apply text-2xl font-bold text-stone-900 mt-8 mb-4;
+  font-family: theme('fontFamily.heading');
+}
+.prose-ww h2 {
+  @apply text-xl font-bold text-stone-900 mt-7 mb-3;
+  font-family: theme('fontFamily.heading');
+}
+.prose-ww h3 {
+  @apply text-lg font-semibold text-stone-800 mt-6 mb-2;
+  font-family: theme('fontFamily.heading');
+}
+.prose-ww p {
+  @apply mb-5 leading-relaxed;
+}
+.prose-ww strong {
+  @apply font-semibold text-stone-800;
+}
+.prose-ww em {
+  @apply italic;
+}
+.prose-ww a {
+  @apply text-forest-600 underline underline-offset-2 hover:text-forest-800 transition-colors;
+}
+.prose-ww ul {
+  @apply list-disc pl-6 mb-5 space-y-1.5;
+}
+.prose-ww ol {
+  @apply list-decimal pl-6 mb-5 space-y-1.5;
+}
+.prose-ww li {
+  @apply leading-relaxed;
+}
+.prose-ww blockquote {
+  @apply border-l-4 border-forest-300 pl-4 italic text-stone-600 my-5;
+}
+.prose-ww code {
+  @apply bg-parchment-200 text-stone-800 px-1.5 py-0.5 rounded text-sm;
+}
+.prose-ww pre {
+  @apply bg-stone-800 text-parchment-100 p-4 rounded-xl overflow-x-auto mb-5 text-sm;
+}
+.prose-ww pre code {
+  @apply bg-transparent text-inherit p-0;
+}
+.prose-ww hr {
+  @apply border-parchment-300 my-8;
+}
+.prose-ww table {
+  @apply w-full border-collapse mb-5;
+}
+.prose-ww th {
+  @apply border border-parchment-300 bg-parchment-100 px-3 py-2 text-left text-sm font-semibold text-stone-800;
+}
+.prose-ww td {
+  @apply border border-parchment-300 px-3 py-2 text-sm;
+}
+.prose-ww img {
+  @apply rounded-xl my-6 max-w-full;
+}
+
 /* Bottom tab bar safe spacing — add padding to footer/body on mobile */
 @media (max-width: 767px) {
   body {

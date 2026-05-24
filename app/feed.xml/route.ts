@@ -7,7 +7,7 @@ export async function GET() {
   const supabase = createServerClient();
   const { data: newsData } = await supabase
     .from('news_posts')
-    .select('id, title, excerpt, slug, category, emoji, published_at')
+    .select('id, title, excerpt, slug, category, emoji, published_at, post_type')
     .eq('published', true)
     .order('published_at', { ascending: false })
     .limit(20);
@@ -18,11 +18,12 @@ export async function GET() {
     .map(post => {
       // Use noon UTC as a stable approximation — avoids PST/PDT offset issues
       const pubDate = new Date(post.published_at + 'T12:00:00Z').toUTCString();
+      const section = post.post_type === 'guide' ? 'guides' : 'news';
       return `
     <item>
       <title><![CDATA[${post.title}]]></title>
-      <link>${SITE_URL}/news#${post.slug}</link>
-      <guid isPermaLink="true">${SITE_URL}/news#${post.slug}</guid>
+      <link>${SITE_URL}/${section}#${post.slug}</link>
+      <guid isPermaLink="true">${SITE_URL}/${section}#${post.slug}</guid>
       <pubDate>${pubDate}</pubDate>
       <description><![CDATA[${post.excerpt ?? ''}]]></description>
       <category><![CDATA[${post.category}]]></category>

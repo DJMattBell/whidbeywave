@@ -427,6 +427,9 @@ create table if not exists news_posts (
   author       text not null default 'WhidbeyWave',
   published_at date not null default current_date,
   published    boolean not null default false,
+  post_type    text not null default 'news',
+  image_url    text,
+  tags         text[] not null default '{}',
   created_at   timestamptz not null default now()
 );
 
@@ -434,6 +437,8 @@ create index if not exists news_posts_published_idx
   on news_posts(published, published_at desc);
 create index if not exists news_posts_slug_idx
   on news_posts(slug);
+create index if not exists news_posts_type_idx
+  on news_posts(post_type, published, published_at desc);
 
 alter table news_posts enable row level security;
 
@@ -457,6 +462,31 @@ create policy "Authenticated users can update news posts"
 create policy "Authenticated users can insert news posts"
   on news_posts for insert
   with check (auth.uid() is not null);
+
+
+-- ──────────────────────────────────────────────
+-- NEWS COMMENTS
+-- ──────────────────────────────────────────────
+create table if not exists news_comments (
+  id            uuid primary key default gen_random_uuid(),
+  article_slug  text not null,
+  author_name   text not null,
+  body          text not null,
+  created_at    timestamptz not null default now()
+);
+
+create index if not exists news_comments_slug_idx
+  on news_comments(article_slug, created_at asc);
+
+alter table news_comments enable row level security;
+
+create policy "Anyone can read news comments"
+  on news_comments for select
+  using (true);
+
+create policy "Anyone can post news comments"
+  on news_comments for insert
+  with check (true);
 
 
 -- ──────────────────────────────────────────────

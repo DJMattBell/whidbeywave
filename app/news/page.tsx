@@ -5,6 +5,7 @@ import { createServerClient } from '@/lib/supabase';
 import { formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import NewsCommentSection from '@/components/NewsCommentSection';
 import ShareButton from '@/components/ShareButton';
+import MarkdownBody from '@/components/MarkdownBody';
 
 export const revalidate = 300;
 
@@ -19,6 +20,9 @@ function normalize(p: any) {
     body:        p.body        ?? '',
     emoji:       p.emoji       ?? '📰',
     slug:        p.slug        ?? String(p.id),
+    postType:    p.post_type   ?? p.postType ?? 'news',
+    imageUrl:    p.image_url   ?? p.imageUrl ?? null,
+    tags:        p.tags        ?? [],
   };
 }
 
@@ -28,6 +32,7 @@ const getCachedPosts = cache(async () => {
     .from('news_posts')
     .select('*')
     .eq('published', true)
+    .eq('post_type', 'news')
     .order('published_at', { ascending: false });
 
   const raw = postsData ?? [];
@@ -45,7 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ? `${latest.title} — ${latest.excerpt?.slice(0, 120) ?? ''}…`
     : 'Local news and community stories from Whidbey Island, WA — covering Oak Harbor, Langley, Coupeville, Freeland, and all island towns.';
   const ogDesc = latest?.excerpt ?? 'Local stories from Whidbey Island.';
-  const ogImage = `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Island News')}`;
+  const ogImage = latest?.imageUrl
+    ?? `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Island News')}`;
 
   return {
     title,
@@ -66,19 +72,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// ── Article body renderer ─────────────────────────────────────
-
-function ArticleBody({ body }: { body: string }) {
-  const paragraphs = body.split(/\n\n+/).filter(Boolean);
-  return (
-    <div className="space-y-6 max-w-prose border-t border-parchment-200 pt-5">
-      {paragraphs.map((p, i) => (
-        <p key={i} className="text-stone-700 leading-relaxed text-base">{p.replace(/\n/g, ' ')}</p>
-      ))}
-    </div>
-  );
-}
-
 // ── Page ──────────────────────────────────────────────────────
 
 export default async function NewsPage() {
@@ -97,6 +90,11 @@ export default async function NewsPage() {
           <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
             Local stories, community updates, and a little of what&apos;s worth knowing around Whidbey.
           </p>
+          <div className="mt-4">
+            <Link href="/guides" className="text-parchment-400 hover:text-parchment-200 text-sm font-medium transition-colors">
+              Looking for community guides? →
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -114,40 +112,66 @@ export default async function NewsPage() {
         ) : (
           <>
             {/* Featured post */}
-            <article id={featured.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden mb-12 md:flex group scroll-mt-24">
-              <div
-                className="md:w-72 bg-gradient-to-br from-parchment-200 to-sound-100 flex items-center justify-center text-8xl shrink-0 py-10 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
-                aria-hidden="true"
-              >
-                {featured.emoji}
-              </div>
-              <div className="p-8 flex flex-col justify-center">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-500 text-parchment-50">
-                    Worth Knowing
-                  </span>
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[featured.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                    {featured.category}
-                  </span>
-                </div>
-                <h2 className="text-2xl md:text-3xl text-stone-900 mb-3 group-hover:text-forest-600 transition-colors leading-tight font-semibold">
-                  {featured.title}
-                </h2>
-                <p className="text-[15px] text-stone-600 mb-4">
-                  By {featured.author} &nbsp;·&nbsp;{' '}
-                  <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time>
-                  &nbsp;·&nbsp; {featured.readMinutes} min read
-                </p>
-                <p className="text-stone-600 leading-relaxed text-base mb-6">{featured.excerpt}</p>
-                <ArticleBody body={featured.body} />
-                <div className="mt-5 pt-4 border-t border-parchment-200">
-                  <ShareButton
-                    title={`${featured.title} — WhidbeyWave`}
-                    url={`/news#${featured.slug}`}
-                    text={featured.excerpt}
+            <article id={featured.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden mb-12 group scroll-mt-24">
+              {featured.imageUrl ? (
+                <div className="w-full h-48 md:h-72 overflow-hidden">
+                  <img
+                    src={featured.imageUrl}
+                    alt={featured.title}
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <NewsCommentSection slug={featured.slug} />
+              ) : (
+                <div className="md:hidden bg-gradient-to-br from-parchment-200 to-sound-100 flex items-center justify-center text-8xl py-10" aria-hidden="true">
+                  {featured.emoji}
+                </div>
+              )}
+              <div className="md:flex">
+                {!featured.imageUrl && (
+                  <div
+                    className="hidden md:flex md:w-72 bg-gradient-to-br from-parchment-200 to-sound-100 items-center justify-center text-8xl shrink-0 rounded-l-2xl"
+                    aria-hidden="true"
+                  >
+                    {featured.emoji}
+                  </div>
+                )}
+                <div className="p-8 flex flex-col justify-center">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-500 text-parchment-50">
+                      Worth Knowing
+                    </span>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[featured.category] ?? 'bg-parchment-200 text-stone-700'}`}>
+                      {featured.category}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl text-stone-900 mb-3 group-hover:text-forest-600 transition-colors leading-tight font-semibold">
+                    {featured.title}
+                  </h2>
+                  <p className="text-[15px] text-stone-600 mb-4">
+                    By {featured.author} &nbsp;·&nbsp;{' '}
+                    <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time>
+                    &nbsp;·&nbsp; {featured.readMinutes} min read
+                  </p>
+                  <p className="text-stone-600 leading-relaxed text-base mb-6">{featured.excerpt}</p>
+                  <MarkdownBody body={featured.body} />
+                  {featured.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-4">
+                      {featured.tags.map((tag: string) => (
+                        <span key={tag} className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-parchment-200 text-stone-600">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-5 pt-4 border-t border-parchment-200">
+                    <ShareButton
+                      title={`${featured.title} — WhidbeyWave`}
+                      url={`/news#${featured.slug}`}
+                      text={featured.excerpt}
+                    />
+                  </div>
+                  <NewsCommentSection slug={featured.slug} />
+                </div>
               </div>
             </article>
 
@@ -158,12 +182,18 @@ export default async function NewsPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   {rest.map((post: any) => (
                     <article key={post.id} id={post.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden group scroll-mt-24">
-                      <div
-                        className="bg-gradient-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-2xl"
-                        aria-hidden="true"
-                      >
-                        {post.emoji}
-                      </div>
+                      {post.imageUrl ? (
+                        <div className="h-40 overflow-hidden">
+                          <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div
+                          className="bg-gradient-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-2xl"
+                          aria-hidden="true"
+                        >
+                          {post.emoji}
+                        </div>
+                      )}
                       <div className="p-6">
                         <div className="flex flex-wrap gap-2 mb-3">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'}`}>
@@ -179,7 +209,16 @@ export default async function NewsPage() {
                           &nbsp;·&nbsp; {post.readMinutes} min read
                         </p>
                         <p className="text-stone-600 text-base mb-4 leading-relaxed">{post.excerpt}</p>
-                        <ArticleBody body={post.body} />
+                        <MarkdownBody body={post.body} />
+                        {post.tags?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {post.tags.map((tag: string) => (
+                              <span key={tag} className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-parchment-200 text-stone-600">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <div className="mt-5 pt-4 border-t border-parchment-200">
                           <ShareButton
                             title={`${post.title} — WhidbeyWave`}

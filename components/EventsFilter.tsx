@@ -249,6 +249,9 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                     {happeningNow && <span className="badge-now">Happening Now</span>}
                     {/* #8 Free badge */}
                     {free && <span className="badge-free">Free</span>}
+                    {event.recurring_event_id && (
+                      <span className="badge bg-amber-50 text-amber-700 border border-amber-200">Recurring</span>
+                    )}
                     <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
                       {event.category}
                     </span>

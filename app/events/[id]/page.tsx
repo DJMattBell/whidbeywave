@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import AddToCalendar from '@/components/AddToCalendar';
 import ShareButton from '@/components/ShareButton';
+import RecurringSeries from '@/components/RecurringSeries';
 
 export const revalidate = 300;
 
@@ -22,6 +23,27 @@ async function getEvent(id: string) {
     .single();
 
   return data ?? null;
+}
+
+async function getSiblingEvents(recurringEventId: string, currentEventId: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key || url.includes('placeholder')) return [];
+
+  const supabase = createClient(url, key);
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data } = await supabase
+    .from('event_submissions')
+    .select('id, date')
+    .eq('recurring_event_id', recurringEventId)
+    .eq('status', 'approved')
+    .gte('date', today)
+    .neq('id', currentEventId)
+    .order('date', { ascending: true })
+    .limit(8);
+
+  return data ?? [];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -56,6 +78,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const emoji = CATEGORY_EMOJI[event.category] ?? '📅';
   const tags: string[] = Array.isArray(event.tags) ? event.tags : [];
 
+  const siblingEvents = event.recurring_event_id
+    ? await getSiblingEvents(event.recurring_event_id, event.id)
+    : [];
+
   return (
     <>
       {/* Header */}
@@ -70,6 +96,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           <div className="flex items-center gap-2 mb-3">
             <span className="text-3xl" aria-hidden="true">{emoji}</span>
             <span className="text-sm font-medium text-forest-300 uppercase tracking-wide">{event.category}</span>
+            {event.recurring_event_id && (
+              <span className="text-xs font-medium bg-amber-400/20 text-amber-200 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
+                Recurring Event
+              </span>
+            )}
           </div>
           <h1
             className="text-2xl md:text-4xl font-bold text-parchment-50 mb-4 leading-snug"
@@ -110,6 +141,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 ))}
               </div>
             )}
+
+            {/* Recurring series dates */}
+            {siblingEvents.length > 0 && (
+              <RecurringSeries events={siblingEvents} currentDate={event.date} />
+            )}
           </div>
 
           {/* Sidebar */}
@@ -132,7 +168,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                   <p className="text-stone-500">{event.town}</p>
                 )}
               </div>
-              {event.submitter_name && (
+              {event.submitter_name && event.submitter_name !== 'Recurring Event' && (
                 <div>
                   <p className="text-xs text-stone-400 uppercase tracking-wide font-medium mb-0.5">Submitted by</p>
                   <p className="text-stone-700">{event.submitter_name}</p>

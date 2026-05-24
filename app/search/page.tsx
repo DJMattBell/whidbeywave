@@ -7,7 +7,7 @@ import { supabase, isConfigured } from '@/lib/supabase';
 import type { ForumPostRow, Recommendation } from '@/lib/db-types';
 
 type EventResult = { id: string; title: string; date: string; town: string; category: string; description: string };
-type NewsResult = { id: string; title: string; excerpt: string; slug: string; emoji: string; category: string };
+type NewsResult = { id: string; title: string; excerpt: string; slug: string; emoji: string; category: string; post_type?: string };
 type ListingResult = { id: string; title: string; price: number | null; is_free: boolean; emoji: string; location: string; description: string | null };
 
 type Results = {
@@ -55,11 +55,11 @@ function SearchBody() {
         .limit(8),
       supabase
         .from('news_posts')
-        .select('id, title, excerpt, slug, emoji, category')
+        .select('id, title, excerpt, slug, emoji, category, post_type')
         .eq('published', true)
         .or(`title.ilike.%${term}%,excerpt.ilike.%${term}%`)
         .order('published_at', { ascending: false })
-        .limit(5),
+        .limit(8),
       supabase
         .from('forum_posts')
         .select('id, title, author_name, reply_count')
@@ -123,7 +123,7 @@ function SearchBody() {
               type="search"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Search events, news, marketplace, forum…"
+              placeholder="Search events, news, guides, marketplace, forum…"
               autoFocus
               className="w-full pl-12 pr-4 py-3 rounded-xl border border-parchment-300 focus:outline-none focus:ring-2 focus:ring-forest-400 text-base bg-white text-stone-800 placeholder:text-stone-400 shadow-warm-sm"
             />
@@ -185,15 +185,34 @@ function SearchBody() {
             </section>
           )}
 
-          {results.news.length > 0 && (
+          {results.news.filter(p => p.post_type !== 'guide').length > 0 && (
             <section>
               <h2 className="text-lg font-semibold text-stone-700 mb-3">
-                📰 Island News ({results.news.length})
+                📰 Island News ({results.news.filter(p => p.post_type !== 'guide').length})
               </h2>
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
-                {results.news.map(p => (
+                {results.news.filter(p => p.post_type !== 'guide').map(p => (
                   <Link key={p.id} href={`/news#${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
                     <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji ?? '📰'}</span>
+                    <div>
+                      <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{p.title}</p>
+                      <p className="text-sm text-stone-500 mt-0.5 line-clamp-1">{p.excerpt}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {results.news.filter(p => p.post_type === 'guide').length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold text-stone-700 mb-3">
+                📖 Community Guides ({results.news.filter(p => p.post_type === 'guide').length})
+              </h2>
+              <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
+                {results.news.filter(p => p.post_type === 'guide').map(p => (
+                  <Link key={p.id} href={`/guides#${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
+                    <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji ?? '📖'}</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{p.title}</p>
                       <p className="text-sm text-stone-500 mt-0.5 line-clamp-1">{p.excerpt}</p>
@@ -297,7 +316,7 @@ export default function SearchPage() {
           >
             Search WhidbeyWave
           </h1>
-          <p className="text-parchment-300">Events · News · Marketplace · Forum · Local Picks</p>
+          <p className="text-parchment-300">Events · News · Guides · Marketplace · Forum · Local Picks</p>
         </div>
       </div>
       <Suspense fallback={

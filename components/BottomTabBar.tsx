@@ -58,6 +58,7 @@ export default function BottomTabBar() {
     { href: '/ferry',           emoji: '🚢', label: 'Ferry Status' },
     { href: '/tides',           emoji: '🌊', label: 'Tides' },
     { href: '/news',            emoji: '📰', label: 'Island News' },
+    { href: '/guides',          emoji: '📖', label: 'Guides' },
     { href: '/recommendations', emoji: '⭐', label: 'Local Picks' },
     { href: '/barter',          emoji: '🔄', label: 'Barter & Trade' },
     { href: '/newsletter',      emoji: '📬', label: 'Newsletter' },
