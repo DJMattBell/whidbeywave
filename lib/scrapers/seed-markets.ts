@@ -136,7 +136,7 @@ export async function seedFarmersMarkets(
         description:     market.description,
         tags:            market.tags,
         submitter_name:  'Market Seed',
-        submitter_email: process.env.ADMIN_EMAIL ?? 'admin@whidbeywave.com',
+        submitter_email: 'noreply@whidbeywave.com',
         status:          'approved',
         source:          market.source,
       });

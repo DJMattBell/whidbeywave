@@ -87,6 +87,9 @@ function SearchBody() {
         recommendations: (recRes.data ?? []) as Results['recommendations'],
       });
       setLoading(false);
+    }).catch(() => {
+      setResults({ events: [], news: [], listings: [], forum: [], recommendations: [] });
+      setLoading(false);
     });
   }, []);
 

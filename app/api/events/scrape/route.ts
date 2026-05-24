@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
       tags:            [] as string[],
       source:          e.source,
       submitter_name:  'Event Scraper',
-      submitter_email: process.env.ADMIN_EMAIL ?? 'admin@whidbeywave.com',
+      submitter_email: 'noreply@whidbeywave.com',
       status:          'pending',
     }));
 

@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       description: template.description,
       tags: template.tags,
       submitter_name: 'Recurring Event',
-      submitter_email: process.env.ADMIN_EMAIL ?? 'admin@whidbeywave.com',
+      submitter_email: 'noreply@whidbeywave.com',
       source: 'recurring',
       status: 'approved',
       recurring_event_id: template.id,

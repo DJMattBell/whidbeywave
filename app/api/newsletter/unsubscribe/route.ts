@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 import { unsubscribeToken } from '@/lib/newsletter';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
@@ -17,7 +18,10 @@ export async function GET(request: NextRequest) {
   try {
     const expected = unsubscribeToken(normalEmail);
 
-    if (token !== expected) {
+    // Use constant-time comparison to prevent timing attacks
+    const a = Buffer.from(token);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !timingSafeEqual(a, b)) {
       return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
     }
 

@@ -4,8 +4,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 /** Generate an HMAC-based unsubscribe token for a given email. */
 export function unsubscribeToken(email: string): string {
-  const secret = process.env.CRON_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret) throw new Error('CRON_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set for unsubscribe tokens');
+  const secret = process.env.CRON_SECRET;
+  if (!secret) throw new Error('CRON_SECRET must be set for unsubscribe tokens');
   return createHmac('sha256', secret).update(email.toLowerCase().trim()).digest('hex').slice(0, 32);
 }
 

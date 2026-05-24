@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
      .maxItems(images, 8, 'Images');
 
     if (!is_free && price !== undefined && price !== null && price !== '') {
-      if (isNaN(Number(price)) || Number(price) < 0) {
+      if (isNaN(Number(price)) || !isFinite(Number(price)) || Number(price) < 0) {
         return NextResponse.json({ error: 'Price must be a non-negative number' }, { status: 400 });
       }
     }

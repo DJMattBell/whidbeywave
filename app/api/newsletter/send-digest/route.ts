@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { unsubscribeUrl } from '@/lib/newsletter';
 import { verifyCronRequest } from '@/lib/cronAuth';
+import { escapeHtml } from '@/lib/escapeHtml';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 
 const resend   = new Resend(process.env.RESEND_API_KEY);
@@ -72,12 +73,12 @@ function buildEventCard(ev: EventRow) {
       <tr>
         <td style="padding:16px 20px;">
           <p style="margin:0 0 4px;font-size:18px;font-weight:bold;color:#1c3d2c;line-height:1.3;">
-            ${emoji} ${ev.title}
+            ${emoji} ${escapeHtml(ev.title)}
           </p>
           <p style="margin:0 0 ${desc ? '6px' : '0'};font-size:13px;color:#9ca3af;line-height:1.4;">
-            ${fmtDate(ev.date)} · ${ev.time}${locationStr ? ' · ' + locationStr : ''}
+            ${fmtDate(ev.date)} · ${escapeHtml(ev.time)}${locationStr ? ' · ' + escapeHtml(locationStr) : ''}
           </p>
-          ${desc ? `<p style="margin:0;font-size:13px;color:#57534e;line-height:1.55;">${desc}</p>` : ''}
+          ${desc ? `<p style="margin:0;font-size:13px;color:#57534e;line-height:1.55;">${escapeHtml(desc)}</p>` : ''}
         </td>
       </tr>
     </table>`;
@@ -106,8 +107,8 @@ function buildDigestHtml(
            style="background:#f0f7ff;border:1px solid #c7dff7;border-radius:12px;margin-bottom:10px;">
       <tr>
         <td style="padding:16px 20px;">
-          <p style="margin:0 0 4px;font-size:15px;font-weight:bold;color:#1c3d2c;">${n.emoji} ${n.title}</p>
-          <p style="margin:0;font-size:13px;color:#57534e;line-height:1.55;">${n.excerpt}</p>
+          <p style="margin:0 0 4px;font-size:15px;font-weight:bold;color:#1c3d2c;">${escapeHtml(n.emoji ?? '📰')} ${escapeHtml(n.title)}</p>
+          <p style="margin:0;font-size:13px;color:#57534e;line-height:1.55;">${escapeHtml(n.excerpt)}</p>
         </td>
       </tr>
     </table>
@@ -124,7 +125,7 @@ function buildDigestHtml(
           <tr>
             <td style="padding:14px 20px;">
               <p style="margin:0 0 4px;font-size:14px;font-weight:bold;color:#1c3d2c;">
-                <a href="${SITE_URL}/forum/${p.id}" style="color:#1c3d2c;text-decoration:none;">${p.title}</a>
+                <a href="${SITE_URL}/forum/${p.id}" style="color:#1c3d2c;text-decoration:none;">${escapeHtml(p.title)}</a>
               </p>
               <p style="margin:0;font-size:12px;color:#9ca3af;">
                 ${p.reply_count} ${p.reply_count === 1 ? 'reply' : 'replies'}
@@ -161,7 +162,7 @@ function buildDigestHtml(
         <tr>
           <td style="padding:28px 32px 16px;">
             <p style="margin:0;font-size:17px;color:#1c3d2c;line-height:1.65;">
-              Good morning, <strong>${sub.first_name}</strong>.
+              Good morning, <strong>${escapeHtml(sub.first_name)}</strong>.
               Here&rsquo;s what&rsquo;s worth knowing on Whidbey this week.
             </p>
           </td>
