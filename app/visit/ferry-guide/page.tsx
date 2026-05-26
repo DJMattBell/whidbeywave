@@ -31,12 +31,12 @@ function statusLabel(s: RouteStatus) {
   return s === 'cancelled' ? 'Cancelled' : s === 'delays' ? 'Delays reported' : 'On Schedule';
 }
 function statusColor(s: RouteStatus) {
-  return s === 'cancelled' ? 'text-red-600 font-semibold'
+  return s === 'cancelled' ? 'text-terra-600 font-semibold'
        : s === 'delays'    ? 'text-amber-600 font-semibold'
        :                     'text-forest-600';
 }
 function dotColor(s: RouteStatus) {
-  return s === 'cancelled' ? 'bg-red-500' : s === 'delays' ? 'bg-amber-500' : 'bg-forest-500';
+  return s === 'cancelled' ? 'bg-terra-500' : s === 'delays' ? 'bg-amber-500' : 'bg-forest-500';
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -49,21 +49,21 @@ export default async function FerryGuidePage() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-sound-800 to-forest-800 text-parchment-100 py-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-4">
-            <ol className="flex items-center gap-2 text-sm text-sound-300">
-              <li><Link href="/visit" className="hover:text-parchment-100 transition-colors">Visit Whidbey</Link></li>
+            <ol className="flex items-center gap-2 text-sm text-stone-500 justify-center">
+              <li><Link href="/visit" className="hover:text-forest-600 transition-colors">Visit Whidbey</Link></li>
               <li aria-hidden="true">›</li>
-              <li className="text-parchment-100">Getting Here</li>
+              <li className="text-stone-700">Getting Here</li>
             </ol>
           </nav>
-          <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">🚢 Getting Here</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
+          <p className="text-sound-600 font-medium mb-2 tracking-wide uppercase text-sm">Getting Here</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Getting to Whidbey Island
           </h1>
-          <p className="text-parchment-300 text-base max-w-xl leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Everything you need to know about the ferry — from a local.
           </p>
         </div>

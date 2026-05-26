@@ -162,7 +162,7 @@ export default function AuthModal({ onClose }: Props) {
               </div>
 
               {status === 'error' && (
-                <p id="auth-error" className="text-red-500 text-sm" role="alert">
+                <p id="auth-error" className="text-terra-600 text-sm" role="alert">
                   Something went wrong — please try again, or check your email address.
                 </p>
               )}

@@ -121,16 +121,13 @@ export default function HowItWorksPage() {
   return (
     <>
       {/* Hero */}
-      <div className="bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100 py-16 md:py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-300 font-medium mb-3 tracking-wide uppercase text-sm">Getting Started</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-5 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">Getting Started</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             How WhidbeyWave Works
           </h1>
-          <p className="text-parchment-300 text-xl leading-relaxed max-w-2xl mx-auto">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             A quick guide for getting the most out of your island&rsquo;s community website.
           </p>
         </div>

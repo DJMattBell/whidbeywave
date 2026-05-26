@@ -81,21 +81,21 @@ export default async function ThisWeekendPage() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-forest-800 via-forest-700 to-sound-800 text-parchment-100 py-14">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="mb-4">
-            <ol className="flex items-center gap-2 text-sm text-forest-300">
-              <li><Link href="/visit" className="hover:text-parchment-100 transition-colors">Visit Whidbey</Link></li>
+            <ol className="flex items-center gap-2 text-sm text-stone-500 justify-center">
+              <li><Link href="/visit" className="hover:text-forest-600 transition-colors">Visit Whidbey</Link></li>
               <li aria-hidden="true">›</li>
-              <li className="text-parchment-100">This Weekend</li>
+              <li className="text-stone-700">This Weekend</li>
             </ol>
           </nav>
-          <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
+          <p className="text-amber-600 font-medium mb-2 tracking-wide uppercase text-sm">What&apos;s On</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             This Weekend on Whidbey
           </h1>
-          <p className="text-parchment-300 text-base">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             {fridayLabel} through {sundayLabel}
           </p>
         </div>

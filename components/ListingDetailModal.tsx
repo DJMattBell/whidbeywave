@@ -402,7 +402,7 @@ export default function ListingDetailModal({
                 )}
 
                 {soldState === 'error' && (
-                  <p className="text-center text-sm text-red-600 py-1">Something went wrong — please try again.</p>
+                  <p className="text-center text-sm text-terra-600 py-1">Something went wrong — please try again.</p>
                 )}
               </>
             )}
@@ -413,21 +413,21 @@ export default function ListingDetailModal({
                 {deleteState === 'idle' && (
                   <button
                     onClick={() => setDeleteState('confirming')}
-                    className="w-full py-2.5 rounded-xl border border-red-200 text-sm text-red-500 hover:bg-red-50 hover:border-red-300 transition-colors"
+                    className="w-full py-2.5 rounded-xl border border-terra-200 text-sm text-terra-500 hover:bg-terra-50 hover:border-terra-300 transition-colors"
                   >
                     Delete Listing
                   </button>
                 )}
 
                 {deleteState === 'confirming' && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-4 space-y-3">
+                  <div className="rounded-xl border border-terra-200 bg-terra-50 p-4 space-y-3">
                     <p className="text-sm text-stone-700">
                       <strong>Permanently delete this listing?</strong> This cannot be undone.
                     </p>
                     <div className="flex gap-2">
                       <button
                         onClick={handleDelete}
-                        className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                        className="flex-1 py-2 rounded-xl bg-terra-600 text-white text-sm font-medium hover:bg-terra-700 transition-colors"
                       >
                         Yes, delete it
                       </button>

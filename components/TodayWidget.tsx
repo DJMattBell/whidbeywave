@@ -127,7 +127,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function FerryDot({ status }: { status: RouteStatus }) {
   const cls =
-    status === 'cancelled' ? 'bg-red-500'    :
+    status === 'cancelled' ? 'bg-terra-500'    :
     status === 'delays'    ? 'bg-amber-500'  :
                              'bg-forest-500' ;
   return (
@@ -140,7 +140,7 @@ function ferryLabel(s: RouteStatus) {
 }
 
 function ferryTextCls(s: RouteStatus) {
-  return s === 'cancelled' ? 'text-red-600 font-semibold'   :
+  return s === 'cancelled' ? 'text-terra-600 font-semibold'   :
          s === 'delays'    ? 'text-amber-600 font-semibold' :
                              'text-forest-600';
 }

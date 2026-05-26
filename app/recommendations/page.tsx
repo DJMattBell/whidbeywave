@@ -221,14 +221,13 @@ export default function RecommendationsPage() {
   return (
     <>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
-      <div className="bg-gradient-to-br from-amber-800 to-forest-800 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">⭐ Community</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">Community</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Island Recommendations
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Real recommendations from people who live here. Searchable, honest, and local.
           </p>
         </div>
@@ -293,13 +292,13 @@ export default function RecommendationsPage() {
             ) : (
               <form onSubmit={submitAddRec} className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="rec-name" className="block text-sm font-medium text-stone-700 mb-1.5">Name <span className="text-red-400">*</span></label>
+                  <label htmlFor="rec-name" className="block text-sm font-medium text-stone-700 mb-1.5">Name <span className="text-terra-600">*</span></label>
                   <input id="rec-name" type="text" required value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
                     placeholder="Toby's Tavern"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div>
-                  <label htmlFor="rec-category" className="block text-sm font-medium text-stone-700 mb-1.5">Category <span className="text-red-400">*</span></label>
+                  <label htmlFor="rec-category" className="block text-sm font-medium text-stone-700 mb-1.5">Category <span className="text-terra-600">*</span></label>
                   <select id="rec-category" value={addForm.category} onChange={e => setAddForm(p => ({ ...p, category: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700">
                     {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
@@ -323,7 +322,7 @@ export default function RecommendationsPage() {
                     placeholder="What makes this place worth knowing about?"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
                 </div>
-                {addStatus === 'error' && <p className="sm:col-span-2 text-red-500 text-xs">Something went wrong — please try again.</p>}
+                {addStatus === 'error' && <p className="sm:col-span-2 text-terra-600 text-xs">Something went wrong — please try again.</p>}
                 <div className="sm:col-span-2">
                   <button type="submit" disabled={addStatus === 'loading'} className="btn-primary disabled:opacity-60">
                     {addStatus === 'loading' ? 'Submitting…' : 'Submit Suggestion'}
@@ -440,7 +439,7 @@ export default function RecommendationsPage() {
                         <form onSubmit={e => submitReview(e, rec.id)} className="space-y-3 border-t border-parchment-200 pt-4">
                           <p className="text-xs font-semibold text-stone-600 uppercase tracking-wider">Write a review</p>
                           <div>
-                            <label className="block text-xs font-medium text-stone-600 mb-1">Rating <span className="text-red-400">*</span></label>
+                            <label className="block text-xs font-medium text-stone-600 mb-1">Rating <span className="text-terra-600">*</span></label>
                             <StarPicker value={rf.rating} onChange={v => updateReviewForm(rec.id, { rating: v })} />
                           </div>
                           <textarea rows={3} required value={rf.body} onChange={e => updateReviewForm(rec.id, { body: e.target.value })}
@@ -449,14 +448,14 @@ export default function RecommendationsPage() {
                           <div>
                             <input type="text" required value={rf.zip} onChange={e => updateReviewForm(rec.id, { zip: e.target.value, zipError: '' })}
                               placeholder="Your Whidbey Island zip code *" maxLength={10}
-                              className={`w-full px-3 py-2 border rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 ${rf.zipError ? 'border-red-300' : 'border-parchment-300'}`} />
+                              className={`w-full px-3 py-2 border rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 ${rf.zipError ? 'border-terra-600' : 'border-parchment-300'}`} />
                             {rf.zipError ? (
-                              <p className="text-red-500 text-xs mt-1">{rf.zipError}</p>
+                              <p className="text-terra-600 text-xs mt-1">{rf.zipError}</p>
                             ) : (
                               <p className="text-xs text-stone-600 mt-1">Must be a Whidbey Island zip code</p>
                             )}
                           </div>
-                          {rf.status === 'error' && <p className="text-red-500 text-xs">Something went wrong — try again.</p>}
+                          {rf.status === 'error' && <p className="text-terra-600 text-xs">Something went wrong — try again.</p>}
                           <button type="submit" disabled={rf.status === 'loading' || !rf.rating}
                             className="btn-primary text-xs py-2 px-4 disabled:opacity-60">
                             {rf.status === 'loading' ? 'Posting…' : 'Post Review'}

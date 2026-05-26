@@ -26,7 +26,7 @@ function StatusBadge({ status }: { status: RouteStatus }) {
     return (
       <span
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold"
-        style={{ background: '#FEE2E2', color: '#991B1B' }}
+        style={{ background: 'var(--color-terra-50, #FEE2E2)', color: 'var(--color-terra-800, #991B1B)' }}
       >
         <span>✕</span> CANCELLED
       </span>
@@ -91,7 +91,7 @@ function DepartureList({
               <span className="text-stone-500 text-xs leading-snug">{dep.vessel}</span>
               <span className="ml-auto text-xs text-stone-400 tabular-nums shrink-0">
                 {dep.isCancelled ? (
-                  <span className="font-semibold text-red-600">CANCELLED</span>
+                  <span className="font-semibold text-terra-600">CANCELLED</span>
                 ) : (
                   relativeLabel(dep.epochMs, now)
                 )}

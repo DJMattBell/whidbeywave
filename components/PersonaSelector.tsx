@@ -252,7 +252,7 @@ function NewsletterStrip() {
         </button>
       </div>
       {status === 'error' && (
-        <p className="text-red-300 text-xs text-center mt-1">Something went wrong. Try again.</p>
+        <p className="text-terra-300 text-xs text-center mt-1">Something went wrong. Try again.</p>
       )}
     </form>
   );

@@ -308,15 +308,13 @@ function SearchBody() {
 export default function SearchPage() {
   return (
     <>
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-14">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h1
-            className="text-3xl md:text-4xl font-bold text-parchment-50 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-sound-600 font-medium mb-2 tracking-wide uppercase text-sm">Find Anything</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Search WhidbeyWave
           </h1>
-          <p className="text-parchment-300">Events · News · Guides · Marketplace · Forum · Local Picks</p>
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">Events · News · Guides · Marketplace · Forum · Local Picks</p>
         </div>
       </div>
       <Suspense fallback={

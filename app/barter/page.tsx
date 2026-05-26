@@ -22,16 +22,13 @@ export default function BarterPage() {
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-terra-700 to-forest-800 text-parchment-100 py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-terra-200 font-medium mb-2 tracking-wide uppercase text-sm">🤝 Trade & Swap</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <p className="text-terra-600 font-medium mb-2 tracking-wide uppercase text-sm">Trade & Swap</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Barter & Trade
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Got something to offer? Looking for something? This is the spot.
           </p>
         </div>

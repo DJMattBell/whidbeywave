@@ -21,15 +21,15 @@ export default function VisitPage() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-forest-800 via-forest-700 to-sound-800 text-parchment-100 py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">
-            🗺️ Whidbey Island, Washington
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">
+            Whidbey Island, Washington
           </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Welcome to Whidbey Island
           </h1>
-          <p className="text-parchment-200 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             The longest island in the contiguous US — and one of the best kept secrets in the Pacific Northwest.
           </p>
         </div>

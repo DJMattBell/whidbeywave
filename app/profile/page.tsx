@@ -33,7 +33,7 @@ function formatDate(dateStr: string) {
 const STATUS_STYLES: Record<string, string> = {
   pending:  'bg-amber-100 text-amber-800 border-amber-200',
   approved: 'bg-forest-100 text-forest-800 border-forest-200',
-  rejected: 'bg-red-100 text-red-700 border-red-200',
+  rejected: 'bg-terra-50 text-terra-700 border-terra-200',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -135,17 +135,14 @@ export default function ProfilePage() {
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
       {/* Header */}
-      <div className="bg-gradient-to-br from-sound-800 to-forest-800 text-parchment-100 py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">👤 My Account</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <p className="text-sound-600 font-medium mb-2 tracking-wide uppercase text-sm">My Account</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             My Profile
           </h1>
           {user && (
-            <p className="text-parchment-300 text-lg">
+            <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
               {displayName}
             </p>
           )}

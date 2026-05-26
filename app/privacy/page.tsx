@@ -14,15 +14,13 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <>
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-10 md:py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h1
-            className="text-3xl md:text-4xl font-bold text-parchment-50 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">Legal</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Privacy Policy
           </h1>
-          <p className="text-parchment-300 text-sm">Last updated: March 23, 2026</p>
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">Last updated: March 23, 2026</p>
         </div>
       </div>
 

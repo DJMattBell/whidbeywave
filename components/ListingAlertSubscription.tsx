@@ -90,7 +90,7 @@ export default function ListingAlertSubscription() {
             </button>
           </form>
           {status === 'error' && (
-            <p className="text-red-500 text-sm mt-2" role="alert">{errorMsg}</p>
+            <p className="text-terra-600 text-sm mt-2" role="alert">{errorMsg}</p>
           )}
         </div>
       </div>

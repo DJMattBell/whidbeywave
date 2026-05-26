@@ -27,7 +27,7 @@ export default async function FerryStatusPill() {
     : 'on-schedule';
 
   const dotColor =
-    worst === 'cancelled' ? 'bg-red-500' :
+    worst === 'cancelled' ? 'bg-terra-500' :
     worst === 'delays' ? 'bg-amber-500' :
     'bg-emerald-500';
 
