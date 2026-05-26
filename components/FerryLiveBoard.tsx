@@ -237,7 +237,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
         {fetchError && (
           <>
             <span className="text-stone-300">·</span>
-            <span className="text-amber-600 text-xs">Update failed — showing last good data</span>
+            <span className="text-terra-600 text-xs">Ferry status is on island time — showing last good data</span>
           </>
         )}
       </div>
@@ -258,16 +258,15 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
 
       {/* Configured but API failed */}
       {data.configured && !data.mukilteoClinton && !data.ptCoupeville && (
-        <div className="bg-parchment-100 border border-parchment-300 rounded-xl p-6 text-center">
-          <p className="text-2xl mb-3">🌧️</p>
-          <p className="font-semibold text-stone-700 mb-1">Live data temporarily unavailable</p>
-          <p className="text-stone-500 text-sm">
-            Could not reach the WSDOT API. Try refreshing, or check{' '}
+        <div className="error-banner">
+          <p className="font-semibold mb-1">Ferry status is on island time.</p>
+          <p className="text-sm">
+            We can&apos;t reach WSDOT right now — they may be doing maintenance. We&apos;ll keep trying. Check{' '}
             <a
               href="https://www.wsdot.wa.gov/ferries/alerts/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-forest-600 hover:text-forest-800 underline underline-offset-2"
+              className="text-terra-600 underline underline-offset-2 hover:text-terra-800"
             >
               wsdot.wa.gov/ferries/alerts
             </a>{' '}

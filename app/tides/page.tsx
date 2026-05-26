@@ -194,17 +194,15 @@ export default async function TidesPage() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-sound-800 to-forest-800 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">
-            🌊 Penn Cove · Station 9444900
+          <p className="text-sound-700 font-medium mb-2 tracking-wide uppercase text-sm">
+            Penn Cove · Station 9444900
           </p>
-          <h1
-            className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
-          >
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Whidbey Island Tides
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             NOAA tide predictions for Penn Cove — 7-day forecast, updated hourly.
           </p>
         </div>
@@ -214,18 +212,15 @@ export default async function TidesPage() {
 
         {/* ── NOAA unavailable ─────────────────────────────────────────────── */}
         {failed && (
-          <div className="empty-state">
-            <div className="empty-state-icon text-4xl">🌧️</div>
-            <p className="empty-state-title text-xl">
-              Tide data temporarily unavailable
-            </p>
-            <p className="text-stone-500 leading-relaxed max-w-sm mx-auto">
-              NOAA&apos;s tide service is taking a breath. Check back in a few minutes, or visit{' '}
+          <div className="error-banner">
+            <p className="font-semibold mb-1">Tides are on island time.</p>
+            <p className="text-sm">
+              We can&apos;t reach NOAA right now. We&apos;ll keep trying. In the meantime, visit{' '}
               <a
                 href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9444900"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-forest-600 hover:text-forest-800 underline underline-offset-2"
+                className="text-terra-600 underline underline-offset-2 hover:text-terra-800"
               >
                 NOAA directly
               </a>
