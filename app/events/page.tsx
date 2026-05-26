@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache, Suspense } from 'react';
 import { createServerClient, isConfigured } from '@/lib/supabase';
-import { events as fallbackEvents, categoryColors } from '@/lib/data';
+import { events as fallbackEvents } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import type { Event } from '@/lib/data';
 import EventsFilter from '@/components/EventsFilter';
 import ShareButton from '@/components/ShareButton';
+import { Calendar } from 'lucide-react';
 
 export const revalidate = 300; // re-fetch every 5 minutes
 
@@ -76,17 +77,17 @@ export default async function EventsPage() {
   return (
     <>
       {/* Page header */}
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             What&apos;s Happening on Whidbey
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Community-submitted events, reviewed and approved by neighbors.
           </p>
           <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <Link href="/submit-event" className="inline-block bg-amber-400 hover:bg-amber-500 text-stone-900 font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-warm text-sm">
+            <Link href="/submit-event" className="btn-primary">
               + Submit Your Event
             </Link>
             <ShareButton title="What's On Whidbey Island — WhidbeyWave" />
@@ -94,7 +95,7 @@ export default async function EventsPage() {
               href="/events/print"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-parchment-50/10 hover:bg-parchment-50/20 text-parchment-200 hover:text-parchment-50 border border-parchment-50/20 transition-colors text-sm font-medium"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-parchment-200 hover:bg-parchment-300 text-stone-600 hover:text-stone-800 border border-parchment-300 transition-colors text-sm font-medium min-h-[44px]"
             >
               🖨️ Print This Week
             </Link>
@@ -102,11 +103,11 @@ export default async function EventsPage() {
         </div>
       </div>
 
-      {/* #14 Persistent search bar */}
+      {/* Mobile search bar */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-2 md:hidden">
         <Link
           href="/search?q="
-          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-parchment-200 bg-white text-stone-400 text-sm shadow-warm-sm"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-parchment-200 bg-white text-stone-400 text-sm shadow-warm-sm min-h-[44px]"
         >
           <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -115,7 +116,7 @@ export default async function EventsPage() {
         </Link>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:pt-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
 
         {/* Upcoming events */}
         <div className="flex items-center justify-between mb-6">
@@ -129,9 +130,9 @@ export default async function EventsPage() {
 
         {upcoming.length === 0 ? (
           <div className="empty-state mb-12">
-            <div className="empty-state-icon text-5xl">🌾</div>
-            <p className="empty-state-title">Nothing scheduled yet</p>
-            <p className="empty-state-text">Be the first to add something happening on the island.</p>
+            <Calendar size={48} className="empty-state-icon" />
+            <h3 className="empty-state-title">The calendar&apos;s looking quiet</h3>
+            <p className="empty-state-text">Check back soon or submit your own community event.</p>
             <Link href="/submit-event" className="btn-primary">Submit an Event</Link>
           </div>
         ) : (
@@ -142,7 +143,7 @@ export default async function EventsPage() {
 
         {/* Past events (collapsible) */}
         {past.length > 0 && (
-          <details className="mt-14 group">
+          <details className="mt-12 md:mt-16 group">
             <summary className="cursor-pointer list-none flex items-center gap-2 text-stone-600 hover:text-stone-800 text-base font-medium transition-colors select-none mb-4 min-h-[44px]">
               <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden="true">▶</span>
               Past events ({past.length})
@@ -174,7 +175,7 @@ export default async function EventsPage() {
         )}
 
         {/* CTA */}
-        <div className="mt-16 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
+        <div className="mt-12 md:mt-16 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
           <h3 className="text-2xl font-semibold text-forest-800 mb-2">
             Got something happening?
           </h3>

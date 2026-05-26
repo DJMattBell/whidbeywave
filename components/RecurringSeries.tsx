@@ -16,7 +16,7 @@ export default function RecurringSeries({
   currentDate: string;
 }) {
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+    <div className="card bg-amber-50 border-amber-200 p-5">
       <h3 className="text-base font-semibold text-amber-900 mb-1">
         This event repeats
       </h3>
