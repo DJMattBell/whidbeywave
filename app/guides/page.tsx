@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 import { createServerClient } from '@/lib/supabase';
 import { formatShortDate, categoryColors } from '@/lib/data';
-import MarkdownBody from '@/components/MarkdownBody';
-import NewsCommentSection from '@/components/NewsCommentSection';
-import ShareButton from '@/components/ShareButton';
+import GuidesFilter from '@/components/GuidesFilter';
 import { JsonLd } from '@/components/JsonLd';
+import { BookOpen } from 'lucide-react';
 
 export const revalidate = 300;
 
@@ -21,11 +20,9 @@ function normalize(p: Record<string, unknown>) {
     publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
     readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
     author:      (p.author ?? 'WhidbeyWave') as string,
-    body:        (p.body ?? '') as string,
     emoji:       (p.emoji ?? '📖') as string,
     slug:        (p.slug ?? String(p.id)) as string,
     imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
-    tags:        (p.tags ?? []) as string[],
   };
 }
 
@@ -59,11 +56,66 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function GuidesPage() {
-  const guides = await getCachedGuides();
+function GuidesGrid({ guides, cat }: { guides: ReturnType<typeof normalize>[]; cat: string }) {
+  const filtered = cat && cat !== 'All' ? guides.filter(g => g.category === cat) : guides;
 
-  // Group by category for organized display
-  const categories = [...new Set(guides.map(g => g.category))];
+  if (filtered.length === 0) {
+    return (
+      <div className="empty-state mb-12">
+        <BookOpen className="empty-state-icon w-12 h-12" />
+        <p className="empty-state-title">No guides in this category yet</p>
+        <p className="empty-state-text">Check back soon or browse all guides.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filtered.map((guide) => (
+        <Link key={guide.id} href={`/guides/${guide.slug}`} className="card group">
+          {guide.imageUrl ? (
+            <div className="relative h-44 overflow-hidden">
+              <Image src={guide.imageUrl} alt={guide.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
+            </div>
+          ) : (
+            <div
+              className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
+              aria-hidden="true"
+            >
+              {guide.emoji}
+            </div>
+          )}
+          <div className="p-5">
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-100 text-forest-800">
+                Guide
+              </span>
+              <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[guide.category] ?? 'bg-parchment-200 text-stone-700'}`}>
+                {guide.category}
+              </span>
+            </div>
+            <h3 className="text-lg text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
+              {guide.title}
+            </h3>
+            <p className="text-sm text-stone-500 mb-2">
+              By {guide.author} · <time dateTime={guide.publishedAt}>{formatShortDate(guide.publishedAt)}</time> · {guide.readMinutes} min read
+            </p>
+            <p className="text-stone-600 text-sm leading-relaxed line-clamp-3">{guide.excerpt}</p>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+export default async function GuidesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cat?: string }>;
+}) {
+  const guides = await getCachedGuides();
+  const { cat = 'All' } = await searchParams;
+  const categories = [...new Set(guides.map(g => g.category))].filter(Boolean);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -83,7 +135,7 @@ export default async function GuidesPage() {
       datePublished: guide.publishedAt,
       author: { '@type': 'Person', name: guide.author },
       publisher: { '@type': 'Organization', name: 'WhidbeyWave' },
-      url: `https://whidbeywave.com/guides#${guide.slug}`,
+      url: `https://whidbeywave.com/guides/${guide.slug}`,
       ...(guide.imageUrl ? { image: guide.imageUrl } : {}),
     })),
   };
@@ -92,31 +144,31 @@ export default async function GuidesPage() {
     <>
       <JsonLd data={jsonLd} />
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📖 Island Know-How</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">Island Know-How</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Community Guides
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Practical guides for getting around, settling in, and making the most of island life.
           </p>
           <div className="mt-4">
-            <Link href="/news" className="text-parchment-400 hover:text-parchment-200 text-sm font-medium transition-colors">
+            <Link href="/news" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
               Looking for news? →
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
 
         {guides.length === 0 ? (
           <div className="empty-state mb-12">
-            <div className="empty-state-icon text-5xl">📖</div>
+            <BookOpen className="empty-state-icon w-12 h-12" />
             <p className="empty-state-title">Guides are on the way</p>
             <p className="empty-state-text">
-              We&apos;re putting together practical guides to help you navigate island life. Check back soon!
+              We&apos;re putting together practical guides to help you navigate island life.
             </p>
             <Link href="/news" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
               Read the latest news →
@@ -124,94 +176,19 @@ export default async function GuidesPage() {
           </div>
         ) : (
           <>
-            {/* Category filter pills */}
+            {/* Category filter chips */}
             {categories.length > 1 && (
-              <div className="flex flex-wrap gap-2 mb-8">
-                {categories.map(cat => (
-                  <a
-                    key={cat}
-                    href={`#cat-${cat.toLowerCase().replace(/\s+/g, '-')}`}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${categoryColors[cat] ?? 'bg-parchment-200 text-stone-700'} hover:opacity-80`}
-                  >
-                    {cat}
-                  </a>
-                ))}
-              </div>
+              <Suspense>
+                <GuidesFilter categories={categories} />
+              </Suspense>
             )}
 
-            {/* Guides grouped by category */}
-            {categories.map(cat => {
-              const catGuides = guides.filter(g => g.category === cat);
-              return (
-                <section key={cat} id={`cat-${cat.toLowerCase().replace(/\s+/g, '-')}`} className="mb-12 scroll-mt-24">
-                  <h2 className="text-2xl text-stone-900 mb-6 font-semibold flex items-center gap-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[cat] ?? 'bg-parchment-200 text-stone-700'}`}>
-                      {cat}
-                    </span>
-                  </h2>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {catGuides.map((guide) => (
-                      <article key={guide.id} id={guide.slug} className="card group scroll-mt-24">
-                        {guide.imageUrl ? (
-                          <div className="relative h-44 overflow-hidden">
-                            <Image src={guide.imageUrl} alt={guide.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
-                          </div>
-                        ) : (
-                          <div
-                            className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
-                            aria-hidden="true"
-                          >
-                            {guide.emoji}
-                          </div>
-                        )}
-                        <div className="p-6">
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-100 text-forest-800">
-                              Guide
-                            </span>
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[guide.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                              {guide.category}
-                            </span>
-                          </div>
-                          <h3 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
-                            {guide.title}
-                          </h3>
-                          <p className="text-[15px] text-stone-600 mb-3">
-                            By {guide.author} &nbsp;·&nbsp;{' '}
-                            <time dateTime={guide.publishedAt}>{formatShortDate(guide.publishedAt)}</time>
-                            &nbsp;·&nbsp; {guide.readMinutes} min read
-                          </p>
-                          <p className="text-stone-600 text-base mb-4 leading-relaxed">{guide.excerpt}</p>
-                          <MarkdownBody body={guide.body} />
-                          {guide.tags?.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-3">
-                              {guide.tags.map((tag: string) => (
-                                <span key={tag} className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-parchment-200 text-stone-600">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          <div className="mt-5 pt-4 border-t border-parchment-200">
-                            <ShareButton
-                              title={`${guide.title} — WhidbeyWave`}
-                              url={`/guides#${guide.slug}`}
-                              text={guide.excerpt ?? undefined}
-                            />
-                          </div>
-                          <NewsCommentSection slug={guide.slug} />
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
+            <GuidesGrid guides={guides} cat={cat} />
           </>
         )}
 
         {/* CTA */}
-        <div className="mt-8 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
+        <div className="mt-16 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
           <h3 className="text-2xl text-forest-800 mb-2 font-semibold">Know something your neighbors should know?</h3>
           <p className="text-forest-700 mb-6 leading-relaxed text-base">
             Whether it&apos;s the best crabbing spots or how to survive storm season, we&apos;d love your island wisdom.

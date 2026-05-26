@@ -75,14 +75,14 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
       {loading ? (
         <p className="text-sm text-stone-600 mb-4">Loading comments…</p>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-stone-600 mb-4">No comments yet — be the first!</p>
+        <p className="text-sm text-stone-500 mb-4">No comments yet — be the first.</p>
       ) : (
         <div className="space-y-3 mb-6">
           {comments.map(c => (
-            <div key={c.id} className="bg-parchment-100 rounded-xl p-4 border border-parchment-200">
+            <div key={c.id} className="card p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="font-semibold text-stone-800 text-sm">{c.author_name}</span>
-                <span className="text-xs text-stone-600">
+                <span className="text-xs text-stone-500">
                   {new Date(c.created_at).toLocaleDateString('en-US', {
                     month: 'short', day: 'numeric', year: 'numeric',
                   })}
@@ -98,7 +98,7 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
       <form onSubmit={handleSubmit} className="bg-parchment-50 rounded-xl p-4 border border-parchment-200">
         <p className="text-sm font-semibold text-stone-600 mb-3">Leave a comment</p>
         {flash && <p className="text-xs text-forest-600 font-medium mb-2">{flash}</p>}
-        {error && <p className="text-xs text-red-500 mb-2" role="alert">{error}</p>}
+        {error && <p className="text-xs text-terra-600 mb-2" role="alert">{error}</p>}
 
         <div className="mb-3">
           <label htmlFor={`comment-name-${slug}`} className="sr-only">Your name</label>
@@ -110,7 +110,7 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
             placeholder="Your name"
             required
             maxLength={80}
-            className="w-full sm:w-64 px-3 py-2 rounded-lg border border-parchment-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 bg-white text-stone-700 placeholder:text-stone-400"
+            className="input-base sm:max-w-xs"
           />
         </div>
 
@@ -124,15 +124,15 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
             required
             rows={3}
             maxLength={1000}
-            className="w-full px-3 py-2 rounded-lg border border-parchment-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 bg-white text-stone-700 placeholder:text-stone-400 resize-none"
+            className="input-base resize-none"
           />
-          <p className="text-xs text-stone-600 mt-1 text-right">{body.length}/1000</p>
+          <p className="text-xs text-stone-500 mt-1 text-right">{body.length}/1000</p>
         </div>
 
         <button
           type="submit"
           disabled={submitting || !name.trim() || !body.trim()}
-          className="px-5 py-2 rounded-lg bg-forest-600 text-parchment-50 text-sm font-semibold hover:bg-forest-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          className="btn-primary"
         >
           {submitting ? 'Posting…' : 'Post Comment'}
         </button>
