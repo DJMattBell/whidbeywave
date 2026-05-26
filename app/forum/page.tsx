@@ -8,6 +8,7 @@ import LocalBadge from '@/components/LocalBadge';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
 import QuickReactions from '@/components/QuickReactions';
 import { SkeletonFeed } from '@/components/SkeletonCard';
+import { MessageCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Ask the Island — Whidbey Island Community Forum',
@@ -76,13 +77,13 @@ export default async function ForumPage({
 
   return (
     <>
-      <div className="bg-gradient-to-br from-sound-800 to-forest-800 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">💬 Community</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">Community</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Ask the Island
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Got a question about the island? Ask it here. Neighbors know things no search engine does.
           </p>
         </div>
@@ -101,7 +102,7 @@ export default async function ForumPage({
                   key={cat}
                   href={href}
                   aria-current={isActive ? 'true' : undefined}
-                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors min-h-[44px] ${
                     isActive
                       ? 'bg-forest-600 text-parchment-50 border-forest-600'
                       : 'bg-parchment-50 text-stone-600 border-parchment-200 hover:border-forest-400 hover:text-forest-600'
@@ -136,12 +137,12 @@ export default async function ForumPage({
             </section>
 
             <div className="empty-state">
-              <div className="empty-state-icon text-5xl">🌾</div>
+              <MessageCircle className="empty-state-icon w-12 h-12" />
               <p className="empty-state-title">
-                {activeCategory === 'All' ? 'No questions yet — be the first' : `No posts in "${activeCategory}" yet`}
+                {activeCategory === 'All' ? "Nobody's asked about this yet" : `No posts in "${activeCategory}" yet`}
               </p>
               <p className="empty-state-text">
-                {isConfigured ? 'Use the form above to post a question.' : 'Configure Supabase to enable the forum.'}
+                {isConfigured ? 'Start the conversation with your neighbors.' : 'Configure Supabase to enable the forum.'}
               </p>
             </div>
           </>
@@ -154,7 +155,7 @@ export default async function ForumPage({
                   <div
                     key={post.id}
                     role="listitem"
-                    className="card p-5 hover:border-forest-200 border border-parchment-200"
+                    className="card p-5 border-l-3 border-l-forest-600"
                   >
                     <Link href={`/forum/${post.id}`} className="flex items-start gap-4 group">
                       {/* Reply count */}

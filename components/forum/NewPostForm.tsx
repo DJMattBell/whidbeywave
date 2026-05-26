@@ -119,7 +119,7 @@ export default function NewPostForm() {
             <label className="block text-sm font-medium text-stone-700 mb-1.5">Category</label>
             <select
               value={categorySlug} onChange={e => setCategory(e.target.value)}
-              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-700"
+              className="input-base"
             >
               {CATEGORIES.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -130,13 +130,13 @@ export default function NewPostForm() {
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1.5">
-                  Your name <span className="text-red-400">*</span>
+                  Your name <span className="text-terra-600">*</span>
                 </label>
                 <input
                   type="text" required value={anonName} onChange={e => setAnonName(e.target.value)}
                   placeholder="Jane from Langley"
                   maxLength={80}
-                  className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                  className="input-base"
                 />
               </div>
               <div>
@@ -149,7 +149,7 @@ export default function NewPostForm() {
                   onChange={e => setAnonZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
                   placeholder="98277"
                   maxLength={5}
-                  className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                  className="input-base"
                 />
                 <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
               </div>
@@ -166,12 +166,12 @@ export default function NewPostForm() {
 
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">
-              Your question <span className="text-red-400">*</span>
+              Your question <span className="text-terra-600">*</span>
             </label>
             <input
               type="text" required value={title} onChange={e => setTitle(e.target.value)}
               placeholder="Best place to get fresh oysters?"
-              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+              className="input-base"
             />
           </div>
 
@@ -182,12 +182,12 @@ export default function NewPostForm() {
             <textarea
               rows={4} value={body} onChange={e => setBody(e.target.value)}
               placeholder="Any context that would help locals give a better answer…"
-              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
+              className="input-base resize-none"
             />
           </div>
 
           {status === 'error' && (
-            <p className="text-red-500 text-xs" role="alert">Something went wrong — please try again.</p>
+            <p className="text-terra-600 text-xs" role="alert">Something went wrong — please try again.</p>
           )}
 
           <button type="submit" disabled={status === 'loading'} className="btn-primary disabled:opacity-60">

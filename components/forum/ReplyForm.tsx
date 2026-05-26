@@ -91,14 +91,14 @@ export default function ReplyForm({ postId }: { postId: string }) {
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-1.5">
-              Your name <span className="text-red-400">*</span>
+              Your name <span className="text-terra-600">*</span>
             </label>
             <input
               type="text" required value={anonName}
               onChange={e => setAnonName(e.target.value)}
               placeholder="Jane from Langley"
               maxLength={80}
-              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+              className="input-base"
             />
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
               onChange={e => setAnonZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
               placeholder="98277"
               maxLength={5}
-              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+              className="input-base"
             />
             <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
           </div>
@@ -119,17 +119,17 @@ export default function ReplyForm({ postId }: { postId: string }) {
 
       <div>
         <label className="block text-sm font-medium text-stone-700 mb-1.5">
-          Your reply <span className="text-red-400">*</span>
+          Your reply <span className="text-terra-600">*</span>
         </label>
         <textarea
           rows={4} required value={body} onChange={e => setBody(e.target.value)}
           placeholder="Share what you know…"
-          className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
+          className="input-base resize-none"
         />
       </div>
 
       {status === 'error' && (
-        <p className="text-red-500 text-xs" role="alert">Something went wrong — please try again.</p>
+        <p className="text-terra-600 text-xs" role="alert">Something went wrong — please try again.</p>
       )}
 
       <button type="submit" disabled={status === 'loading'} className="btn-primary disabled:opacity-60">
