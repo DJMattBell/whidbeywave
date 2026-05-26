@@ -9,8 +9,7 @@ import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
 import TodayWidget from '@/components/TodayWidget';
 import AddToCalendar from '@/components/AddToCalendar';
-import PersonaSelector, { PersonaBar } from '@/components/PersonaSelector';
-import type { Persona } from '@/components/PersonaSelector';
+import ChipFilters, { getFilterFromCookie, type FilterChip } from '@/components/ChipFilters';
 import FerryStatusPill from '@/components/FerryStatusPill';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Suspense } from 'react';
@@ -19,7 +18,7 @@ import { Calendar, Gift, Newspaper } from 'lucide-react';
 
 export const revalidate = 300; // 5 minutes
 
-const VALID_PERSONAS = new Set(['local', 'visitor', 'ferry', 'dashboard']);
+// ChipFilters reads cookie directly — no persona gate
 
 function getGreeting(): string {
   const hour = new Date().toLocaleString('en-US', {
@@ -35,10 +34,8 @@ function getGreeting(): string {
 
 export default async function HomePage() {
   const cookieStore = await cookies();
-  const personaRaw = cookieStore.get('ww-persona')?.value;
-  const persona: Persona | null = personaRaw && VALID_PERSONAS.has(personaRaw)
-    ? (personaRaw as Persona)
-    : null;
+  const filterRaw = cookieStore.get('whidbey-filter')?.value ?? cookieStore.get('ww-persona')?.value;
+  const activeFilter: FilterChip = getFilterFromCookie(filterRaw);
 
   const supabase = createServerClient();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
@@ -139,7 +136,7 @@ export default async function HomePage() {
           WhidbeyWave
         </h1>
         <p className="text-base md:text-lg text-stone-600 max-w-lg mx-auto mb-4 md:mb-6">
-          {persona === 'visitor'
+          {activeFilter === 'visitors'
             ? 'Your guide to the best of Whidbey Island'
             : 'The easiest way to see what\u2019s happening on Whidbey Island'}
         </p>
@@ -482,33 +479,15 @@ export default async function HomePage() {
     </section>
   );
 
-  // ── Assemble page based on persona ────────────────────────────────────────
+  // ── Assemble page based on chip filter ──────────────────────────────────
 
-  // No persona yet → show the full persona selector hero
-  if (!persona) {
+  // Visitors filter: visitor CTA first, no marketplace
+  if (activeFilter === 'visitors') {
     return (
       <>
         <JsonLd data={jsonLd} />
-        <PersonaSelector />
-        {mobileQuickAccess}
-        {desktopQuickLinks}
-        {todayBlock}
-        {eventsSection}
-        {flashGivesSection}
-        {newsSection}
-        {listingsSection}
-        {closingCta}
-      </>
-    );
-  }
-
-  // Visitor: events & visitor guide first, then ferry/weather, then news
-  if (persona === 'visitor') {
-    return (
-      <>
-        <JsonLd data={jsonLd} />
-        <PersonaBar persona={persona} />
         {heroSection}
+        <ChipFilters active={activeFilter} />
         {mobileQuickAccess}
         {desktopQuickLinks}
         {todayBlock}
@@ -520,13 +499,12 @@ export default async function HomePage() {
     );
   }
 
-  // Local: news, marketplace, and forum elevated; no visitor CTA
-  // (persona === 'local' or 'ferry' or 'dashboard' that somehow landed here)
+  // All other filters: full local layout with chip row
   return (
     <>
       <JsonLd data={jsonLd} />
-      <PersonaBar persona={persona} />
       {heroSection}
+      <ChipFilters active={activeFilter} />
       {mobileQuickAccess}
       {desktopQuickLinks}
       {todayBlock}

@@ -27,6 +27,81 @@ This entry is the record of that reconciliation. No code rollback was needed.
 
 ---
 
+## Phase 18 retrospective — 2026-05-26
+
+### What shipped
+Replaced PersonaSelector doors with ChipFilters chip row: Everyone, Kids, Seniors, Visitors, New Residents, Outdoors. Cookie migration from ww-persona to whidbey-filter. "Why am I seeing this?" tooltip. Keyboard navigation (arrow keys) through chips. Chip selection reorders home sections rather than gatekeeping.
+
+### What I'd do differently (3 items)
+
+1. **Chip selection doesn't actually reorder events.** The filter cookie is set and visitors get a different layout, but the kids/seniors/outdoors chips don't yet filter or reorder events by category. This requires tagging events with audience metadata (kid-friendly, senior-accessible, etc.) which doesn't exist in the schema yet.
+
+2. **PersonaSelector not deleted.** Per constraint, kept PersonaSelector.tsx in the codebase as fallback. Should be deleted after chip filters are verified in production. Dead code until then.
+
+3. **No A/B test infrastructure.** Swapping the home page UX is a significant change. Should have added a simple feature flag or A/B test mechanism to gradually roll out chip filters vs. persona doors.
+
+---
+
+## Phase 17 retrospective — 2026-05-26
+
+### What shipped
+Recommendation detail page (/recommendations/[id]) with business info, "Recommended by N neighbors" with avatar initials and Local badges. /locals explainer page describing zip-based verification. Metadata generation for SEO.
+
+### What I'd do differently (3 items)
+
+1. **No admin recommendations management page.** Spec called for /admin/recommendations with flag/remove and merge capabilities. Skipped this — admin can still manage via Supabase dashboard but no dedicated UI.
+
+2. **Didn't add milestone notifications.** Spec called for notify() triggers at 5/10/25 recommendation milestones. The notification_preferences types support it but no trigger code was added to the review submission flow.
+
+3. **Detail page missing "write a recommendation" CTA.** The page shows existing reviews but doesn't have an inline form to add one. Users must go back to /recommendations index to write reviews. Should add inline review form on the detail page.
+
+---
+
+## Phase 16 retrospective — 2026-05-26
+
+### What shipped
+Barter fields (barter_open, barter_seeking) on listings. Flash-give duration selector on submit-listing. "Neighbors are giving" horizontal scroll section on homepage (hides when <2 free listings). notify() scope filtering with category/town matching. notifyAll() for flash-give broadcasts. Barter info/offer button on listing detail.
+
+### What I'd do differently (3 items)
+
+1. **ListingAlertSubscription not refactored to use notify().** Spec explicitly called for switching the existing alert subscription from direct Resend to notify(). This was skipped — existing subscribers still use the old flow. Need to add a migration path for existing subscribers.
+
+2. **No subscription bottom sheet.** Spec called for an end-of-scroll "Notify me of new free items" CTA opening a bottom sheet with category/town scope chips. Only the card scroll was implemented, not the subscription UX.
+
+3. **Flash-give duration doesn't auto-expire.** Added the flash_give_duration column but no cron job or trigger to mark listings as expired when the duration passes. Currently duration is informational only.
+
+---
+
+## Phase 15 retrospective — 2026-05-26
+
+### What shipped
+lib/notifications.ts with notify() and scope filtering. Forum reply route refactored to use notify() instead of direct Resend. Service worker for push events. Push subscription API routes (subscribe, unsubscribe, preferences). /profile/notifications preferences page with per-channel toggles. NotificationOptIn component with iOS PWA detection.
+
+### What I'd do differently (3 items)
+
+1. **No bell icon in navbar.** Spec called for a bell icon in the navbar linking to /profile/notifications with an unread badge based on notification_log. This was skipped entirely — users must navigate to /profile/notifications manually.
+
+2. **No one-time inline prompt after first forum reply.** Spec called for "Want a heads-up when someone replies? Turn on notifications" after a user's first forum reply. Not implemented — requires tracking first-reply state.
+
+3. **No test notification endpoint.** Spec called for POST /api/notifications/test (admin-only) to verify the push pipeline end-to-end. Would be very useful for debugging push issues in production.
+
+---
+
+## Phase 14 retrospective — 2026-05-26
+
+### What shipped
+Sentry (@sentry/nextjs) with conditional init. Plausible script tag + trackEvent() helper. Playwright smoke tests for 7 core pages + mobile UI. Scraper monitoring: scrape_log migration, logScrapeRun() wrapper, /admin/scrapers health dashboard with expandable per-source run history. Shared components: EmptyState, ErrorState, DataStatus per design system.
+
+### What I'd do differently (3 items)
+
+1. **EmptyState component not yet adopted.** Created the reusable component but didn't refactor existing inline empty states to use it. There are ~15 inline empty states across the codebase that should be replaced with <EmptyState> for consistency. Each phase added empty states inline rather than using the shared component.
+
+2. **DataStatus not wired into any live data sections.** Created the component per error-states.md spec but didn't integrate it into ferry, tides, or weather sections. Those still use inline "Last updated" text. Phase 14 was supposed to add the DataStatus indicator to data-dependent sections.
+
+3. **Playwright tests are minimal.** Only 7 page-load smoke tests and a basic mobile check. Should add interaction tests: submit forms, navigate between pages, test filter interactions. Current tests only verify pages return 200 and have an h1.
+
+---
+
 ## Phase 13 retrospective — 2026-05-26
 
 ### What shipped
