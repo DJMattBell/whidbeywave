@@ -111,80 +111,78 @@ export default async function WeatherTideWidget() {
   const label = weather ? (WMO_LABELS[weather.code] ?? '')    : null;
 
   return (
-    <div className="bg-sound-50 border-b border-sound-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-x-6 text-sm text-sound-800 overflow-x-auto scrollbar-none">
+    <div className="flex items-center gap-x-6 text-sm text-sound-800 overflow-x-auto scrollbar-none border-t border-parchment-200 pt-3 mt-3">
 
-        {/* Location label */}
-        <span className="font-semibold text-sound-700 shrink-0 whitespace-nowrap">
-          🗺️ Whidbey Now
-        </span>
+      {/* Location label */}
+      <span className="font-semibold text-sound-700 shrink-0 whitespace-nowrap">
+        🗺️ Whidbey Now
+      </span>
 
-        {/* Weather */}
-        {weather && (
-          <>
-            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
-            <span className="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-              <span aria-hidden="true">{icon}</span>
-              <span className="font-semibold">{weather.temp}°F</span>
-              <span className="text-sound-600">{label}</span>
-              {weather.wind > 0 && (
-                <span className="text-sound-500">· {weather.wind} mph wind</span>
-              )}
-            </span>
-          </>
-        )}
+      {/* Weather */}
+      {weather && (
+        <>
+          <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+          <span className="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+            <span aria-hidden="true">{icon}</span>
+            <span className="font-semibold">{weather.temp}°F</span>
+            <span className="text-sound-600">{label}</span>
+            {weather.wind > 0 && (
+              <span className="text-sound-500">· {weather.wind} mph wind</span>
+            )}
+          </span>
+        </>
+      )}
 
-        {/* Ferry — Clinton/Mukilteo */}
-        {hasMuk && (
-          <>
-            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
-            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
-              <span aria-hidden="true">🚢</span>
-              <span className="text-sound-600 font-medium">Clinton–Mukilteo:</span>
-              <FerryStatusText status={ferry.mukilteoClinton!.status} />
-            </Link>
-          </>
-        )}
+      {/* Ferry — Clinton/Mukilteo */}
+      {hasMuk && (
+        <>
+          <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+          <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
+            <span aria-hidden="true">🚢</span>
+            <span className="text-sound-600 font-medium">Clinton–Mukilteo:</span>
+            <FerryStatusText status={ferry.mukilteoClinton!.status} />
+          </Link>
+        </>
+      )}
 
-        {/* Ferry — Coupeville/PT */}
-        {hasPT && (
-          <>
-            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
-            <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
-              <span aria-hidden="true">⛴</span>
-              <span className="text-sound-600 font-medium">Coupeville–PT:</span>
-              <FerryStatusText status={ferry.ptCoupeville!.status} />
-            </Link>
-          </>
-        )}
+      {/* Ferry — Coupeville/PT */}
+      {hasPT && (
+        <>
+          <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+          <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
+            <span aria-hidden="true">⛴</span>
+            <span className="text-sound-600 font-medium">Coupeville–PT:</span>
+            <FerryStatusText status={ferry.ptCoupeville!.status} />
+          </Link>
+        </>
+      )}
 
-        {/* Tides */}
-        {hasTides && (
-          <>
-            <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
-            <span className="flex items-center gap-3 shrink-0 whitespace-nowrap">
-              <span className="text-sound-600 font-medium">🌊 Tides:</span>
-              {tides!.map((tide, i) => (
-                <span key={i} className="flex items-center gap-1">
-                  <span className={`font-semibold text-xs uppercase tracking-wide ${
-                    tide.type === 'H' ? 'text-forest-600' : 'text-stone-500'
-                  }`}>
-                    {tide.type === 'H' ? 'High' : 'Low'}
-                  </span>
-                  <span>{tide.time}</span>
-                  <span className="text-sound-500">({tide.height} ft)</span>
-                  {i < tides!.length - 1 && <span className="text-sound-300 mx-1">·</span>}
+      {/* Tides */}
+      {hasTides && (
+        <>
+          <span className="text-sound-300 shrink-0" aria-hidden="true">·</span>
+          <span className="flex items-center gap-3 shrink-0 whitespace-nowrap">
+            <span className="text-sound-600 font-medium">🌊 Tides:</span>
+            {tides!.map((tide, i) => (
+              <span key={i} className="flex items-center gap-1">
+                <span className={`font-semibold text-xs uppercase tracking-wide ${
+                  tide.type === 'H' ? 'text-forest-600' : 'text-stone-500'
+                }`}>
+                  {tide.type === 'H' ? 'High' : 'Low'}
                 </span>
-              ))}
-            </span>
-          </>
-        )}
+                <span>{tide.time}</span>
+                <span className="text-sound-500">({tide.height} ft)</span>
+                {i < tides!.length - 1 && <span className="text-sound-300 mx-1">·</span>}
+              </span>
+            ))}
+          </span>
+        </>
+      )}
 
-        {/* Attribution */}
-        <span className="ml-auto text-xs text-sound-400 hidden md:block shrink-0">
-          NOAA · Open-Meteo · WSDOT
-        </span>
-      </div>
+      {/* Attribution */}
+      <span className="ml-auto text-xs text-sound-400 hidden md:block shrink-0">
+        NOAA · Open-Meteo · WSDOT
+      </span>
     </div>
   );
 }

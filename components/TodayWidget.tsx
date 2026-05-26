@@ -174,134 +174,131 @@ export default async function TodayWidget() {
   if (!weather && !hasFerry && !tide && eventsCount === null && !showListings) return null;
 
   return (
-    <section className="bg-parchment-50 border-b border-parchment-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
+    <>
+      {/* Header row */}
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-base font-bold text-forest-800">
+          Today on Whidbey
+        </h2>
+        <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
+      </div>
 
-        {/* Header row */}
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-base font-bold text-forest-800">
-            Today on Whidbey
-          </h2>
-          <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
-        </div>
+      {/* Card — 2×2 grid on mobile, flex row on desktop */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-row border border-parchment-200 rounded-xl overflow-hidden bg-white [&>*]:min-h-[80px] sm:[&>*]:min-h-0 [&>*:nth-child(odd)]:border-r sm:[&>*:nth-child(odd)]:border-r-0 [&>*:nth-last-child(n+3)]:border-b sm:[&>*]:border-b-0 sm:[&>*:not(:last-child)]:border-r [&>*]:border-parchment-200 [&>*:nth-child(even)]:bg-parchment-50/50 sm:[&>*:nth-child(even)]:bg-transparent">
 
-        {/* Card — 2×2 grid on mobile, flex row on desktop */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-row border border-parchment-200 rounded-xl overflow-hidden bg-white [&>*]:min-h-[80px] sm:[&>*]:min-h-0 [&>*:nth-child(odd)]:border-r sm:[&>*:nth-child(odd)]:border-r-0 [&>*:nth-last-child(n+3)]:border-b sm:[&>*]:border-b-0 sm:[&>*:not(:last-child)]:border-r [&>*]:border-parchment-200 [&>*:nth-child(even)]:bg-parchment-50/50 sm:[&>*:nth-child(even)]:bg-transparent">
-
-          {/* ── 1. Weather ─────────────────────────────────────────── */}
-          {weather && (
-            <div className="sm:flex-1 px-4 py-4 min-w-0">
-              <SectionLabel>Weather</SectionLabel>
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl leading-none" aria-hidden="true">
-                  {WMO_ICONS[weather.code] ?? '🌤️'}
-                </span>
-                <div>
-                  <p className="text-xl font-bold text-stone-800 leading-none">{weather.temp}°F</p>
-                  <p className="text-xs text-stone-600 mt-0.5">{WMO_LABELS[weather.code] ?? ''}</p>
-                </div>
+        {/* ── 1. Weather ─────────────────────────────────────────── */}
+        {weather && (
+          <div className="sm:flex-1 px-4 py-4 min-w-0">
+            <SectionLabel>Weather</SectionLabel>
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl leading-none" aria-hidden="true">
+                {WMO_ICONS[weather.code] ?? '🌤️'}
+              </span>
+              <div>
+                <p className="text-xl font-bold text-stone-800 leading-none">{weather.temp}°F</p>
+                <p className="text-xs text-stone-600 mt-0.5">{WMO_LABELS[weather.code] ?? ''}</p>
               </div>
-              {weather.wind > 0 && (
-                <p className="text-xs text-stone-600 mt-1.5">💨 {weather.wind} mph</p>
+            </div>
+            {weather.wind > 0 && (
+              <p className="text-xs text-stone-600 mt-1.5">💨 {weather.wind} mph</p>
+            )}
+          </div>
+        )}
+
+        {/* ── 2. Ferry ───────────────────────────────────────────── */}
+        {hasFerry && (
+          <Link href="/ferry" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <SectionLabel>Ferry</SectionLabel>
+            <div className="space-y-2">
+              {hasMuk && (
+                <div className="flex items-start gap-1.5">
+                  <FerryDot status={ferry.mukilteoClinton!.status} />
+                  <div className="min-w-0">
+                    <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
+                    <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoClinton!.status)}`}>
+                      {ferryLabel(ferry.mukilteoClinton!.status)}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {hasPT && (
+                <div className="flex items-start gap-1.5">
+                  <FerryDot status={ferry.ptCoupeville!.status} />
+                  <div className="min-w-0">
+                    <p className="text-xs text-stone-600 leading-tight">PT / Coupeville</p>
+                    <p className={`text-sm leading-tight ${ferryTextCls(ferry.ptCoupeville!.status)}`}>
+                      {ferryLabel(ferry.ptCoupeville!.status)}
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
-          )}
+          </Link>
+        )}
 
-          {/* ── 2. Ferry ───────────────────────────────────────────── */}
-          {hasFerry && (
-            <Link href="/ferry" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-              <SectionLabel>Ferry</SectionLabel>
-              <div className="space-y-2">
-                {hasMuk && (
-                  <div className="flex items-start gap-1.5">
-                    <FerryDot status={ferry.mukilteoClinton!.status} />
-                    <div className="min-w-0">
-                      <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
-                      <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoClinton!.status)}`}>
-                        {ferryLabel(ferry.mukilteoClinton!.status)}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {hasPT && (
-                  <div className="flex items-start gap-1.5">
-                    <FerryDot status={ferry.ptCoupeville!.status} />
-                    <div className="min-w-0">
-                      <p className="text-xs text-stone-600 leading-tight">PT / Coupeville</p>
-                      <p className={`text-sm leading-tight ${ferryTextCls(ferry.ptCoupeville!.status)}`}>
-                        {ferryLabel(ferry.ptCoupeville!.status)}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Link>
-          )}
-
-          {/* ── 3. Next Tide ───────────────────────────────────────── */}
-          {tide && (
-            <div className="sm:flex-1 px-4 py-4 min-w-0">
-              <SectionLabel>Next Tide</SectionLabel>
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl leading-none" aria-hidden="true">🌊</span>
-                <div>
-                  <p className={`text-xs font-bold uppercase tracking-wide leading-none ${
-                    tide.type === 'H' ? 'text-forest-600' : 'text-stone-600'
-                  }`}>
-                    {tide.type === 'H' ? 'High' : 'Low'}
-                  </p>
-                  <p className="text-xl font-bold text-stone-800 leading-tight mt-0.5">{tide.time}</p>
-                  <p className="text-xs text-stone-600">{tide.height} ft</p>
-                </div>
+        {/* ── 3. Next Tide ───────────────────────────────────────── */}
+        {tide && (
+          <div className="sm:flex-1 px-4 py-4 min-w-0">
+            <SectionLabel>Next Tide</SectionLabel>
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl leading-none" aria-hidden="true">🌊</span>
+              <div>
+                <p className={`text-xs font-bold uppercase tracking-wide leading-none ${
+                  tide.type === 'H' ? 'text-forest-600' : 'text-stone-600'
+                }`}>
+                  {tide.type === 'H' ? 'High' : 'Low'}
+                </p>
+                <p className="text-xl font-bold text-stone-800 leading-tight mt-0.5">{tide.time}</p>
+                <p className="text-xs text-stone-600">{tide.height} ft</p>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* ── 4. Events Today ────────────────────────────────────── */}
-          {eventsCount !== null && (
-            <Link href="/events" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-              <SectionLabel>Events Today</SectionLabel>
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl leading-none" aria-hidden="true">
-                  {eventsCount > 0 ? '📅' : '🌿'}
-                </span>
-                <div>
-                  {eventsCount > 0 ? (
-                    <>
-                      <p className="text-xl font-bold text-stone-800 leading-none">{eventsCount}</p>
-                      <p className="text-xs text-stone-600 mt-0.5">
-                        event{eventsCount !== 1 ? 's' : ''} today
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-stone-600 leading-snug">
-                      Quiet day<br />on the island
+        {/* ── 4. Events Today ────────────────────────────────────── */}
+        {eventsCount !== null && (
+          <Link href="/events" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <SectionLabel>Events Today</SectionLabel>
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl leading-none" aria-hidden="true">
+                {eventsCount > 0 ? '📅' : '🌿'}
+              </span>
+              <div>
+                {eventsCount > 0 ? (
+                  <>
+                    <p className="text-xl font-bold text-stone-800 leading-none">{eventsCount}</p>
+                    <p className="text-xs text-stone-600 mt-0.5">
+                      event{eventsCount !== 1 ? 's' : ''} today
                     </p>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-stone-600 leading-snug">
+                    Quiet day<br />on the island
+                  </p>
+                )}
               </div>
-            </Link>
-          )}
+            </div>
+          </Link>
+        )}
 
-          {/* ── 5. New Listings ────────────────────────────────────── */}
-          {showListings && (
-            <Link href="/marketplace" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-              <SectionLabel>New Listings</SectionLabel>
-              <div className="flex items-center gap-2.5">
-                <span className="text-2xl leading-none" aria-hidden="true">🛒</span>
-                <div>
-                  <p className="text-xl font-bold text-stone-800 leading-none">{listingsCount}</p>
-                  <p className="text-xs text-stone-600 mt-0.5">new today</p>
-                </div>
+        {/* ── 5. New Listings ────────────────────────────────────── */}
+        {showListings && (
+          <Link href="/marketplace" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
+            <SectionLabel>New Listings</SectionLabel>
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl leading-none" aria-hidden="true">🛒</span>
+              <div>
+                <p className="text-xl font-bold text-stone-800 leading-none">{listingsCount}</p>
+                <p className="text-xs text-stone-600 mt-0.5">new today</p>
               </div>
-            </Link>
-          )}
+            </div>
+          </Link>
+        )}
 
-        </div>
-
-        {/* Mobile date label */}
-        <p className="text-xs text-stone-600 mt-2 sm:hidden">{todayLabel}</p>
       </div>
-    </section>
+
+      {/* Mobile date label */}
+      <p className="text-xs text-stone-600 mt-2 sm:hidden">{todayLabel}</p>
+    </>
   );
 }

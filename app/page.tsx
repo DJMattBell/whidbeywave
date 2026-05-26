@@ -12,12 +12,26 @@ import AddToCalendar from '@/components/AddToCalendar';
 import PersonaSelector, { PersonaBar } from '@/components/PersonaSelector';
 import type { Persona } from '@/components/PersonaSelector';
 import FerryStatusPill from '@/components/FerryStatusPill';
+import { SkeletonCard } from '@/components/SkeletonCard';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
+import { Calendar, Newspaper } from 'lucide-react';
 
 export const revalidate = 300; // 5 minutes
 
 const VALID_PERSONAS = new Set(['local', 'visitor', 'ferry', 'dashboard']);
+
+function getGreeting(): string {
+  const hour = new Date().toLocaleString('en-US', {
+    hour: 'numeric',
+    hour12: false,
+    timeZone: 'America/Los_Angeles',
+  });
+  const h = parseInt(hour, 10);
+  if (h < 12) return 'Good morning, Whidbey';
+  if (h < 17) return 'Good afternoon, Whidbey';
+  return 'Good evening, Whidbey';
+}
 
 export default async function HomePage() {
   const cookieStore = await cookies();
@@ -99,42 +113,32 @@ export default async function HomePage() {
     ],
   };
 
+  const greeting = getGreeting();
+
   // ── Section builders ──────────────────────────────────────────────────────
 
   const heroSection = (
-    <section key="hero" className="relative bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100 overflow-hidden">
-      <div className="hidden sm:block absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-forest-600 opacity-20 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-sound-700 opacity-20 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-800 opacity-10 blur-3xl" />
-      </div>
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-16 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 md:mb-3 text-parchment-50">
+    <section key="hero" className="bg-parchment-100 border-b border-parchment-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 text-center">
+        <p className="text-sm text-stone-500 mb-2">{greeting}</p>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 md:mb-3 text-stone-900">
           WhidbeyWave
         </h1>
-        <p className="text-base md:text-lg text-parchment-200 max-w-lg mx-auto mb-4 md:mb-6">
+        <p className="text-base md:text-lg text-stone-600 max-w-lg mx-auto mb-4 md:mb-6">
           {persona === 'visitor'
             ? 'Your guide to the best of Whidbey Island'
             : 'The easiest way to see what\u2019s happening on Whidbey Island'}
         </p>
-        <div className="flex flex-col items-center gap-2">
-          <Link href="/events" className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 shadow-warm-lg">
-            See What&apos;s On
-          </Link>
-        </div>
+        <Link href="/events" className="btn-primary">
+          See What&apos;s On
+        </Link>
       </div>
-      <svg className="absolute bottom-0 left-0 w-full hidden sm:block" viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M0 40L60 33C120 27 240 13 360 12C480 11 600 21 720 24C840 27 960 21 1080 17C1200 13 1320 11 1380 9L1440 8V40H0Z" fill="#fdfaf3" />
-      </svg>
-      <svg className="absolute bottom-0 left-0 w-full sm:hidden" viewBox="0 0 1440 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M0 30L60 25C120 20 240 10 360 9C480 8 600 16 720 18C840 20 960 16 1080 13C1200 10 1320 8 1380 7L1440 6V30H0Z" fill="#fdfaf3" />
-      </svg>
     </section>
   );
 
   const mobileQuickAccess = (
     <section key="mobile-quick" className="md:hidden bg-parchment-50 border-b border-parchment-200">
-      {/* #17 Ferry status pill */}
+      {/* Ferry status pill */}
       <div className="px-4 pt-3">
         <Suspense fallback={null}>
           <FerryStatusPill />
@@ -192,12 +196,29 @@ export default async function HomePage() {
     </section>
   );
 
-  const todayGlance = <TodayWidget key="today" />;
-  const weatherTide = <WeatherTideWidget key="weather" />;
-  const ferryAlerts = <FerryAlerts key="ferry" />;
+  const todayBlock = (
+    <section key="today" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+      <div className="card border-l-[3px] border-l-sound-600 p-5">
+        <Suspense fallback={
+          <div className="animate-pulse space-y-3">
+            <div className="h-4 bg-parchment-200 rounded w-40" />
+            <div className="h-20 bg-parchment-200 rounded-xl" />
+          </div>
+        }>
+          <TodayWidget />
+        </Suspense>
+        <Suspense fallback={null}>
+          <WeatherTideWidget />
+        </Suspense>
+        <Suspense fallback={null}>
+          <FerryAlerts />
+        </Suspense>
+      </div>
+    </section>
+  );
 
   const eventsSection = (
-    <section key="events" className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-20">
+    <section key="events" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="flex items-end justify-between mb-10">
         <div>
           <h2 className="section-title">Coming Up on the Island</h2>
@@ -208,15 +229,17 @@ export default async function HomePage() {
         </Link>
       </div>
       {upcomingEvents.length === 0 ? (
-        <div className="card p-10 text-center">
-          <p className="text-stone-600 text-lg mb-4">Nothing on the calendar yet — check back soon or submit an event!</p>
-          <Link href="/submit-event" className="btn-secondary">Submit an Event →</Link>
+        <div className="empty-state">
+          <Calendar size={48} className="empty-state-icon" />
+          <h3 className="empty-state-title">The calendar&apos;s looking quiet</h3>
+          <p className="empty-state-text">Check back soon or submit your own community event.</p>
+          <Link href="/submit-event" className="btn-primary">Submit an event</Link>
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
             <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group flex flex-col">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-sound-500" />
+              <div className="h-1 bg-forest-600" />
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
@@ -227,8 +250,8 @@ export default async function HomePage() {
                 <h3 className="text-lg font-semibold text-stone-900 mb-2 group-hover:text-forest-600 transition-colors">
                   {event.title}
                 </h3>
-                <p className="text-[15px] text-stone-600 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
-                <p className="text-[15px] text-stone-600 mb-4">📍 {event.town}</p>
+                <p className="text-sm text-stone-600 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
+                <p className="text-sm text-stone-600 mb-4">📍 {event.town}</p>
                 <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description}</p>
                 <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-parchment-200">
                   <AddToCalendar
@@ -258,7 +281,7 @@ export default async function HomePage() {
   );
 
   const newsSection = (
-    <section key="news" className="bg-parchment-100 py-20">
+    <section key="news" className="bg-parchment-100 py-12 md:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -270,11 +293,10 @@ export default async function HomePage() {
           </Link>
         </div>
         {latestNews.length === 0 ? (
-          <div className="card p-8 text-center col-span-2">
-            <p className="text-stone-600 mb-3">Nothing published yet — check back soon.</p>
-            <Link href="/contact" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
-              Got a story? Share it →
-            </Link>
+          <div className="empty-state">
+            <Newspaper size={48} className="empty-state-icon" />
+            <h3 className="empty-state-title">The newsroom is between stories</h3>
+            <p className="empty-state-text">Stories from the island will appear here.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
@@ -289,7 +311,7 @@ export default async function HomePage() {
                     <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
                       {post.title}
                     </h3>
-                    <p className="text-[15px] text-stone-600 mb-2">
+                    <p className="text-sm text-stone-600 mb-2">
                       {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
                     </p>
                     <p className="text-base text-stone-600">{post.excerpt}</p>
@@ -304,7 +326,7 @@ export default async function HomePage() {
   );
 
   const listingsSection = featuredListings.length > 0 ? (
-    <section key="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <section key="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="flex items-end justify-between mb-10">
         <div>
           <h2 className="section-title">Things for Sale</h2>
@@ -331,7 +353,7 @@ export default async function HomePage() {
                 {listing.title}
               </h3>
               <p className="text-forest-600 font-bold text-lg mb-1">{formatPrice(listing.price, listing.is_free)}</p>
-              <p className="text-[15px] text-stone-600 mb-3">📍 {listing.location}</p>
+              <p className="text-sm text-stone-600 mb-3">📍 {listing.location}</p>
               <p className="text-sm text-forest-600">View listing →</p>
             </div>
           </Link>
@@ -341,7 +363,7 @@ export default async function HomePage() {
   ) : null;
 
   const visitorCta = (
-    <section key="visitor-cta" className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <section key="visitor-cta" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="card p-6 sm:p-8 bg-sound-50 border-sound-200">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <span className="text-4xl">🗺️</span>
@@ -364,13 +386,13 @@ export default async function HomePage() {
   );
 
   const closingCta = (
-    <section key="closing" className="bg-gradient-to-br from-forest-800 to-sound-800 text-parchment-100 py-20">
+    <section key="closing" className="bg-forest-700 text-parchment-50 py-12 md:py-16">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
-          Keep up with the island
+          This is your site as much as ours
         </h2>
-        <p className="text-parchment-300 text-lg mb-8 leading-relaxed">
-          Got an event or something to sell? Add it here — this is your site as much as ours.
+        <p className="text-parchment-200 text-lg mb-8 leading-relaxed">
+          Got an event or something to sell? Add it here. This place works because neighbors use it.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
           <Link
@@ -387,11 +409,11 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 justify-center">
-          <Link href="/contact" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
+          <Link href="/contact" className="text-parchment-300 hover:text-parchment-100 text-sm transition-colors">
             Or just say hello →
           </Link>
-          <span className="text-parchment-500 hidden sm:inline">·</span>
-          <Link href="/newsletter" className="text-parchment-400 hover:text-parchment-200 text-sm transition-colors">
+          <span className="text-parchment-400 hidden sm:inline">·</span>
+          <Link href="/newsletter" className="text-parchment-300 hover:text-parchment-100 text-sm transition-colors">
             Sign up for the weekly newsletter →
           </Link>
         </div>
@@ -409,9 +431,7 @@ export default async function HomePage() {
         <PersonaSelector />
         {mobileQuickAccess}
         {desktopQuickLinks}
-        {todayGlance}
-        {weatherTide}
-        {ferryAlerts}
+        {todayBlock}
         {eventsSection}
         {newsSection}
         {listingsSection}
@@ -429,9 +449,7 @@ export default async function HomePage() {
         {heroSection}
         {mobileQuickAccess}
         {desktopQuickLinks}
-        {todayGlance}
-        {weatherTide}
-        {ferryAlerts}
+        {todayBlock}
         {visitorCta}
         {eventsSection}
         {newsSection}
@@ -449,9 +467,7 @@ export default async function HomePage() {
       {heroSection}
       {mobileQuickAccess}
       {desktopQuickLinks}
-      {todayGlance}
-      {weatherTide}
-      {ferryAlerts}
+      {todayBlock}
       {eventsSection}
       {newsSection}
       {listingsSection}

@@ -64,86 +64,48 @@ export default async function FerryAlerts() {
 
   if (freshAlerts.length === 0) return null;
 
+  // Show at most 2 alerts on the homepage; full list lives on /ferry
+  const displayAlerts = freshAlerts.slice(0, 2);
+
   return (
-    <section className="bg-sound-50 border-y border-sound-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="border-t border-parchment-200 pt-3 mt-3">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-lg" aria-hidden="true">⛴️</span>
+        <h3 className="text-sm font-bold text-sound-900">Ferry Alerts</h3>
+      </div>
 
-        {/* Header */}
-        <div className="flex items-center gap-2.5 mb-5">
-          <span className="text-2xl" aria-hidden="true">⛴️</span>
-          <div>
-            <h2 className="text-lg font-bold text-sound-900 leading-none">
-              WSF Ferry Alerts
-            </h2>
-            <p className="text-xs text-sound-600 mt-0.5">Mukilteo / Clinton &nbsp;·&nbsp; Port Townsend / Coupeville</p>
-          </div>
-          <span className="ml-auto text-xs text-sound-500 hidden sm:block">
-            Via Washington State Ferries
-          </span>
-        </div>
+      {/* Alert list */}
+      <div className="space-y-2">
+        {displayAlerts.map(alert => {
+          const routes = affectedRouteLabels(alert);
 
-        {/* Alert list */}
-        <div className="space-y-3">
-          {freshAlerts.map(alert => {
-            const routes  = affectedRouteLabels(alert);
-            const pubDate = parseMsDate(alert.PublishDate);
-
-            return (
-              <div
-                key={alert.BulletinID}
-                className="bg-white rounded-xl border border-sound-200 shadow-sm px-5 py-4 flex flex-col sm:flex-row sm:items-start gap-3"
-              >
-                {/* Icon */}
-                <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">⚠️</span>
-
-                {/* Body */}
-                <div className="flex-1 min-w-0">
-                  {/* Route badges */}
-                  <div className="flex flex-wrap gap-1.5 mb-2">
-                    {routes.map(r => (
-                      <span
-                        key={r}
-                        className="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sound-100 text-sound-800 border border-sound-200"
-                      >
-                        {r}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Text */}
-                  <p className="text-sm text-stone-700 leading-relaxed">
-                    {alert.RouteAlertText}
-                  </p>
-
-                  {/* Date */}
-                  {pubDate && (
-                    <p className="text-xs text-stone-600 mt-1.5">
-                      Posted{' '}
-                      <time dateTime={pubDate.toISOString()}>
-                        {pubDate.toLocaleDateString('en-US', {
-                          month: 'long', day: 'numeric', year: 'numeric',
-                        })}
-                      </time>
-                    </p>
-                  )}
-                </div>
+          return (
+            <div
+              key={alert.BulletinID}
+              className="flex items-start gap-2 text-sm"
+            >
+              <span className="shrink-0 mt-0.5" aria-hidden="true">⚠️</span>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold text-sound-700">
+                  {routes.join(' · ')}
+                </span>
+                <p className="text-sm text-stone-700 leading-snug line-clamp-2">
+                  {alert.RouteAlertText}
+                </p>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Footer link */}
-        <p className="text-xs text-sound-500 mt-4 text-right">
-          <a
-            href="https://www.wsdot.wa.gov/ferries"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-sound-700 underline underline-offset-2 transition-colors"
-          >
-            Full schedule & updates at wsdot.wa.gov/ferries →
+      {freshAlerts.length > 2 && (
+        <p className="text-xs text-sound-600 mt-2">
+          <a href="/ferry" className="hover:text-sound-800 underline underline-offset-2 transition-colors">
+            {freshAlerts.length - 2} more alert{freshAlerts.length - 2 !== 1 ? 's' : ''} on the ferry page →
           </a>
         </p>
-      </div>
-    </section>
+      )}
+    </div>
   );
 }
