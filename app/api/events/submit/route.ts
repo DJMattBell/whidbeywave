@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getResend } from '@/lib/resend';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { escapeHtml } from '@/lib/escapeHtml';
 import {
   Validator,
@@ -45,10 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to Supabase (service role — RLS blocks anon inserts)
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = createServiceClient();
 
     const { data: submission, error: dbError } = await supabase
       .from('event_submissions')

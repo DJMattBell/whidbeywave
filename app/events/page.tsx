@@ -8,6 +8,7 @@ import type { Event } from '@/lib/data';
 import EventsFilter from '@/components/EventsFilter';
 import ShareButton from '@/components/ShareButton';
 import { Calendar } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 export const revalidate = 300; // re-fetch every 5 minutes
 
@@ -129,11 +130,13 @@ export default async function EventsPage() {
         </div>
 
         {upcoming.length === 0 ? (
-          <div className="empty-state mb-12">
-            <Calendar size={48} className="empty-state-icon" />
-            <h3 className="empty-state-title">The calendar&apos;s looking quiet</h3>
-            <p className="empty-state-text">Check back soon or submit your own community event.</p>
-            <Link href="/submit-event" className="btn-primary">Submit an Event</Link>
+          <div className="mb-12">
+            <EmptyState
+              icon={Calendar}
+              headline="The calendar's looking quiet"
+              subtext="Check back soon or submit your own community event."
+              action={{ label: 'Submit an Event', href: '/submit-event' }}
+            />
           </div>
         ) : (
           <Suspense fallback={null}>

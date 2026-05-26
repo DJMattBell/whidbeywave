@@ -4,7 +4,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Info } from 'lucide-react';
 
-export type FilterChip = 'everyone' | 'kids' | 'seniors' | 'visitors' | 'new-residents' | 'outdoors';
+import { getFilterFromCookie, type FilterChip } from '@/lib/chipFilters';
+export type { FilterChip };
+export { getFilterFromCookie };
 
 const COOKIE_NAME = 'whidbey-filter';
 const OLD_COOKIE_NAME = 'ww-persona';
@@ -140,10 +142,3 @@ export default function ChipFilters({ active }: { active?: FilterChip }) {
   );
 }
 
-/** Export for the home page server component to read the cookie value */
-export function getFilterFromCookie(cookieValue: string | undefined): FilterChip {
-  if (!cookieValue) return 'everyone';
-  if (CHIPS.some(c => c.key === cookieValue)) return cookieValue as FilterChip;
-  // Migrate old persona values
-  return 'everyone';
-}

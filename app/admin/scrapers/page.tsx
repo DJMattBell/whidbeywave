@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import { Activity } from 'lucide-react';
 
 type ScrapeLogEntry = {
@@ -53,12 +53,10 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function AdminScrapersPage() {
-  const { user } = useAuth();
+  const { isAdmin } = useAdmin();
   const [logs, setLogs] = useState<ScrapeLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
-  const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   useEffect(() => {
     async function fetchLogs() {

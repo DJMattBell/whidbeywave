@@ -3,11 +3,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
-
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 async function getToken(): Promise<string | null> {
   const { data: { session } } = await supabase.auth.getSession();
@@ -72,7 +70,7 @@ function freshForm() {
 }
 
 export default function AdminNewsPage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen] = useState(false);
 
   // Form state
@@ -86,8 +84,6 @@ export default function AdminNewsPage() {
   const [posts, setPosts]       = useState<Post[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [toggling, setToggling] = useState<Record<string, boolean>>({});
-
-  const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
   const loadPosts = useCallback(async () => {
     setLoadingPosts(true);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { timingSafeEqual } from 'crypto';
 import { unsubscribeToken } from '@/lib/newsletter';
 
@@ -25,10 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    const supabase = createServiceClient();
 
     await supabase
       .from('newsletter_subscribers')

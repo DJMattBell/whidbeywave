@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 
 type ScrapeStatus = 'success' | 'partial' | 'failed';
 
@@ -13,17 +13,17 @@ export async function logScrapeRun(opts: {
   status: ScrapeStatus;
   error?: string;
 }): Promise<void> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return;
-
-  const supabase = createClient(url, key);
-  await supabase.from('scrape_log').insert({
-    source: opts.source,
-    started_at: opts.startedAt.toISOString(),
-    finished_at: new Date().toISOString(),
-    event_count: opts.eventCount,
-    status: opts.status,
-    error: opts.error ?? null,
-  });
+  try {
+    const supabase = createServiceClient();
+    await supabase.from('scrape_log').insert({
+      source: opts.source,
+      started_at: opts.startedAt.toISOString(),
+      finished_at: new Date().toISOString(),
+      event_count: opts.eventCount,
+      status: opts.status,
+      error: opts.error ?? null,
+    });
+  } catch {
+    // Silently fail — scrape logging should never break the scraper
+  }
 }

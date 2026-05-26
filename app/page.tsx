@@ -9,12 +9,14 @@ import WeatherTideWidget from '@/components/WeatherTideWidget';
 import FerryAlerts from '@/components/FerryAlerts';
 import TodayWidget from '@/components/TodayWidget';
 import AddToCalendar from '@/components/AddToCalendar';
-import ChipFilters, { getFilterFromCookie, type FilterChip } from '@/components/ChipFilters';
+import ChipFilters from '@/components/ChipFilters';
+import { getFilterFromCookie, type FilterChip } from '@/lib/chipFilters';
 import FerryStatusPill from '@/components/FerryStatusPill';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import { Calendar, Gift, Newspaper } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 export const revalidate = 300; // 5 minutes
 
@@ -240,12 +242,12 @@ export default async function HomePage() {
         </Link>
       </div>
       {upcomingEvents.length === 0 ? (
-        <div className="empty-state">
-          <Calendar size={48} className="empty-state-icon" />
-          <h3 className="empty-state-title">The calendar&apos;s looking quiet</h3>
-          <p className="empty-state-text">Check back soon or submit your own community event.</p>
-          <Link href="/submit-event" className="btn-primary">Submit an event</Link>
-        </div>
+        <EmptyState
+          icon={Calendar}
+          headline="The calendar's looking quiet"
+          subtext="Check back soon or submit your own community event."
+          action={{ label: 'Submit an event', href: '/submit-event' }}
+        />
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
@@ -304,11 +306,11 @@ export default async function HomePage() {
           </Link>
         </div>
         {latestNews.length === 0 ? (
-          <div className="empty-state">
-            <Newspaper size={48} className="empty-state-icon" />
-            <h3 className="empty-state-title">The newsroom is between stories</h3>
-            <p className="empty-state-text">Stories from the island will appear here.</p>
-          </div>
+          <EmptyState
+            icon={Newspaper}
+            headline="The newsroom is between stories"
+            subtext="Stories from the island will appear here."
+          />
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {latestNews.map((post) => (

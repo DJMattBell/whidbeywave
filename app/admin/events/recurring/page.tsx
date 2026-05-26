@@ -3,13 +3,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
 import { ALLOWED_TOWNS, ALLOWED_EVENT_CATEGORIES, ALLOWED_EVENT_TAGS } from '@/lib/validate';
 import { recurrenceSummary } from '@/lib/recurring';
-
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -86,7 +84,7 @@ const defaultForm: FormState = {
 };
 
 export default function RecurringEventsPage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen] = useState(false);
   const [templates, setTemplates] = useState<RecurringTemplate[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -99,8 +97,6 @@ export default function RecurringEventsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(defaultForm);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
   const loadTemplates = useCallback(async () => {
     setFetching(true);

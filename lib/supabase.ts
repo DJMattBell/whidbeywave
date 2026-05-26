@@ -19,9 +19,18 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
 });
 
-// Factory for server components (new instance per request)
+// Factory for server components (new instance per request, anon key)
 export function createServerClient() {
   return createClient(supabaseUrl, supabaseKey);
+}
+
+// Factory for API routes / cron jobs that need to bypass RLS (service role key)
+export function createServiceClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY env var is not set');
+  }
+  return createClient(supabaseUrl, serviceKey);
 }
 
 // Auth helpers

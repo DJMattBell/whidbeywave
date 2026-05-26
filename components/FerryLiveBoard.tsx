@@ -76,7 +76,7 @@ function DepartureList({
 
       {nextDep && (
         <div className="mb-3">
-          <p className="text-3xl font-bold text-stone-900 tabular-nums leading-none">{nextDep.time}</p>
+          <p className="text-5xl font-bold text-stone-900 tabular-nums leading-none">{nextDep.time}</p>
           <p className="text-sm font-semibold text-forest-600 mt-0.5">{relativeLabel(nextDep.epochMs, now)}</p>
         </div>
       )}

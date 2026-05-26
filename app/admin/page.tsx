@@ -2,14 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
-
-// TODO: Admin auth check should be server-side middleware rather than a
-// client-side email comparison, to avoid exposing the admin email in the
-// NEXT_PUBLIC_ bundle.
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 type Counts = {
   pendingEvents: number;
@@ -23,14 +18,13 @@ type Counts = {
 };
 
 export default function AdminDashboard() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen] = useState(false);
   const [counts, setCounts] = useState<Counts | null>(null);
   const [countsLoading, setCountsLoading] = useState(true);
 
   useEffect(() => {
-    if (loading || !user) return;
-    if (user.email !== ADMIN_EMAIL) return;
+    if (loading || !user || !isAdmin) return;
 
     async function fetchCounts() {
       setCountsLoading(true);
@@ -69,7 +63,7 @@ export default function AdminDashboard() {
     }
 
     fetchCounts();
-  }, [user, loading]);
+  }, [user, loading, isAdmin]);
 
   // Auth states
   if (loading) {
@@ -99,7 +93,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (user.email !== ADMIN_EMAIL) {
+  if (!isAdmin) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="text-5xl mb-4">🚫</div>

@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { createServiceClient } from '@/lib/supabase';
 
 type AdminOk = { email: string };
 type AdminFail = { error: NextResponse };
@@ -28,10 +28,7 @@ export async function verifyAdminRequest(
     return { error: NextResponse.json({ error: 'Server misconfigured' }, { status: 500 }) };
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabase = createServiceClient();
 
   const { data: { user }, error } = await supabase.auth.getUser(token);
 

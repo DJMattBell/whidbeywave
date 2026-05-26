@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 import { generateDates } from '@/lib/recurring';
 import { ALLOWED_TOWNS, ALLOWED_EVENT_CATEGORIES, ALLOWED_EVENT_TAGS, Validator } from '@/lib/validate';
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  return createServiceClient();
 }
 
 /** GET — list all recurring event templates with generated event counts */

@@ -12,20 +12,13 @@
  * Newsletter, contact-to-admin, scraper emails stay direct Resend — not per-user events.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { getResend } from './resend';
 import { emailForumReply } from './email';
 
 type NotifyPayload = Record<string, string>;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
-
-function getServiceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
 
 async function logNotification(
   userId: string,
@@ -34,7 +27,7 @@ async function logNotification(
   status: 'sent' | 'failed' | 'skipped',
   error?: string
 ) {
-  const supabase = getServiceClient();
+  const supabase = createServiceClient();
   await supabase.from('notification_log').insert({
     user_id: userId,
     event_type: eventType,
@@ -59,7 +52,7 @@ async function sendPush(userId: string, eventType: string, payload: NotifyPayloa
 
     webPush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
 
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const { data: subs } = await supabase
       .from('push_subscriptions')
       .select('endpoint, p256dh, auth')
@@ -100,7 +93,7 @@ async function sendPush(userId: string, eventType: string, payload: NotifyPayloa
 
 async function sendEmail(userId: string, eventType: string, payload: NotifyPayload) {
   try {
-    const supabase = getServiceClient();
+    const supabase = createServiceClient();
     const { data: user } = await supabase.auth.admin.getUserById(userId);
     const email = user?.user?.email;
     if (!email) {
@@ -173,7 +166,7 @@ export async function notify(
   eventType: string,
   payload: NotifyPayload
 ): Promise<void> {
-  const supabase = getServiceClient();
+  const supabase = createServiceClient();
 
   // Look up preferences
   const { data: prefs } = await supabase
@@ -224,7 +217,7 @@ export async function notifyAll(
   eventType: string,
   payload: NotifyPayload
 ): Promise<number> {
-  const supabase = getServiceClient();
+  const supabase = createServiceClient();
 
   const { data: allPrefs } = await supabase
     .from('notification_preferences')

@@ -9,26 +9,9 @@ import MarkdownBody from '@/components/MarkdownBody';
 import NewsCommentSection from '@/components/NewsCommentSection';
 import ShareButton from '@/components/ShareButton';
 import { JsonLd } from '@/components/JsonLd';
+import { normalizePostFull } from '@/lib/normalize-post';
 
 export const revalidate = 300;
-
-function normalize(p: Record<string, unknown>) {
-  return {
-    ...p,
-    id:          p.id as string,
-    title:       p.title as string,
-    category:    (p.category ?? '') as string,
-    excerpt:     (p.excerpt ?? '') as string | null,
-    publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
-    readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
-    author:      (p.author ?? 'WhidbeyWave') as string,
-    body:        (p.body ?? '') as string,
-    emoji:       (p.emoji ?? '📖') as string,
-    slug:        (p.slug ?? String(p.id)) as string,
-    imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
-    tags:        (p.tags ?? []) as string[],
-  };
-}
 
 const getGuide = cache(async (slug: string) => {
   const supabase = createServerClient();
@@ -40,7 +23,7 @@ const getGuide = cache(async (slug: string) => {
     .eq('post_type', 'guide')
     .single();
 
-  return data ? normalize(data) : null;
+  return data ? normalizePostFull(data, '📖') : null;
 });
 
 const getRelatedGuides = cache(async (category: string, excludeSlug: string) => {
@@ -57,7 +40,7 @@ const getRelatedGuides = cache(async (category: string, excludeSlug: string) => 
     .limit(3);
 
   if (sameCat && sameCat.length >= 3) {
-    return sameCat.map(normalize);
+    return sameCat.map(p => normalizePostFull(p, '📖'));
   }
 
   const { data: latest } = await supabase
@@ -69,7 +52,7 @@ const getRelatedGuides = cache(async (category: string, excludeSlug: string) => 
     .order('published_at', { ascending: false })
     .limit(3);
 
-  return (latest ?? []).map(normalize);
+  return (latest ?? []).map(p => normalizePostFull(p, '📖'));
 });
 
 export async function generateStaticParams() {

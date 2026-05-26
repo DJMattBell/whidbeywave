@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 
@@ -24,10 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into site_feedback (anon key — table allows public inserts)
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = createServerClient();
 
     const { error: insertError } = await supabase.from('site_feedback').insert({
       message: message.trim(),

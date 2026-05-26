@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import DataStatus from '@/components/DataStatus';
 
 export const metadata: Metadata = {
   title: 'Whidbey Island Tide Tables — 7-Day Predictions',
@@ -205,6 +206,12 @@ export default async function TidesPage() {
           <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             NOAA tide predictions for Penn Cove — 7-day forecast, updated hourly.
           </p>
+          <div className="mt-3 flex justify-center">
+            <DataStatus
+              state={failed ? 'on-island-time' : 'live'}
+              label="NOAA Tide Data"
+            />
+          </div>
         </div>
       </div>
 

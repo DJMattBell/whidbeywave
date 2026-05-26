@@ -7,24 +7,9 @@ import { formatShortDate, categoryColors } from '@/lib/data';
 import GuidesFilter from '@/components/GuidesFilter';
 import { JsonLd } from '@/components/JsonLd';
 import { BookOpen } from 'lucide-react';
+import { normalizePost } from '@/lib/normalize-post';
 
 export const revalidate = 300;
-
-function normalize(p: Record<string, unknown>) {
-  return {
-    ...p,
-    id:          p.id as string,
-    title:       p.title as string,
-    category:    (p.category ?? '') as string,
-    excerpt:     (p.excerpt ?? '') as string | null,
-    publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
-    readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
-    author:      (p.author ?? 'WhidbeyWave') as string,
-    emoji:       (p.emoji ?? '📖') as string,
-    slug:        (p.slug ?? String(p.id)) as string,
-    imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
-  };
-}
 
 const getCachedGuides = cache(async () => {
   const supabase = createServerClient();
@@ -35,7 +20,7 @@ const getCachedGuides = cache(async () => {
     .eq('post_type', 'guide')
     .order('published_at', { ascending: false });
 
-  return (data ?? []).map(normalize);
+  return (data ?? []).map(p => normalizePost(p, '📖'));
 });
 
 export const metadata: Metadata = {
@@ -56,7 +41,7 @@ export const metadata: Metadata = {
   },
 };
 
-function GuidesGrid({ guides, cat }: { guides: ReturnType<typeof normalize>[]; cat: string }) {
+function GuidesGrid({ guides, cat }: { guides: ReturnType<typeof normalizePost>[]; cat: string }) {
   const filtered = cat && cat !== 'All' ? guides.filter(g => g.category === cat) : guides;
 
   if (filtered.length === 0) {

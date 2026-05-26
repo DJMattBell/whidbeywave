@@ -3,11 +3,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
-
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 async function getToken(): Promise<string | null> {
   const { data: { session } } = await supabase.auth.getSession();
@@ -44,7 +42,7 @@ function fmt(dateStr: string) {
 }
 
 export default function AdminEventsPage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen]   = useState(false);
   const [allSubmissions, setAllSubmissions] = useState<Submission[]>([]);
   const [filter, setFilter]       = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
@@ -59,8 +57,6 @@ export default function AdminEventsPage() {
   const [nlStatus, setNlStatus]         = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [subCount, setSubCount]         = useState<number | null>(null);
   const [countLoading, setCountLoading] = useState(false);
-
-  const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
   // Always load all submissions — filter client-side so counts stay accurate on all tabs
   const loadSubmissions = useCallback(async () => {

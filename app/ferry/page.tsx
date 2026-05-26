@@ -4,6 +4,7 @@ import { fetchFerryPageData } from '@/lib/ferry';
 import type { RouteStatus } from '@/lib/ferry';
 import ShareButton from '@/components/ShareButton';
 import FerryLiveBoard from '@/components/FerryLiveBoard';
+import DataStatus from '@/components/DataStatus';
 
 export const revalidate = 60;
 
@@ -84,7 +85,11 @@ export default async function FerryPage() {
           <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Live status for both Whidbey Island ferry routes — updates every minute.
           </p>
-          <div className="mt-4">
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <DataStatus
+              state={ferry.mukilteoClinton || ferry.ptCoupeville ? 'live' : ferry.configured ? 'on-island-time' : 'cached'}
+              label="WSDOT Ferry Data"
+            />
             <ShareButton title="Whidbey Island Ferry Status — WhidbeyWave" />
           </div>
         </div>

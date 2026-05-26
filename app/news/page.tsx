@@ -6,26 +6,9 @@ import { createServerClient } from '@/lib/supabase';
 import { formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import { JsonLd } from '@/components/JsonLd';
 import { Newspaper } from 'lucide-react';
+import { normalizePost } from '@/lib/normalize-post';
 
 export const revalidate = 300;
-
-// ── Data fetching ─────────────────────────────────────────────
-
-function normalize(p: Record<string, unknown>) {
-  return {
-    ...p,
-    id:          p.id as string,
-    title:       p.title as string,
-    category:    (p.category ?? '') as string,
-    excerpt:     (p.excerpt ?? '') as string | null,
-    publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
-    readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
-    author:      (p.author ?? 'WhidbeyWave') as string,
-    emoji:       (p.emoji ?? '📰') as string,
-    slug:        (p.slug ?? String(p.id)) as string,
-    imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
-  };
-}
 
 const getCachedPosts = cache(async () => {
   const supabase = createServerClient();
@@ -37,7 +20,7 @@ const getCachedPosts = cache(async () => {
     .order('published_at', { ascending: false });
 
   const raw = postsData ?? [];
-  return raw.map(normalize);
+  return raw.map(p => normalizePost(p));
 });
 
 // ── Metadata ──────────────────────────────────────────────────

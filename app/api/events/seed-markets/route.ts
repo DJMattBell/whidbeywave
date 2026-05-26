@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { seedFarmersMarkets } from '@/lib/scrapers/seed-markets';
 import { verifyCronRequest } from '@/lib/cronAuth';
 
@@ -9,14 +9,7 @@ export async function GET(request: NextRequest) {
   const authError = verifyCronRequest(request);
   if (authError) return authError;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
-    console.error('[seed-markets] SUPABASE_SERVICE_ROLE_KEY is not set');
-    return NextResponse.json({ error: 'Supabase service role key not configured' }, { status: 500 });
-  }
-
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const supabase = createServiceClient();
 
   try {
     const { inserted, skipped } = await seedFarmersMarkets(supabase);

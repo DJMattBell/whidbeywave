@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@/lib/supabase';
 import { verifyUserRequest } from '@/lib/userAuth';
 import { notify } from '@/lib/notifications';
 
@@ -43,10 +43,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Fetch the original post's author_email and title (using anon client — public read)
-  const supabaseAnon = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabaseAnon = createServerClient();
 
   const { data: post } = await supabaseAnon
     .from('forum_posts')

@@ -2,11 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
-
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 type Feedback = {
   id: string;
@@ -25,12 +23,10 @@ function fmt(dateStr: string) {
 }
 
 export default function AdminFeedbackPage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen]   = useState(false);
   const [items, setItems]         = useState<Feedback[]>([]);
   const [fetching, setFetching]   = useState(false);
-
-  const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
 
   const loadFeedback = useCallback(async () => {
     setFetching(true);

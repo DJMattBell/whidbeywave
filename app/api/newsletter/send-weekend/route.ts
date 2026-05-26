@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient, createServerClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
 import { unsubscribeUrl } from '@/lib/newsletter';
 import { verifyCronRequest } from '@/lib/cronAuth';
@@ -240,22 +240,8 @@ export async function GET(request: NextRequest) {
   const authError = verifyCronRequest(request);
   if (authError) return authError;
 
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return NextResponse.json(
-      { error: 'SUPABASE_SERVICE_ROLE_KEY not configured' },
-      { status: 500 }
-    );
-  }
-
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-
-  const supabaseAnon = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabaseAdmin = createServiceClient();
+  const supabaseAnon = createServerClient();
 
   // Determine the coming Friday–Sunday
   const { friday, saturday, sunday } = getWeekendDates(new Date());

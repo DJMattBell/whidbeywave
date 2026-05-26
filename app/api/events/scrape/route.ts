@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { verifyCronRequest } from '@/lib/cronAuth';
@@ -39,16 +39,6 @@ async function sendAdminEmail(subject: string, html: string) {
 export async function GET(request: NextRequest) {
   const authError = verifyCronRequest(request);
   if (authError) return authError;
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
-    console.error('[scrape] SUPABASE_SERVICE_ROLE_KEY is not set — cannot run scraper');
-    return NextResponse.json(
-      { error: 'Supabase service role key not configured' },
-      { status: 500 }
-    );
-  }
 
   // Per-source schedule: some scrapers only need to run monthly
   const today = new Date();
@@ -132,7 +122,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: true, found: 0, added: 0 });
   }
 
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const supabase = createServiceClient();
 
   // Dedup: fetch existing submissions from the last 90 days
   // Uses normalized title + date + source to catch duplicates even with

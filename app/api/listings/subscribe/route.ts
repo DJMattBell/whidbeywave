@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase';
 import { randomUUID } from 'crypto';
 import { ALLOWED_LISTING_CATEGORIES } from '@/lib/validate';
 
@@ -16,13 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid category.' }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceRoleKey) {
-      return NextResponse.json({ error: 'Server not configured' }, { status: 500 });
-    }
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createServiceClient();
 
     // Upsert so re-subscribing the same email+category is idempotent.
     // unsubscribe_token is included so new rows get a token; on conflict it
