@@ -447,13 +447,32 @@ export default function ListingDetailModal({
               </>
             )}
 
+            {/* ── Barter info ───────────────────────────────── */}
+            {listing.barter_open && !sold && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                <p className="font-semibold mb-0.5">Open to barter</p>
+                {listing.barter_seeking && (
+                  <p className="text-amber-700">{listing.barter_seeking}</p>
+                )}
+              </div>
+            )}
+
             {/* ── Buyer action ───────────────────────────────── */}
             {!sold && !isOwner && (
-              <MarketplaceContactButton
-                listingId={listing.id}
-                listingTitle={listing.title}
-                sellerName={listing.seller_name}
-              />
+              <div className="space-y-2">
+                <MarketplaceContactButton
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  sellerName={listing.seller_name}
+                />
+                {listing.barter_open && (
+                  <MarketplaceContactButton
+                    listingId={listing.id}
+                    listingTitle={`[Barter offer] ${listing.title}`}
+                    sellerName={listing.seller_name}
+                  />
+                )}
+              </div>
             )}
 
           </div>

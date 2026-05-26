@@ -15,7 +15,7 @@ import FerryStatusPill from '@/components/FerryStatusPill';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
-import { Calendar, Newspaper } from 'lucide-react';
+import { Calendar, Gift, Newspaper } from 'lucide-react';
 
 export const revalidate = 300; // 5 minutes
 
@@ -83,6 +83,20 @@ export default async function HomePage() {
   const featuredListings = (featuredListingsData ?? []) as {
     id: string; title: string; price: number | null; is_free: boolean;
     category: string; location: string; emoji: string; images: string[];
+  }[];
+
+  // Free listings for "Neighbors are giving" section
+  const { data: freeListingsData } = await supabase
+    .from('listings')
+    .select('id, title, location, images, emoji, created_at')
+    .eq('status', 'approved')
+    .eq('sold', false)
+    .eq('is_free', true)
+    .or(`expires_at.is.null,expires_at.gt.${now}`)
+    .order('created_at', { ascending: false })
+    .limit(8);
+  const freeListings = (freeListingsData ?? []) as {
+    id: string; title: string; location: string; images: string[]; emoji: string; created_at: string;
   }[];
 
   const jsonLd = {
@@ -325,6 +339,53 @@ export default async function HomePage() {
     </section>
   );
 
+  // "Neighbors are giving" section — only shows with ≥2 free listings
+  const flashGivesSection = freeListings.length >= 2 ? (
+    <section key="flash-gives" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+      <div className="flex items-end justify-between mb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Gift size={20} className="text-forest-600" />
+            <h2 className="text-xl font-bold text-stone-900">Neighbors are giving</h2>
+          </div>
+          <p className="text-stone-500 text-sm">Free items from around the island</p>
+        </div>
+        <Link href="/marketplace?cat=Free+Stuff" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
+          See all free →
+        </Link>
+      </div>
+      <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-none md:grid md:grid-cols-4 md:overflow-visible motion-reduce:overflow-visible">
+        {freeListings.map(listing => (
+          <Link
+            key={listing.id}
+            href={`/marketplace/${listing.id}`}
+            className="card-pressable group shrink-0 w-[200px] md:w-auto snap-start"
+          >
+            <div className="h-1 bg-gradient-to-r from-forest-500 to-forest-300" />
+            <div className="relative bg-parchment-100 h-28 flex items-center justify-center overflow-hidden">
+              {listing.images?.[0]
+                ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="200px" />
+                : <span className="text-4xl">{listing.emoji}</span>
+              }
+            </div>
+            <div className="p-3">
+              <span className="badge-free text-xs mb-1">Free</span>
+              <h3 className="text-sm font-semibold text-stone-800 line-clamp-1 group-hover:text-forest-600 transition-colors">
+                {listing.title}
+              </h3>
+              <p className="text-xs text-stone-500 mt-0.5">📍 {listing.location}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+      <div className="text-center mt-4 sm:hidden">
+        <Link href="/marketplace?cat=Free+Stuff" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
+          See all free items →
+        </Link>
+      </div>
+    </section>
+  ) : null;
+
   const listingsSection = featuredListings.length > 0 ? (
     <section key="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="flex items-end justify-between mb-10">
@@ -433,6 +494,7 @@ export default async function HomePage() {
         {desktopQuickLinks}
         {todayBlock}
         {eventsSection}
+        {flashGivesSection}
         {newsSection}
         {listingsSection}
         {closingCta}
@@ -469,6 +531,7 @@ export default async function HomePage() {
       {desktopQuickLinks}
       {todayBlock}
       {eventsSection}
+      {flashGivesSection}
       {newsSection}
       {listingsSection}
       {closingCta}

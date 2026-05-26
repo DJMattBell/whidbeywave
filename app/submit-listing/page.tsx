@@ -49,6 +49,11 @@ export default function SubmitListingPage() {
     contact_method: 'Email',
     contact_email: '',
     contact_phone: '',
+    // Barter fields
+    barter_open: false,
+    barter_seeking: '',
+    // Flash give duration
+    flash_give_duration: '' as '' | '24h' | '48h' | 'week',
     // Housing-specific fields
     bedrooms: '',
     bathrooms: '',
@@ -143,6 +148,9 @@ export default function SubmitListingPage() {
           contact_email: effectiveEmail,
           contact_phone: form.contact_phone || null,
           images: imageUrls,
+          barter_open: form.is_free ? false : form.barter_open,
+          barter_seeking: form.barter_open && !form.is_free ? form.barter_seeking || null : null,
+          flash_give_duration: form.is_free && form.flash_give_duration ? form.flash_give_duration : null,
           ...(form.category === 'Housing' && {
             bedrooms:       form.bedrooms || null,
             bathrooms:      form.bathrooms || null,
@@ -220,6 +228,7 @@ export default function SubmitListingPage() {
                   contact_method: 'Email',
                   contact_email: user.email ?? '',
                   contact_phone: '',
+                  barter_open: false, barter_seeking: '', flash_give_duration: '' as '' | '24h' | '48h' | 'week',
                   bedrooms: '', bathrooms: '', neighborhood: '', available_date: '',
                 });
               }}
@@ -360,17 +369,62 @@ export default function SubmitListingPage() {
                   <span className="text-sm font-medium text-green-700">This item is free</span>
                 </label>
               </div>
+              {form.is_free && (
+                <div className="mt-2">
+                  <label htmlFor="ls-duration" className={labelCls}>How long is this available?</label>
+                  <select
+                    id="ls-duration"
+                    value={form.flash_give_duration}
+                    onChange={e => set('flash_give_duration', e.target.value as '' | '24h' | '48h' | 'week')}
+                    className={inputCls}
+                  >
+                    <option value="">No time limit</option>
+                    <option value="24h">24 hours</option>
+                    <option value="48h">48 hours</option>
+                    <option value="week">1 week</option>
+                  </select>
+                </div>
+              )}
               {!form.is_free && (
-                <input
-                  id="ls-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.price}
-                  onChange={e => set('price', e.target.value)}
-                  placeholder="150"
-                  className={inputCls}
-                />
+                <>
+                  <input
+                    id="ls-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.price}
+                    onChange={e => set('price', e.target.value)}
+                    placeholder="150"
+                    className={inputCls}
+                  />
+                  <div className="mt-3">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={form.barter_open}
+                        onChange={e => set('barter_open', e.target.checked)}
+                        className="w-4 h-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
+                      />
+                      <span className="text-sm font-medium text-stone-700">Open to barter</span>
+                    </label>
+                    {form.barter_open && (
+                      <div className="mt-2">
+                        <label htmlFor="ls-barter-seeking" className={labelCls}>
+                          What are you looking for? <span className="text-stone-500 font-normal">(optional)</span>
+                        </label>
+                        <textarea
+                          id="ls-barter-seeking"
+                          rows={2}
+                          maxLength={500}
+                          value={form.barter_seeking}
+                          onChange={e => set('barter_seeking', e.target.value)}
+                          placeholder="Looking for firewood, garden tools, or bike repairs…"
+                          className={inputCls + ' resize-none'}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 

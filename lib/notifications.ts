@@ -142,6 +142,29 @@ async function sendEmail(userId: string, eventType: string, payload: NotifyPaylo
 }
 
 /**
+ * Check if a notification scope matches the payload.
+ * Empty arrays = match all. Null scope = match all.
+ */
+function scopeMatches(
+  scope: { categories?: string[]; towns?: string[] } | null,
+  payload: NotifyPayload
+): boolean {
+  if (!scope) return true;
+
+  if (scope.categories && scope.categories.length > 0 && payload.category) {
+    const categorySet = new Set(scope.categories.map(c => c.toLowerCase()));
+    if (!categorySet.has(payload.category.toLowerCase())) return false;
+  }
+
+  if (scope.towns && scope.towns.length > 0 && payload.town) {
+    const townSet = new Set(scope.towns.map(t => t.toLowerCase()));
+    if (!townSet.has(payload.town.toLowerCase())) return false;
+  }
+
+  return true;
+}
+
+/**
  * Send a notification to a user through all their enabled channels.
  * Looks up preferences, fans out to email and/or push, logs everything.
  */
@@ -155,7 +178,7 @@ export async function notify(
   // Look up preferences
   const { data: prefs } = await supabase
     .from('notification_preferences')
-    .select('channel, enabled')
+    .select('channel, enabled, scope')
     .eq('user_id', recipientUserId)
     .eq('event_type', eventType);
 
@@ -163,7 +186,10 @@ export async function notify(
   const channels: Record<string, boolean> = {};
   if (prefs && prefs.length > 0) {
     for (const p of prefs) {
-      channels[p.channel] = p.enabled;
+      // Check scope filtering
+      if (p.enabled && scopeMatches(p.scope as { categories?: string[]; towns?: string[] } | null, payload)) {
+        channels[p.channel] = true;
+      }
     }
   } else if (eventType === 'forum_reply_to_my_post') {
     channels.email = true;
@@ -173,6 +199,9 @@ export async function notify(
   if (eventType === 'forum_reply_to_my_post') {
     payload.pushTitle = `${payload.replierName ?? 'Someone'} replied to your question`;
     payload.pushBody = (payload.replyBody ?? '').slice(0, 100);
+  } else if (eventType === 'flash_give_in_my_area') {
+    payload.pushTitle = 'Free on Whidbey!';
+    payload.pushBody = payload.title ?? 'A neighbor is giving something away';
   }
 
   const promises: Promise<void>[] = [];
@@ -185,4 +214,38 @@ export async function notify(
   }
 
   await Promise.allSettled(promises);
+}
+
+/**
+ * Broadcast a notification to all users with matching preferences and scope.
+ * Used for events like flash_give_in_my_area where recipients aren't known upfront.
+ */
+export async function notifyAll(
+  eventType: string,
+  payload: NotifyPayload
+): Promise<number> {
+  const supabase = getServiceClient();
+
+  const { data: allPrefs } = await supabase
+    .from('notification_preferences')
+    .select('user_id, channel, enabled, scope')
+    .eq('event_type', eventType)
+    .eq('enabled', true);
+
+  if (!allPrefs || allPrefs.length === 0) return 0;
+
+  // Group by user_id, check scope
+  const userChannels: Record<string, Set<string>> = {};
+  for (const p of allPrefs) {
+    if (scopeMatches(p.scope as { categories?: string[]; towns?: string[] } | null, payload)) {
+      if (!userChannels[p.user_id]) userChannels[p.user_id] = new Set();
+      userChannels[p.user_id].add(p.channel);
+    }
+  }
+
+  const userIds = Object.keys(userChannels);
+  const promises = userIds.map(userId => notify(userId, eventType, payload));
+  await Promise.allSettled(promises);
+
+  return userIds.length;
 }

@@ -29,6 +29,9 @@ export type MarketplaceListing = {
   created_at: string;
   user_id: string | null;
   contact_method: string | null;
+  barter_open: boolean;
+  barter_seeking: string | null;
+  flash_give_duration: string | null;
 };
 
 export function timeAgo(dateStr: string): string {
