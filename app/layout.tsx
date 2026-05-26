@@ -10,6 +10,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import WelcomeSheet from '@/components/WelcomeSheet';
 import BackToTop from '@/components/BackToTop';
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import Script from 'next/script';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -102,6 +103,7 @@ export default function RootLayout({
           <WelcomeSheet />
           <BackToTop />
         </AuthProvider>
+        <ServiceWorkerRegistration />
         <TextSizeToggle />
         <FeedbackButton />
         <Analytics />

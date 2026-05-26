@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getResend } from '@/lib/resend';
-import { escapeHtml } from '@/lib/escapeHtml';
 import { verifyUserRequest } from '@/lib/userAuth';
-
-const resend = getResend();
-
+import { notify } from '@/lib/notifications';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
@@ -58,98 +54,31 @@ export async function POST(request: NextRequest) {
     .eq('id', postId)
     .single();
 
-  // Send notification if the post has an author email and it's not the same person replying
+  // Send notification through the notification engine
+  // notify() handles preference lookup, channel fan-out, and logging
   if (post?.author_email && post.author_email !== user.email) {
     const snippet = body.trim().length > 200
       ? body.trim().slice(0, 200) + '…'
       : body.trim();
 
-    try {
-      await resend.emails.send({
-        from: 'WhidbeyWave <hello@whidbeywave.com>',
-        to: post.author_email,
-        subject: `Someone replied to your question on WhidbeyWave`,
-        html: `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f7f0e2;font-family:Georgia,'Times New Roman',serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f0e2;padding:32px 16px;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden;max-width:600px;">
+    // We need the author's user_id — look it up by email
+    const { data: authorUser } = await supabaseAnon
+      .from('forum_posts')
+      .select('author_id')
+      .eq('id', postId)
+      .single();
 
-        <!-- Header -->
-        <tr>
-          <td style="background:#1a4a33;padding:28px 36px;">
-            <p style="margin:0;font-size:22px;font-weight:bold;color:#f5efe0;letter-spacing:-0.3px;">
-              🌊 WhidbeyWave
-            </p>
-          </td>
-        </tr>
-
-        <!-- Body -->
-        <tr>
-          <td style="padding:36px 36px 24px;">
-            <h2 style="margin:0 0 12px;font-size:22px;color:#1c3d2c;font-family:Georgia,serif;">
-              Someone replied to your question
-            </h2>
-            <p style="margin:0 0 20px;font-size:16px;color:#57534e;line-height:1.6;">
-              <strong>${escapeHtml(displayName)}</strong> added a reply to a question you posted on WhidbeyWave.
-            </p>
-
-            <!-- Post title + snippet block -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdfaf3;border:1px solid #e8dfc8;border-radius:12px;margin-bottom:24px;">
-              <tr>
-                <td style="padding:20px 24px;">
-                  <p style="margin:0 0 8px;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:0.8px;color:#6b7280;">
-                    Re: your question
-                  </p>
-                  <p style="margin:0 0 12px;font-size:16px;font-weight:bold;color:#1c3d2c;font-family:Georgia,serif;">
-                    ${escapeHtml(post.title)}
-                  </p>
-                  <p style="margin:0;font-size:15px;color:#57534e;line-height:1.6;font-style:italic;">
-                    "${escapeHtml(snippet)}"
-                  </p>
-                  <p style="margin:8px 0 0;font-size:13px;color:#9ca3af;">
-                    — ${escapeHtml(displayName)}
-                  </p>
-                </td>
-              </tr>
-            </table>
-
-            <!-- CTA -->
-            <table cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="background:#255c42;border-radius:10px;">
-                  <a href="${SITE_URL}/forum/${postId}"
-                     style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:bold;color:#f5efe0;text-decoration:none;">
-                    View the reply →
-                  </a>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <!-- Footer -->
-        <tr>
-          <td style="background:#fdfaf3;border-top:1px solid #e8dfc8;padding:20px 36px;">
-            <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
-              You received this because you posted a question on
-              <a href="${SITE_URL}" style="color:#255c42;text-decoration:none;">WhidbeyWave.com</a>.
-              Whidbey Island, WA.
-            </p>
-          </td>
-        </tr>
-
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`,
-      });
-    } catch {
-      // Non-fatal — reply was already saved successfully
+    if (authorUser?.author_id) {
+      try {
+        await notify(authorUser.author_id, 'forum_reply_to_my_post', {
+          postTitle: post.title,
+          replierName: displayName,
+          replyBody: snippet,
+          threadUrl: `${SITE_URL}/forum/${postId}`,
+        });
+      } catch {
+        // Non-fatal — reply was already saved successfully
+      }
     }
   }
 
