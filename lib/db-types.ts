@@ -160,3 +160,51 @@ export type RecurringEventRow = {
   created_at: string;
   updated_at: string;
 };
+
+export type NewsPostRow = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  body: string;
+  image_url: string | null;
+  category: string | null;
+  published: boolean;
+  post_type: string;
+  created_at: string;
+  tags: string[];
+};
+
+export type MarketplaceListingRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number | null;
+  is_free: boolean;
+  category: string;
+  location: string;
+  images: string[];
+  emoji: string;
+  seller_name: string;
+  seller_email: string;
+  status: string;
+  sold: boolean;
+  expires_at: string | null;
+  created_at: string;
+};
+
+export type ListingAlertRow = {
+  id: string;
+  email: string;
+  category: string | null;
+  unsubscribe_token: string | null;
+  created_at: string;
+};
+
+export type SiteFeedbackRow = {
+  id: string;
+  message: string;
+  email: string | null;
+  page: string | null;
+  created_at: string;
+};

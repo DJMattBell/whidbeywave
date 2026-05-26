@@ -66,7 +66,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
 
   if (status === 'success') {
     return (
-      <div className="text-center py-6 bg-forest-50 rounded-2xl border border-forest-100">
+      <div className="text-center py-6 bg-forest-50 rounded-xl border border-forest-100">
         <div className="text-3xl mb-2">🌿</div>
         <p className="text-forest-700 font-semibold text-sm">Your reply was posted — thank you!</p>
       </div>
@@ -74,10 +74,9 @@ export default function ReplyForm({ postId }: { postId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-parchment-50 rounded-2xl border border-parchment-200 p-6 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-parchment-50 rounded-xl border border-parchment-200 p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg text-stone-900"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+        <h3 className="text-lg font-semibold text-stone-900">
           Add your reply
         </h3>
         {user ? (
@@ -99,7 +98,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
               onChange={e => setAnonName(e.target.value)}
               placeholder="Jane from Langley"
               maxLength={80}
-              className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
             />
           </div>
           <div>
@@ -111,7 +110,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
               onChange={e => setAnonZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
               placeholder="98277"
               maxLength={5}
-              className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
             />
             <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
           </div>
@@ -125,12 +124,12 @@ export default function ReplyForm({ postId }: { postId: string }) {
         <textarea
           rows={4} required value={body} onChange={e => setBody(e.target.value)}
           placeholder="Share what you know…"
-          className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+          className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
         />
       </div>
 
       {status === 'error' && (
-        <p className="text-red-500 text-xs">Something went wrong — please try again.</p>
+        <p className="text-red-500 text-xs" role="alert">Something went wrong — please try again.</p>
       )}
 
       <button type="submit" disabled={status === 'loading'} className="btn-primary disabled:opacity-60">

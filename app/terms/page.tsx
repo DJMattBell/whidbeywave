@@ -2,8 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service',
+  title: 'Terms of Service — WhidbeyWave',
   description: 'Terms of use for WhidbeyWave.com.',
+  openGraph: {
+    title: 'Terms of Service — WhidbeyWave',
+    description: 'Terms of use for WhidbeyWave.com.',
+    siteName: 'WhidbeyWave',
+  },
 };
 
 export default function TermsOfServicePage() {

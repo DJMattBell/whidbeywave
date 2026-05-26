@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 
 function ConfirmBanner() {
@@ -312,7 +313,7 @@ export default function NewsletterPage() {
                     <legend className="block text-sm font-medium text-stone-700 mb-2">
                       How often would you like to hear from us?
                     </legend>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Email frequency">
                       {[
                         {
                           value: 'weekly' as const,
@@ -406,7 +407,7 @@ export default function NewsletterPage() {
             <h2 className="text-xl text-stone-900 mb-4 font-semibold">Here&apos;s a sample issue</h2>
             <div className="border border-parchment-300 rounded-2xl overflow-hidden shadow-warm-md bg-white">
               <div className="bg-forest-800 text-parchment-100 px-6 py-4 flex items-center gap-3">
-                <img src="/logo.png" alt="" aria-hidden="true" role="presentation" className="w-8 h-8 rounded-full object-cover" />
+                <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                 <div>
                   <p className="font-bold text-sm">The WhidbeyWave Weekly</p>
                   <p className="text-forest-300 text-sm">Monday, March 2 &nbsp;·&nbsp; Your island digest</p>

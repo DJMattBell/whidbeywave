@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { verifyCronRequest } from '@/lib/cronAuth';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 
 // Supabase webhook payload wraps the new row under `record`
 type WebhookPayload = {
@@ -22,6 +24,11 @@ type WebhookPayload = {
   };
 };
 
+// Auth: This endpoint uses verifyCronRequest which checks for either the
+// x-vercel-cron header or an Authorization: Bearer <CRON_SECRET> header.
+// When configuring the Supabase webhook, set the HTTP header to:
+//   Authorization: Bearer <CRON_SECRET>
+// where CRON_SECRET matches the environment variable on the server.
 export async function POST(request: NextRequest) {
   const authError = verifyCronRequest(request);
   if (authError) return authError;
@@ -44,10 +51,11 @@ export async function POST(request: NextRequest) {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Query subscribers who want this category OR "All" (null category = all)
+    // Use parameterized filter to prevent injection via listing.category
     const { data: subscribers, error } = await supabase
       .from('listing_alerts')
       .select('email, category, unsubscribe_token')
-      .or(`category.is.null,category.eq."${listing.category}"`);
+      .or(`category.is.null,category.eq.${listing.category}`);
 
     if (error) {
       console.error('listing_alerts query error:', error);

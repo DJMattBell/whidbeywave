@@ -2,8 +2,20 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Barter & Trade',
+  title: 'Barter & Trade — WhidbeyWave',
   description: 'Trade, swap, and barter with your Whidbey Island neighbors. Got something to offer? Looking for something? This is the spot.',
+  openGraph: {
+    title: 'Barter & Trade — WhidbeyWave',
+    description: 'Trade, swap, and barter with your Whidbey Island neighbors.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Barter & Trade — WhidbeyWave',
+    description: 'Trade, swap, and barter with your Whidbey Island neighbors.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function BarterPage() {

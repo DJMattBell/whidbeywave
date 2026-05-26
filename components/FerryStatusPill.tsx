@@ -15,7 +15,7 @@ export default async function FerryStatusPill() {
 
   if (!data) return null;
 
-  const routes = [data.mukilteoCliton, data.ptCoupeville].filter(Boolean);
+  const routes = [data.mukilteoClinton, data.ptCoupeville].filter(Boolean);
   if (routes.length === 0) return null;
 
   // Determine worst status across routes

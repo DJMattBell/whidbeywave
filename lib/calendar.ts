@@ -72,6 +72,10 @@ export function googleCalendarUrl(event: CalendarEventInput): string {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+function icsEscape(s: string): string {
+  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,');
+}
+
 export function generateIcs(event: CalendarEventInput): string {
   const { start, end, allDay } = parseDates(event.date, event.time);
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
@@ -88,11 +92,11 @@ export function generateIcs(event: CalendarEventInput): string {
     `UID:${uid}`,
     allDay ? `DTSTART;VALUE=DATE:${start}` : `DTSTART;TZID=America/Los_Angeles:${start}`,
     allDay ? `DTEND;VALUE=DATE:${end}`     : `DTEND;TZID=America/Los_Angeles:${end}`,
-    `SUMMARY:${event.title}`,
+    `SUMMARY:${icsEscape(event.title)}`,
   ];
 
   if (event.location) {
-    lines.push(`LOCATION:${event.location}`);
+    lines.push(`LOCATION:${icsEscape(event.location)}`);
   }
   if (event.description) {
     // Escape special chars; fold long lines at 75 chars per RFC 5545

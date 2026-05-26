@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 import { escapeHtml } from '@/lib/escapeHtml';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+const resend = getResend();
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAdminRequest(request);

@@ -98,34 +98,31 @@ function findEventSeries(obj: unknown): Record<string, unknown> | null {
 }
 
 /**
- * Format an ISO 8601 timestamp to YYYY-MM-DD.
+ * Format an ISO 8601 timestamp to YYYY-MM-DD in Pacific time.
  */
 function isoToDate(iso: string): string | null {
   try {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return null;
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+    return d.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
   } catch {
     return null;
   }
 }
 
 /**
- * Format an ISO 8601 timestamp to a human-readable time like "10:00 AM".
+ * Format an ISO 8601 timestamp to a human-readable time like "10:00 AM" in Pacific time.
  */
 function isoToTime(iso: string): string | null {
   try {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return null;
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const h = hours % 12 || 12;
-    const m = String(minutes).padStart(2, '0');
-    return `${h}:${m} ${ampm}`;
+    return d.toLocaleTimeString('en-US', {
+      timeZone: 'America/Los_Angeles',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
   } catch {
     return null;
   }

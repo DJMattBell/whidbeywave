@@ -1,28 +1,35 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase';
+import type { NewsPostRow } from '@/lib/db-types';
 import { formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import NewsCommentSection from '@/components/NewsCommentSection';
 import ShareButton from '@/components/ShareButton';
 import MarkdownBody from '@/components/MarkdownBody';
+import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 300;
 
 // ── Data fetching ─────────────────────────────────────────────
 
-function normalize(p: any) {
+function normalize(p: Record<string, unknown>) {
   return {
     ...p,
-    publishedAt: p.published_at ?? p.publishedAt ?? '',
-    readMinutes: p.read_minutes ?? p.readMinutes ?? 3,
-    author:      p.author      ?? 'WhidbeyWave',
-    body:        p.body        ?? '',
-    emoji:       p.emoji       ?? '📰',
-    slug:        p.slug        ?? String(p.id),
-    postType:    p.post_type   ?? p.postType ?? 'news',
-    imageUrl:    p.image_url   ?? p.imageUrl ?? null,
-    tags:        p.tags        ?? [],
+    id:          p.id as string,
+    title:       p.title as string,
+    category:    (p.category ?? '') as string,
+    excerpt:     (p.excerpt ?? '') as string | null,
+    publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
+    readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
+    author:      (p.author ?? 'WhidbeyWave') as string,
+    body:        (p.body ?? '') as string,
+    emoji:       (p.emoji ?? '📰') as string,
+    slug:        (p.slug ?? String(p.id)) as string,
+    postType:    (p.post_type ?? p.postType ?? 'news') as string,
+    imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
+    tags:        (p.tags ?? []) as string[],
   };
 }
 
@@ -78,8 +85,32 @@ export default async function NewsPage() {
   const posts              = await getCachedPosts();
   const [featured, ...rest] = posts;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Whidbey Island News',
+    description: 'Local news and community stories from Whidbey Island, WA.',
+    url: 'https://whidbeywave.com/news',
+    publisher: {
+      '@type': 'Organization',
+      name: 'WhidbeyWave',
+      url: 'https://whidbeywave.com',
+    },
+    mainEntity: posts.slice(0, 5).map((post) => ({
+      '@type': 'NewsArticle',
+      headline: post.title,
+      description: post.excerpt,
+      datePublished: post.publishedAt,
+      author: { '@type': 'Person', name: post.author },
+      publisher: { '@type': 'Organization', name: 'WhidbeyWave' },
+      url: `https://whidbeywave.com/news#${post.slug}`,
+      ...(post.imageUrl ? { image: post.imageUrl } : {}),
+    })),
+  };
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       {/* Header */}
       <div className="bg-gradient-to-br from-sound-800 to-forest-700 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
@@ -101,10 +132,10 @@ export default async function NewsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
 
         {!featured ? (
-          <div className="text-center py-20 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300 mb-12">
-            <div className="text-5xl mb-4">📰</div>
-            <p className="text-lg text-stone-700 font-semibold mb-2">Nothing published yet</p>
-            <p className="text-stone-600 text-sm mb-5">Check back soon — there&apos;s always something happening on the island.</p>
+          <div className="empty-state mb-12">
+            <div className="empty-state-icon text-5xl">📰</div>
+            <p className="empty-state-title">Nothing published yet</p>
+            <p className="empty-state-text">Check back soon — there&apos;s always something happening on the island.</p>
             <Link href="/contact" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
               Got a story? Share it →
             </Link>
@@ -112,13 +143,15 @@ export default async function NewsPage() {
         ) : (
           <>
             {/* Featured post */}
-            <article id={featured.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden mb-12 group scroll-mt-24">
+            <article id={featured.slug} className="card mb-12 group scroll-mt-24">
               {featured.imageUrl ? (
-                <div className="w-full h-48 md:h-72 overflow-hidden">
-                  <img
+                <div className="relative w-full h-48 md:h-72 overflow-hidden">
+                  <Image
                     src={featured.imageUrl}
                     alt={featured.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 800px"
                   />
                 </div>
               ) : (
@@ -129,7 +162,7 @@ export default async function NewsPage() {
               <div className="md:flex">
                 {!featured.imageUrl && (
                   <div
-                    className="hidden md:flex md:w-72 bg-gradient-to-br from-parchment-200 to-sound-100 items-center justify-center text-8xl shrink-0 rounded-l-2xl"
+                    className="hidden md:flex md:w-72 bg-gradient-to-br from-parchment-200 to-sound-100 items-center justify-center text-8xl shrink-0 rounded-l-xl"
                     aria-hidden="true"
                   >
                     {featured.emoji}
@@ -137,7 +170,7 @@ export default async function NewsPage() {
                 )}
                 <div className="p-8 flex flex-col justify-center">
                   <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-500 text-parchment-50">
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-forest-600 text-parchment-50">
                       Worth Knowing
                     </span>
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[featured.category] ?? 'bg-parchment-200 text-stone-700'}`}>
@@ -167,7 +200,7 @@ export default async function NewsPage() {
                     <ShareButton
                       title={`${featured.title} — WhidbeyWave`}
                       url={`/news#${featured.slug}`}
-                      text={featured.excerpt}
+                      text={featured.excerpt ?? undefined}
                     />
                   </div>
                   <NewsCommentSection slug={featured.slug} />
@@ -180,15 +213,15 @@ export default async function NewsPage() {
               <>
                 <h2 className="text-2xl text-stone-900 mb-6 font-semibold">More from the Island</h2>
                 <div className="grid md:grid-cols-2 gap-6">
-                  {rest.map((post: any) => (
-                    <article key={post.id} id={post.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden group scroll-mt-24">
+                  {rest.map((post) => (
+                    <article key={post.id} id={post.slug} className="card group scroll-mt-24">
                       {post.imageUrl ? (
-                        <div className="h-40 overflow-hidden">
-                          <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                        <div className="relative h-40 overflow-hidden">
+                          <Image src={post.imageUrl} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
                         </div>
                       ) : (
                         <div
-                          className="bg-gradient-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-2xl"
+                          className="bg-gradient-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
                           aria-hidden="true"
                         >
                           {post.emoji}
@@ -200,9 +233,9 @@ export default async function NewsPage() {
                             {post.category}
                           </span>
                         </div>
-                        <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
+                        <h3 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors leading-snug font-semibold">
                           {post.title}
-                        </h2>
+                        </h3>
                         <p className="text-[15px] text-stone-600 mb-3">
                           By {post.author} &nbsp;·&nbsp;{' '}
                           <time dateTime={post.publishedAt}>{formatShortDate(post.publishedAt)}</time>
@@ -223,7 +256,7 @@ export default async function NewsPage() {
                           <ShareButton
                             title={`${post.title} — WhidbeyWave`}
                             url={`/news#${post.slug}`}
-                            text={post.excerpt}
+                            text={post.excerpt ?? undefined}
                           />
                         </div>
                         <NewsCommentSection slug={post.slug} />
@@ -237,7 +270,7 @@ export default async function NewsPage() {
         )}
 
         {/* Submit story CTA */}
-        <div className="mt-16 bg-sound-50 rounded-2xl p-8 text-center border border-sound-100">
+        <div className="mt-16 bg-sound-50 rounded-xl p-8 text-center border border-sound-100">
           <h3 className="text-2xl text-sound-800 mb-2 font-semibold">Got a story worth sharing?</h3>
           <p className="text-sound-600 mb-6 leading-relaxed text-base">
             If something&apos;s happening on the island that your neighbors should know about, we&apos;d love to hear it.

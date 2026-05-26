@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { createClient } from '@supabase/supabase-js';
 import { escapeHtml } from '@/lib/escapeHtml';
 import {
@@ -9,7 +9,7 @@ import {
   ALLOWED_EVENT_TAGS,
 } from '@/lib/validate';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
 
 export async function POST(request: NextRequest) {
   try {

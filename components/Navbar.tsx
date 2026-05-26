@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
@@ -63,7 +64,7 @@ export default function Navbar() {
 
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2 group">
-                <img src="/logo.png" alt="WhidbeyWave logo" className="w-8 h-8 rounded-full object-cover" />
+                <Image src="/logo.png" alt="WhidbeyWave logo" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                 <span className="text-xl font-bold text-forest-600 group-hover:text-forest-500 transition-colors">
                   WhidbeyWave
                 </span>
@@ -80,7 +81,7 @@ export default function Navbar() {
                       aria-current={active ? 'page' : undefined}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         active
-                          ? 'bg-forest-500 text-parchment-50'
+                          ? 'bg-forest-600 text-parchment-50'
                           : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
                       }`}
                     >
@@ -98,10 +99,10 @@ export default function Navbar() {
                   <button
                     onClick={() => setVisitOpen(v => !v)}
                     aria-expanded={visitOpen}
-                    aria-haspopup="listbox"
+                    aria-haspopup="menu"
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
                       visitActive
-                        ? 'bg-forest-500 text-parchment-50'
+                        ? 'bg-forest-600 text-parchment-50'
                         : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
                     }`}
                   >
@@ -118,7 +119,7 @@ export default function Navbar() {
 
                   {visitOpen && (
                     <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[210px] z-50">
-                    <div className="bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden">
+                    <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                       {visitLinks.map(({ href, label }) => {
                         const active = href === '/visit'
                           ? pathname === '/visit'
@@ -152,7 +153,7 @@ export default function Navbar() {
                       aria-current={active ? 'page' : undefined}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         active
-                          ? 'bg-forest-500 text-parchment-50'
+                          ? 'bg-forest-600 text-parchment-50'
                           : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
                       }`}
                     >
@@ -171,8 +172,8 @@ export default function Navbar() {
                 <button
                   onClick={() => setSubmitOpen(v => !v)}
                   aria-expanded={submitOpen}
-                  aria-haspopup="listbox"
-                  className="px-4 py-2 rounded-full text-sm font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-500 hover:text-parchment-50 transition-colors inline-flex items-center gap-1.5 min-h-[40px]"
+                  aria-haspopup="menu"
+                  className="px-4 py-2 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-600 hover:text-parchment-50 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
                 >
                   <span aria-hidden="true">＋</span>
                   <span>Submit</span>
@@ -187,7 +188,7 @@ export default function Navbar() {
 
                 {submitOpen && (
                   <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[190px] z-50">
-                  <div className="bg-white border border-parchment-200 rounded-xl shadow-warm-md overflow-hidden">
+                  <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                     <Link
                       href="/submit-event"
                       onClick={() => setSubmitOpen(false)}
@@ -214,7 +215,7 @@ export default function Navbar() {
                   aria-label="Search"
                   className={`p-2 rounded-lg transition-colors ${
                     pathname === searchLink.href
-                      ? 'bg-forest-500 text-parchment-50'
+                      ? 'bg-forest-600 text-parchment-50'
                       : 'text-stone-500 hover:text-forest-600 hover:bg-forest-50'
                   }`}
                 >
@@ -236,7 +237,7 @@ export default function Navbar() {
                 ) : (
                   <button
                     onClick={() => setAuthOpen(true)}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-forest-500 text-parchment-50 hover:bg-forest-600 transition-colors min-h-[44px]"
+                    className="px-4 py-2 rounded-lg text-sm font-medium bg-forest-600 text-parchment-50 hover:bg-forest-700 transition-colors min-h-[44px]"
                   >
                     Sign in
                   </button>
@@ -255,21 +256,21 @@ export default function Navbar() {
                 ) : (
                   <button
                     onClick={() => setAuthOpen(true)}
-                    className="text-xs font-medium bg-forest-500 text-parchment-50 px-3 py-2 rounded-lg hover:bg-forest-600 transition-colors"
+                    className="text-xs font-medium bg-forest-600 text-parchment-50 px-3 py-2 rounded-lg hover:bg-forest-700 transition-colors"
                   >
                     Sign in
                   </button>
                 )}
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="p-2 rounded-lg text-stone-600 hover:bg-parchment-200 transition-colors min-w-[52px] min-h-[52px] flex flex-col items-center justify-center gap-1"
+                  className="p-2 rounded-lg text-stone-600 hover:bg-parchment-200 transition-colors w-11 h-11 flex flex-col items-center justify-center gap-[5px]"
                   aria-label={menuOpen ? 'Close menu' : 'Open menu'}
                   aria-expanded={menuOpen}
                   aria-controls="mobile-menu"
                 >
-                  <span className="block w-5 h-0.5 bg-current" />
-                  <span className="block w-5 h-0.5 bg-current" />
-                  <span className="block w-5 h-0.5 bg-current" />
+                  <span className={`block w-5 h-0.5 bg-current transition-transform duration-200 origin-center ${menuOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
+                  <span className={`block w-5 h-0.5 bg-current transition-opacity duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
+                  <span className={`block w-5 h-0.5 bg-current transition-transform duration-200 origin-center ${menuOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
                 </button>
               </div>
             </div>
@@ -317,7 +318,7 @@ export default function Navbar() {
                       aria-current={active ? 'page' : undefined}
                       className={`block px-5 py-3 text-base font-medium transition-colors ${
                         active
-                          ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-500'
+                          ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
                           : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                       }`}
                     >
@@ -330,7 +331,7 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors ${
                     pathname === searchLink.href
-                      ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-500'
+                      ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
                       : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                   }`}
                 >
@@ -396,14 +397,14 @@ export default function Navbar() {
                 <Link
                   href="/submit-event"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-forest-500 text-parchment-50 hover:bg-forest-600 transition-colors"
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-forest-600 text-parchment-50 hover:bg-forest-700 transition-colors"
                 >
                   <span aria-hidden="true">📅</span> Submit an Event
                 </Link>
                 <Link
                   href="/submit-listing"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold border-2 border-forest-500 text-forest-600 hover:bg-forest-50 transition-colors"
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-50 transition-colors"
                 >
                   <span aria-hidden="true">🏷️</span> Post a Listing
                 </Link>
@@ -429,7 +430,7 @@ export default function Navbar() {
                       aria-current={active ? 'page' : undefined}
                       className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         active
-                          ? 'bg-forest-500 text-parchment-50'
+                          ? 'bg-forest-600 text-parchment-50'
                           : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'
                       }`}
                     >
@@ -453,7 +454,7 @@ export default function Navbar() {
               aria-current={pathname === '/search' ? 'page' : undefined}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
                 pathname === '/search'
-                  ? 'bg-forest-500 text-parchment-50'
+                  ? 'bg-forest-600 text-parchment-50'
                   : 'bg-forest-100 text-forest-700 hover:bg-forest-200 hover:text-forest-900'
               }`}
             >
@@ -473,7 +474,7 @@ export default function Navbar() {
                     aria-current={active ? 'page' : undefined}
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                       active
-                        ? 'bg-forest-500 text-parchment-50'
+                        ? 'bg-forest-600 text-parchment-50'
                         : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'
                     }`}
                   >

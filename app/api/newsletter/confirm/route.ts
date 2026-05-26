@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 
-const resend   = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 export async function GET(request: NextRequest) {
@@ -27,10 +29,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
     }
 
-    await supabase
+    const { error: updateError } = await supabase
       .from('newsletter_subscribers')
       .update({ confirmed: true, confirmation_token: null })
       .eq('id', sub.id);
+
+    if (updateError) {
+      return NextResponse.redirect(new URL('/newsletter?error=invalid', SITE_URL));
+    }
 
     // Send welcome email (non-fatal)
     try {

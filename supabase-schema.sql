@@ -120,22 +120,27 @@ on conflict (slug) do nothing;
 -- FORUM POSTS
 -- ──────────────────────────────────────────────
 create table if not exists forum_posts (
-  id          uuid primary key default gen_random_uuid(),
-  title       text not null,
-  body        text,
-  category_id uuid references forum_categories(id) on delete set null,
-  author_id   uuid references auth.users(id) on delete set null,
-  author_name text not null,
-  views       int not null default 0,
-  reply_count int not null default 0,
-  is_pinned   boolean not null default false,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
+  id            uuid primary key default gen_random_uuid(),
+  title         text not null,
+  body          text,
+  category_id   uuid references forum_categories(id) on delete set null,
+  category_name text,
+  author_id     uuid references auth.users(id) on delete set null,
+  author_name   text not null,
+  author_email  text,
+  zip_code      text,
+  views         int not null default 0,
+  reply_count   int not null default 0,
+  is_pinned     boolean not null default false,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
 
 create index if not exists forum_posts_category_idx on forum_posts(category_id);
 create index if not exists forum_posts_author_idx on forum_posts(author_id);
 create index if not exists forum_posts_created_idx on forum_posts(created_at desc);
+create index if not exists forum_posts_author_email_idx on forum_posts(id, author_email);
+create index if not exists idx_forum_posts_category_name on forum_posts(category_name);
 
 alter table forum_posts enable row level security;
 
@@ -165,6 +170,7 @@ create table if not exists forum_replies (
   body        text not null,
   author_id   uuid references auth.users(id) on delete set null,
   author_name text not null,
+  zip_code    text,
   created_at  timestamptz not null default now()
 );
 

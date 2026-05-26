@@ -179,7 +179,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                   onClick={() => toggleTag(tag)}
                   className={`inline-flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
                     active
-                      ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm scale-105'
+                      ? 'bg-forest-600 text-parchment-50 border-forest-600 shadow-warm scale-105'
                       : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
                   }`}
                 >
@@ -210,13 +210,10 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
       {/* ── Event cards ─────────────────────────────────────────────── */}
       {sorted.length === 0 ? (
-        <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-          <div className="text-5xl mb-4">🌧️</div>
-          <p className="text-lg font-semibold text-stone-700 mb-1"
-             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            Quiet day for those filters
-          </p>
-          <p className="text-stone-600 text-sm mb-5">Try fewer filters — or check back soon.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon text-5xl">🌧️</div>
+          <p className="empty-state-title">Quiet day for those filters</p>
+          <p className="empty-state-text">Try fewer filters — or check back soon.</p>
           <button onClick={clearAll} className="btn-primary">
             Show everything
           </button>
@@ -230,7 +227,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
             return (
               <Link key={event.id} href={`/events/${event.id}`} className="card-pressable flex flex-col md:flex-row group block hover:shadow-warm-md hover:-translate-y-0.5 transition-all duration-200">
                 {/* Date block */}
-                <div className={`md:w-36 ${happeningNow ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-forest-600 to-sound-600'} text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none shrink-0`}>
+                <div className={`md:w-36 ${happeningNow ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-forest-600 to-sound-600'} text-parchment-100 flex flex-col items-center justify-center py-6 md:py-0 rounded-t-xl md:rounded-l-xl md:rounded-tr-none shrink-0`}>
                   <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
                     {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
                   </span>
@@ -258,8 +255,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                     <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
                   </div>
 
-                  <h2 className="text-xl text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                  <h2 className="text-xl font-semibold text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2">
                     <span>{event.emoji}</span>
                     <span>{event.title}</span>
                   </h2>
@@ -290,7 +286,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                           onClick={() => { if (!activeTags.includes(tag)) toggleTag(tag); }}
                           className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors min-h-[36px] ${
                             activeTags.includes(tag)
-                              ? 'bg-forest-500 text-parchment-50'
+                              ? 'bg-forest-600 text-parchment-50'
                               : 'bg-forest-50 text-forest-700 hover:bg-forest-100 border border-forest-200'
                           }`}
                           title={`Filter by ${tag}`}

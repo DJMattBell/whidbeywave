@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { Validator, ALLOWED_CONTACT_TOPICS } from '@/lib/validate';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+const resend = getResend();
 const TOPIC_LABELS: Record<string, string> = {
   event:       'Sharing an Event',
   news:        'News Tip',

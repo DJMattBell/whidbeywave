@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient, isConfigured } from '@/lib/supabase';
 import type { Recommendation } from '@/lib/db-types';
 import RestaurantsFilter from '@/components/RestaurantsFilter';
 
@@ -27,11 +27,9 @@ export const metadata: Metadata = {
 };
 
 async function getRestaurantRecs(): Promise<Recommendation[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || url.includes('placeholder')) return [];
+  if (!isConfigured) return [];
 
-  const { data } = await createClient(url, key)
+  const { data } = await createServerClient()
     .from('recommendations')
     .select('*')
     .eq('category', 'Restaurants & Cafes')

@@ -13,15 +13,18 @@ export default function EventRsvpButton({ eventId }: { eventId: string }) {
 
   useEffect(() => {
     if (!isConfigured) return;
-    supabase
-      .from('event_rsvps')
-      .select('user_email')
-      .eq('event_id', eventId)
+    Promise.resolve(
+      supabase
+        .from('event_rsvps')
+        .select('user_email')
+        .eq('event_id', eventId)
+    )
       .then(({ data }) => {
         setCount(data?.length ?? 0);
         setGoing(data?.some(r => r.user_email === user?.email) ?? false);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [eventId, user?.email]);
 
   async function toggle() {
@@ -56,7 +59,7 @@ export default function EventRsvpButton({ eventId }: { eventId: string }) {
       title={!user ? 'Sign in to RSVP' : going ? 'Cancel your RSVP' : 'Mark yourself as going'}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
         going
-          ? 'bg-forest-500 text-parchment-50 border-forest-500 shadow-warm-sm'
+          ? 'bg-forest-600 text-parchment-50 border-forest-600 shadow-warm-sm'
           : user
             ? 'bg-parchment-50 text-forest-600 border-forest-200 hover:bg-forest-100'
             : 'bg-parchment-50 text-stone-600 border-parchment-300 cursor-not-allowed'

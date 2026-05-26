@@ -1,25 +1,31 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase';
 import { formatShortDate, categoryColors } from '@/lib/data';
 import MarkdownBody from '@/components/MarkdownBody';
 import NewsCommentSection from '@/components/NewsCommentSection';
 import ShareButton from '@/components/ShareButton';
+import { JsonLd } from '@/components/JsonLd';
 
 export const revalidate = 300;
 
-function normalize(p: any) {
+function normalize(p: Record<string, unknown>) {
   return {
     ...p,
-    publishedAt: p.published_at ?? p.publishedAt ?? '',
-    readMinutes: p.read_minutes ?? p.readMinutes ?? 3,
-    author:      p.author      ?? 'WhidbeyWave',
-    body:        p.body        ?? '',
-    emoji:       p.emoji       ?? '📖',
-    slug:        p.slug        ?? String(p.id),
-    imageUrl:    p.image_url   ?? p.imageUrl ?? null,
-    tags:        p.tags        ?? [],
+    id:          p.id as string,
+    title:       p.title as string,
+    category:    (p.category ?? '') as string,
+    excerpt:     (p.excerpt ?? '') as string | null,
+    publishedAt: (p.published_at ?? p.publishedAt ?? '') as string,
+    readMinutes: (p.read_minutes ?? p.readMinutes ?? 3) as number,
+    author:      (p.author ?? 'WhidbeyWave') as string,
+    body:        (p.body ?? '') as string,
+    emoji:       (p.emoji ?? '📖') as string,
+    slug:        (p.slug ?? String(p.id)) as string,
+    imageUrl:    (p.image_url ?? p.imageUrl ?? null) as string | null,
+    tags:        (p.tags ?? []) as string[],
   };
 }
 
@@ -43,6 +49,13 @@ export const metadata: Metadata = {
     title: 'Community Guides — WhidbeyWave',
     description: 'Practical guides for living on and visiting Whidbey Island.',
     siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Community Guides — WhidbeyWave',
+    description: 'Practical guides for living on and visiting Whidbey Island.',
+    images: ['/og-default.png'],
   },
 };
 
@@ -52,8 +65,32 @@ export default async function GuidesPage() {
   // Group by category for organized display
   const categories = [...new Set(guides.map(g => g.category))];
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Whidbey Island Community Guides',
+    description: 'Practical guides for living on and visiting Whidbey Island.',
+    url: 'https://whidbeywave.com/guides',
+    publisher: {
+      '@type': 'Organization',
+      name: 'WhidbeyWave',
+      url: 'https://whidbeywave.com',
+    },
+    mainEntity: guides.slice(0, 5).map((guide) => ({
+      '@type': 'Article',
+      headline: guide.title,
+      description: guide.excerpt,
+      datePublished: guide.publishedAt,
+      author: { '@type': 'Person', name: guide.author },
+      publisher: { '@type': 'Organization', name: 'WhidbeyWave' },
+      url: `https://whidbeywave.com/guides#${guide.slug}`,
+      ...(guide.imageUrl ? { image: guide.imageUrl } : {}),
+    })),
+  };
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       {/* Header */}
       <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-8 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
@@ -75,10 +112,10 @@ export default async function GuidesPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
 
         {guides.length === 0 ? (
-          <div className="text-center py-20 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300 mb-12">
-            <div className="text-5xl mb-4">📖</div>
-            <p className="text-lg text-stone-700 font-semibold mb-2">Guides are on the way</p>
-            <p className="text-stone-600 text-sm mb-5">
+          <div className="empty-state mb-12">
+            <div className="empty-state-icon text-5xl">📖</div>
+            <p className="empty-state-title">Guides are on the way</p>
+            <p className="empty-state-text">
               We&apos;re putting together practical guides to help you navigate island life. Check back soon!
             </p>
             <Link href="/news" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
@@ -107,24 +144,21 @@ export default async function GuidesPage() {
               const catGuides = guides.filter(g => g.category === cat);
               return (
                 <section key={cat} id={`cat-${cat.toLowerCase().replace(/\s+/g, '-')}`} className="mb-12 scroll-mt-24">
-                  <h2
-                    className="text-2xl text-stone-900 mb-6 font-semibold flex items-center gap-2"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <h2 className="text-2xl text-stone-900 mb-6 font-semibold flex items-center gap-2">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${categoryColors[cat] ?? 'bg-parchment-200 text-stone-700'}`}>
                       {cat}
                     </span>
                   </h2>
                   <div className="grid md:grid-cols-2 gap-6">
-                    {catGuides.map((guide: any) => (
-                      <article key={guide.id} id={guide.slug} className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden group scroll-mt-24">
+                    {catGuides.map((guide) => (
+                      <article key={guide.id} id={guide.slug} className="card group scroll-mt-24">
                         {guide.imageUrl ? (
-                          <div className="h-44 overflow-hidden">
-                            <img src={guide.imageUrl} alt={guide.title} className="w-full h-full object-cover" />
+                          <div className="relative h-44 overflow-hidden">
+                            <Image src={guide.imageUrl} alt={guide.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
                           </div>
                         ) : (
                           <div
-                            className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-2xl"
+                            className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
                             aria-hidden="true"
                           >
                             {guide.emoji}
@@ -162,7 +196,7 @@ export default async function GuidesPage() {
                             <ShareButton
                               title={`${guide.title} — WhidbeyWave`}
                               url={`/guides#${guide.slug}`}
-                              text={guide.excerpt}
+                              text={guide.excerpt ?? undefined}
                             />
                           </div>
                           <NewsCommentSection slug={guide.slug} />
@@ -177,7 +211,7 @@ export default async function GuidesPage() {
         )}
 
         {/* CTA */}
-        <div className="mt-8 bg-forest-50 rounded-2xl p-8 text-center border border-forest-100">
+        <div className="mt-8 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
           <h3 className="text-2xl text-forest-800 mb-2 font-semibold">Know something your neighbors should know?</h3>
           <p className="text-forest-700 mb-6 leading-relaxed text-base">
             Whether it&apos;s the best crabbing spots or how to survive storm season, we&apos;d love your island wisdom.

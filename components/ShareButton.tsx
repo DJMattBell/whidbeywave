@@ -40,7 +40,7 @@ export default function ShareButton({ title, url, text }: Props) {
   return (
     <button
       onClick={handleShare}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-parchment-100 text-stone-600 border border-parchment-300 hover:border-forest-400 hover:text-forest-700 hover:bg-forest-50 transition-colors min-h-[44px]"
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-parchment-100 text-stone-600 border border-parchment-200 hover:border-forest-400 hover:text-forest-700 hover:bg-forest-50 transition-colors min-h-[44px]"
       aria-label={copied ? 'Link copied!' : 'Share this page'}
     >
       {copied ? (

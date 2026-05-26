@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { categoryColors } from '@/lib/data';
 import { timeAgo, formatPrice, type MarketplaceListing } from '@/lib/marketplace';
 import MarketplaceContactButton from '@/components/MarketplaceContactButton';
@@ -21,7 +22,7 @@ export default function ListingCard({
 
   return (
     <article
-      className={`group cursor-pointer rounded-2xl overflow-hidden border bg-white transition-all duration-200 flex flex-row sm:flex-col ${
+      className={`group cursor-pointer rounded-xl overflow-hidden border bg-white transition-all duration-200 flex flex-row sm:flex-col ${
         sold
           ? 'border-stone-200 opacity-60 grayscale'
           : 'border-parchment-200 hover:border-parchment-300 hover:shadow-warm'
@@ -31,11 +32,12 @@ export default function ListingCard({
       {/* Photo area — square on mobile, 4/3 on sm+ */}
       <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-amber-100">
         {photo ? (
-          <img
+          <Image
             src={photo}
             alt={listing.title}
-            className={`w-full h-full object-cover transition-transform duration-300 ${!sold ? 'group-hover:scale-105' : ''}`}
-            loading="lazy"
+            fill
+            className={`object-cover transition-transform duration-300 ${!sold ? 'group-hover:scale-105' : ''}`}
+            sizes="(max-width: 640px) 112px, (max-width: 768px) 50vw, 33vw"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl sm:text-5xl" aria-hidden="true">

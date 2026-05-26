@@ -85,8 +85,8 @@ function DepartureList({
         <p className="text-sm text-stone-600 italic">No upcoming departures</p>
       ) : (
         <ol className="space-y-1.5">
-          {live.map((dep, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm">
+          {live.map((dep) => (
+            <li key={dep.epochMs} className="flex items-start gap-2 text-sm">
               <span className="font-semibold text-stone-800 tabular-nums w-16 shrink-0 pt-px">{dep.time}</span>
               <span className="text-stone-500 text-xs leading-snug">{dep.vessel}</span>
               <span className="ml-auto text-xs text-stone-400 tabular-nums shrink-0">
@@ -124,16 +124,13 @@ function RouteCard({
   extra?: React.ReactNode;
 }) {
   return (
-    <article className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md overflow-hidden">
+    <article className="card-elevated overflow-hidden">
       <div className={`h-1.5 ${accentGradient}`} />
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs font-semibold text-stone-600 uppercase tracking-wide mb-0.5">Route</p>
-            <h3
-              className="text-xl font-semibold text-stone-900"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+            <h3 className="text-xl font-semibold text-stone-900">
               {emoji} {title}
             </h3>
           </div>
@@ -141,7 +138,7 @@ function RouteCard({
         </div>
 
         {route.alertText && route.status !== 'on-schedule' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-5 text-sm text-amber-800 leading-relaxed">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5 text-sm text-amber-800 leading-relaxed">
             {route.alertText}
           </div>
         )}
@@ -247,7 +244,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
 
       {/* Not configured */}
       {!data.configured && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
           <p className="text-2xl mb-3">🔑</p>
           <p className="font-semibold text-amber-800 mb-1">WSDOT API key not configured</p>
           <p className="text-amber-700 text-sm">
@@ -260,8 +257,8 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
       )}
 
       {/* Configured but API failed */}
-      {data.configured && !data.mukilteoCliton && !data.ptCoupeville && (
-        <div className="bg-parchment-100 border border-parchment-300 rounded-2xl p-6 text-center">
+      {data.configured && !data.mukilteoClinton && !data.ptCoupeville && (
+        <div className="bg-parchment-100 border border-parchment-300 rounded-xl p-6 text-center">
           <p className="text-2xl mb-3">🌧️</p>
           <p className="font-semibold text-stone-700 mb-1">Live data temporarily unavailable</p>
           <p className="text-stone-500 text-sm">
@@ -280,11 +277,11 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
       )}
 
       {/* Route cards */}
-      {(data.mukilteoCliton || data.ptCoupeville) && (
+      {(data.mukilteoClinton || data.ptCoupeville) && (
         <div className="grid md:grid-cols-2 gap-6">
-          {data.mukilteoCliton && (
+          {data.mukilteoClinton && (
             <RouteCard
-              route={data.mukilteoCliton}
+              route={data.mukilteoClinton}
               title="Mukilteo / Clinton"
               emoji="🚢"
               mainlandLabel="From Mukilteo →"

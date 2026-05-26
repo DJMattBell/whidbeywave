@@ -101,7 +101,7 @@ export default async function WeatherTideWidget() {
     fetchFerryBarStatus(),
   ]);
 
-  const hasMuk  = ferry.mukilteoCliton !== null;
+  const hasMuk  = ferry.mukilteoClinton !== null;
   const hasPT   = ferry.ptCoupeville   !== null;
   const hasTides = tides && tides.length > 0;
 
@@ -141,7 +141,7 @@ export default async function WeatherTideWidget() {
             <Link href="/ferry" className="flex items-center gap-1.5 shrink-0 whitespace-nowrap hover:text-sound-600 transition-colors">
               <span aria-hidden="true">🚢</span>
               <span className="text-sound-600 font-medium">Clinton–Mukilteo:</span>
-              <FerryStatusText status={ferry.mukilteoCliton!.status} />
+              <FerryStatusText status={ferry.mukilteoClinton!.status} />
             </Link>
           </>
         )}

@@ -19,7 +19,7 @@ export type RouteBarStatus = {
 };
 
 export type FerryBarData = {
-  mukilteoCliton: RouteBarStatus | null;
+  mukilteoClinton: RouteBarStatus | null;
   ptCoupeville:   RouteBarStatus | null;
 };
 
@@ -32,7 +32,7 @@ export type RouteFullData = {
 };
 
 export type FerryPageData = {
-  mukilteoCliton: RouteFullData | null;
+  mukilteoClinton: RouteFullData | null;
   ptCoupeville:   RouteFullData | null;
   lastUpdated:    string;
   configured:     boolean;
@@ -169,10 +169,10 @@ function extractDepartures(
 /** Lightweight — only fetches alerts. Used by the Whidbey Now bar. */
 export async function fetchFerryBarStatus(): Promise<FerryBarData> {
   const { data: alerts, success } = await fetchAlerts();
-  if (!success) return { mukilteoCliton: null, ptCoupeville: null };
+  if (!success) return { mukilteoClinton: null, ptCoupeville: null };
 
   return {
-    mukilteoCliton: { status: extractStatus(alerts, 7).status },
+    mukilteoClinton: { status: extractStatus(alerts, 7).status },
     ptCoupeville:   { status: extractStatus(alerts, 8).status },
   };
 }
@@ -188,7 +188,7 @@ export async function fetchFerryPageData(fresh = false): Promise<FerryPageData> 
   });
 
   if (!configured) {
-    return { mukilteoCliton: null, ptCoupeville: null, lastUpdated, configured: false };
+    return { mukilteoClinton: null, ptCoupeville: null, lastUpdated, configured: false };
   }
 
   const [{ data: alerts, success }, mukData, ptData] = await Promise.all([
@@ -198,7 +198,7 @@ export async function fetchFerryPageData(fresh = false): Promise<FerryPageData> 
   ]);
 
   if (!success) {
-    return { mukilteoCliton: null, ptCoupeville: null, lastUpdated, configured: true };
+    return { mukilteoClinton: null, ptCoupeville: null, lastUpdated, configured: true };
   }
 
   const mukAlert = extractStatus(alerts, 7);
@@ -207,7 +207,7 @@ export async function fetchFerryPageData(fresh = false): Promise<FerryPageData> 
   return {
     configured: true,
     lastUpdated,
-    mukilteoCliton: {
+    mukilteoClinton: {
       status:       mukAlert.status,
       alertText:    mukAlert.alertText,
       fromMainland: extractDepartures(mukData, 'Mukilteo', 6),

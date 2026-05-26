@@ -165,7 +165,7 @@ export default async function TodayWidget() {
     fetchNewListings(),
   ]);
 
-  const hasMuk      = ferry.mukilteoCliton != null;
+  const hasMuk      = ferry.mukilteoClinton != null;
   const hasPT       = ferry.ptCoupeville  != null;
   const hasFerry    = hasMuk || hasPT;
   const showListings = listingsCount !== null && listingsCount > 0;
@@ -179,10 +179,7 @@ export default async function TodayWidget() {
 
         {/* Header row */}
         <div className="flex items-baseline justify-between mb-3">
-          <h2
-            className="text-base font-bold text-forest-800"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-base font-bold text-forest-800">
             Today on Whidbey
           </h2>
           <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
@@ -217,11 +214,11 @@ export default async function TodayWidget() {
               <div className="space-y-2">
                 {hasMuk && (
                   <div className="flex items-start gap-1.5">
-                    <FerryDot status={ferry.mukilteoCliton!.status} />
+                    <FerryDot status={ferry.mukilteoClinton!.status} />
                     <div className="min-w-0">
                       <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
-                      <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoCliton!.status)}`}>
-                        {ferryLabel(ferry.mukilteoCliton!.status)}
+                      <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoClinton!.status)}`}>
+                        {ferryLabel(ferry.mukilteoClinton!.status)}
                       </p>
                     </div>
                   </div>

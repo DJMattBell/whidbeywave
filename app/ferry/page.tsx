@@ -16,7 +16,7 @@ function statusLabel(s: RouteStatus) {
 export async function generateMetadata(): Promise<Metadata> {
   const ferry = await getCachedFerry();
   const parts: string[] = [];
-  if (ferry.mukilteoCliton) parts.push(`Mukilteo/Clinton: ${statusLabel(ferry.mukilteoCliton.status)}`);
+  if (ferry.mukilteoClinton) parts.push(`Mukilteo/Clinton: ${statusLabel(ferry.mukilteoClinton.status)}`);
   if (ferry.ptCoupeville)   parts.push(`PT/Coupeville: ${statusLabel(ferry.ptCoupeville.status)}`);
 
   const description = parts.length > 0
@@ -80,7 +80,6 @@ export default async function FerryPage() {
           <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">🚢 Getting On and Off the Island</p>
           <h1
             className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Ferry Status
           </h1>
@@ -99,7 +98,6 @@ export default async function FerryPage() {
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Live Route Status
           </h2>
@@ -111,8 +109,7 @@ export default async function FerryPage() {
           <div className="mb-6">
             <h2
               className="text-2xl font-semibold text-stone-800"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+              >
               Terminal Cameras
             </h2>
             <p className="text-stone-500 text-sm mt-1">
@@ -151,7 +148,6 @@ export default async function FerryPage() {
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Vessel Watch
           </h2>
@@ -159,15 +155,14 @@ export default async function FerryPage() {
             href="https://wsdot.com/ferries/vesselwatch/"
             target="_blank"
             rel="noopener noreferrer"
-            className="group block bg-gradient-to-br from-sound-800 to-forest-800 rounded-2xl p-8 hover:from-sound-700 hover:to-forest-700 transition-all shadow-warm-md"
+            className="group block bg-gradient-to-br from-sound-800 to-forest-800 rounded-xl p-8 hover:from-sound-700 hover:to-forest-700 transition-all shadow-warm-md"
           >
             <div className="flex items-start justify-between gap-6">
               <div>
                 <p className="text-3xl mb-3" aria-hidden="true">🗺️</p>
                 <h3
                   className="text-2xl font-bold text-parchment-50 mb-2 group-hover:text-white transition-colors"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                      >
                   See Where Your Ferry Is Right Now
                 </h3>
                 <p className="text-parchment-300 text-base leading-relaxed max-w-xl">
@@ -188,7 +183,6 @@ export default async function FerryPage() {
         <section>
           <h2
             className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Helpful Links
           </h2>

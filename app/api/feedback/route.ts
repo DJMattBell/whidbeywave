@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 
-const resend   = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 export async function POST(request: NextRequest) {
@@ -15,6 +17,10 @@ export async function POST(request: NextRequest) {
     }
     if (message.length > 5000) {
       return NextResponse.json({ error: 'Message must be 5,000 characters or fewer' }, { status: 400 });
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
     // Insert into site_feedback (anon key — table allows public inserts)

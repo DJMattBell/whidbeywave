@@ -28,7 +28,7 @@ export default function MarketplaceLocationFilter({
         id="marketplace-location"
         value={current ?? 'All Locations'}
         onChange={e => handleChange(e.target.value)}
-        className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-parchment-300 focus:outline-none focus:ring-2 focus:ring-forest-400 text-sm text-stone-600 bg-white"
+        className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-parchment-200 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-sm text-stone-600 bg-white"
       >
         {locations.map(loc => <option key={loc}>{loc}</option>)}
       </select>

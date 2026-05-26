@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 
+const PHONE_DISPLAY = '(360) 926-9101';
+const PHONE_TEL = 'tel:+13609269101';
+
 const inputCls =
   'w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent text-stone-800 placeholder:text-stone-400';
 
@@ -67,10 +70,10 @@ export default function ContactPage() {
               Prefer to call or text? Reach Matthew at
             </p>
             <a
-              href="tel:+13609269101"
+              href={PHONE_TEL}
               className="inline-flex items-center min-h-[48px] text-forest-700 font-bold text-xl hover:text-forest-900 transition-colors"
             >
-              (360) 926-9101
+              {PHONE_DISPLAY}
             </a>
             <p className="text-stone-500 text-sm mt-0.5">Happy to help.</p>
           </div>
@@ -91,10 +94,10 @@ export default function ContactPage() {
               <p className="text-stone-500 text-base mb-6 leading-relaxed">
                 Or call/text Matthew at{' '}
                 <a
-                  href="tel:+13609269101"
+                  href={PHONE_TEL}
                   className="text-forest-600 hover:text-forest-800 font-medium transition-colors"
                 >
-                  (360) 926-9101
+                  {PHONE_DISPLAY}
                 </a>{' '}
                 if that&apos;s easier.
               </p>
@@ -173,10 +176,10 @@ export default function ContactPage() {
                     <div className="rounded-xl bg-amber-50 border border-amber-200 px-5 py-5 text-stone-700 text-base leading-relaxed">
                       No problem! Give Matthew a call or text at{' '}
                       <a
-                        href="tel:+13609269101"
+                        href={PHONE_TEL}
                         className="text-forest-700 font-bold hover:text-forest-900 transition-colors"
                       >
-                        (360) 926-9101
+                        {PHONE_DISPLAY}
                       </a>{' '}
                       — he&apos;s usually available during island hours.
                     </div>
@@ -270,10 +273,10 @@ export default function ContactPage() {
               <div>
                 <p className="text-stone-800 text-base font-semibold mb-0.5">Call or Text</p>
                 <a
-                  href="tel:+13609269101"
+                  href={PHONE_TEL}
                   className="text-forest-600 hover:text-forest-800 text-base font-medium transition-colors"
                 >
-                  (360) 926-9101
+                  {PHONE_DISPLAY}
                 </a>
                 <p className="text-stone-600 text-sm mt-0.5">Whidbey Island DJ Collective</p>
               </div>

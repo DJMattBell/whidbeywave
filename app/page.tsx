@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { cookies } from 'next/headers';
 import { formatShortDate, categoryColors } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
@@ -108,10 +109,7 @@ export default async function HomePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-amber-800 opacity-10 blur-3xl" />
       </div>
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-16 text-center">
-        <h1
-          className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 md:mb-3 text-parchment-50"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 md:mb-3 text-parchment-50">
           WhidbeyWave
         </h1>
         <p className="text-base md:text-lg text-parchment-200 max-w-lg mx-auto mb-4 md:mb-6">
@@ -154,7 +152,7 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-2xl bg-parchment-100 border border-parchment-200 hover:bg-forest-50 hover:border-forest-300 transition-colors min-w-[80px] text-center"
+            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-forest-50 hover:border-forest-300 transition-colors min-w-[80px] text-center"
           >
             <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
             <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
@@ -162,7 +160,7 @@ export default async function HomePage() {
         ))}
         <Link
           href="/submit-event"
-          className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-2xl bg-forest-500 border border-forest-600 hover:bg-forest-600 transition-colors min-w-[80px] text-center"
+          className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-forest-600 border border-forest-700 hover:bg-forest-700 transition-colors min-w-[80px] text-center"
         >
           <span className="text-2xl leading-none" aria-hidden="true">➕</span>
           <span className="text-xs font-semibold text-parchment-50 whitespace-nowrap">Submit</span>
@@ -184,7 +182,7 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className={`flex flex-col items-center gap-2 py-5 rounded-2xl font-semibold text-sm ${color} shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200`}
+            className={`flex flex-col items-center gap-2 py-5 rounded-xl font-semibold text-sm ${color} shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200`}
           >
             <span className="text-3xl">{emoji}</span>
             <span>{label}</span>
@@ -226,10 +224,7 @@ export default async function HomePage() {
                   </span>
                   <span className="text-2xl">{CATEGORY_EMOJI[event.category] ?? '📅'}</span>
                 </div>
-                <h3
-                  className="text-lg text-stone-900 mb-2 group-hover:text-forest-600 transition-colors"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-                >
+                <h3 className="text-lg font-semibold text-stone-900 mb-2 group-hover:text-forest-600 transition-colors">
                   {event.title}
                 </h3>
                 <p className="text-[15px] text-stone-600 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
@@ -291,10 +286,7 @@ export default async function HomePage() {
                     <span className={`badge ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
                       {post.category}
                     </span>
-                    <h3
-                      className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-                    >
+                    <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
                       {post.title}
                     </h3>
                     <p className="text-[15px] text-stone-600 mb-2">
@@ -325,9 +317,9 @@ export default async function HomePage() {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {featuredListings.map((listing) => (
           <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group">
-            <div className="bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center overflow-hidden">
+            <div className="relative bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center overflow-hidden">
               {listing.images?.[0]
-                ? <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" />
                 : <span className="text-5xl">{listing.emoji}</span>
               }
             </div>
@@ -335,10 +327,7 @@ export default async function HomePage() {
               <span className={`badge ${categoryColors[listing.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
                 {listing.category}
               </span>
-              <h3
-                className="text-stone-900 mb-1 group-hover:text-forest-600 transition-colors"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-              >
+              <h3 className="text-stone-900 font-semibold mb-1 group-hover:text-forest-600 transition-colors">
                 {listing.title}
               </h3>
               <p className="text-forest-600 font-bold text-lg mb-1">{formatPrice(listing.price, listing.is_free)}</p>
@@ -359,7 +348,6 @@ export default async function HomePage() {
           <div className="flex-1">
             <h2
               className="text-xl font-semibold text-stone-800 mb-1"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
               Planning your visit?
             </h2>
@@ -378,10 +366,7 @@ export default async function HomePage() {
   const closingCta = (
     <section key="closing" className="bg-gradient-to-br from-forest-800 to-sound-800 text-parchment-100 py-20">
       <div className="max-w-3xl mx-auto px-4 text-center">
-        <h2
-          className="text-3xl md:text-4xl font-bold mb-4 text-parchment-50"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
           Keep up with the island
         </h2>
         <p className="text-parchment-300 text-lg mb-8 leading-relaxed">
@@ -396,7 +381,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/submit-listing"
-            className="btn-primary bg-transparent border-2 border-parchment-300 text-parchment-100 hover:bg-parchment-50/10 min-h-[48px]"
+            className="btn-primary bg-transparent border border-parchment-300 text-parchment-100 hover:bg-parchment-50/10 min-h-[48px]"
           >
             🏷️ Post a Listing
           </Link>

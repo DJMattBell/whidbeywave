@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { verifyCronRequest } from '@/lib/cronAuth';
 import { scrapeWica } from '@/lib/scrapers/wica';
@@ -11,10 +11,9 @@ import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
 
+const resend = getResend();
+
 export const runtime = 'nodejs';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 /** Normalize a title for dedup comparison: lowercase, collapse whitespace, strip punctuation edges */
 function normalizeTitle(title: string): string {
   return title.toLowerCase().replace(/\s+/g, ' ').trim();

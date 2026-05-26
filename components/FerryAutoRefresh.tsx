@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
@@ -9,11 +9,17 @@ export default function FerryAutoRefresh() {
   const router = useRouter();
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(REFRESH_INTERVAL / 1000);
+  const countdownRef = useRef<ReturnType<typeof setInterval>>();
 
   const refresh = useCallback(() => {
     router.refresh();
     setLastRefresh(new Date());
     setCountdown(REFRESH_INTERVAL / 1000);
+    // Clear and restart the countdown interval to avoid stale display
+    clearInterval(countdownRef.current);
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => Math.max(0, prev - 1));
+    }, 1000);
   }, [router]);
 
   // Auto-refresh on interval
@@ -22,13 +28,13 @@ export default function FerryAutoRefresh() {
     return () => clearInterval(interval);
   }, [refresh]);
 
-  // Countdown timer
+  // Countdown timer — initial start
   useEffect(() => {
-    const tick = setInterval(() => {
+    countdownRef.current = setInterval(() => {
       setCountdown(prev => Math.max(0, prev - 1));
     }, 1000);
-    return () => clearInterval(tick);
-  }, [lastRefresh]);
+    return () => clearInterval(countdownRef.current);
+  }, []);
 
   // Refresh when tab becomes visible again
   useEffect(() => {

@@ -6,27 +6,27 @@ import TodayWidget from '@/components/TodayWidget';
 import { createServerClient } from '@/lib/supabase';
 import { formatShortDate, categoryColors } from '@/lib/data';
 import AddToCalendar from '@/components/AddToCalendar';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Quick View — Whidbey Island at a Glance',
   description:
     'A single-page snapshot of Whidbey Island: ferry status, weather, tides, and today\'s events.',
+  openGraph: {
+    title: 'Quick View — Whidbey Island at a Glance',
+    description: 'A single-page snapshot of Whidbey Island: ferry status, weather, tides, and today\'s events.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Quick View — Whidbey Island at a Glance',
+    description: 'Ferry status, weather, tides, and today\'s events on Whidbey Island.',
+    images: ['/og-default.png'],
+  },
 };
 
 export const revalidate = 300;
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':     '🌿',
-  'Arts & Culture':        '🎨',
-  'Farmers Market':        '🥕',
-  'Music & Performance':   '🎵',
-  'Outdoors & Recreation': '🌲',
-  'Film & Media':          '🎬',
-  'Community & Social':    '🤝',
-  'Classes & Workshops':   '📚',
-  'Food & Drink':          '🍽️',
-  'Sports & Fitness':      '🏃',
-};
 
 export default async function DashboardPage() {
   const supabase = createServerClient();
@@ -65,8 +65,7 @@ export default async function DashboardPage() {
       <section className="bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 text-center">
           <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-parchment-50 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-parchment-50 mb-2 font-heading"
           >
             Quick View
           </h1>
@@ -115,8 +114,7 @@ export default async function DashboardPage() {
       {/* Today's Events */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-6">
         <h2
-          className="text-xl font-semibold text-stone-800 mb-4"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          className="text-xl font-semibold text-stone-800 mb-4 font-heading"
         >
           Happening Today
         </h2>
@@ -164,8 +162,7 @@ export default async function DashboardPage() {
       {weekendList.length > 0 && (
         <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-10">
           <h2
-            className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            className="text-xl font-semibold text-stone-800 mb-4 font-heading"
           >
             Coming Up This Week
           </h2>

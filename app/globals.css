@@ -71,38 +71,51 @@ html.text-large h2 { font-size: 1.9rem; }
 html.text-large h3 { font-size: 1.4rem; }
 
 @layer components {
+  /* ── Buttons ── */
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-6 py-3 text-base
-           bg-forest-500 hover:bg-forest-600
-           text-parchment-50 font-semibold rounded-xl
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+           bg-forest-600 hover:bg-forest-700
+           text-parchment-50 font-semibold rounded-lg
            transition-all duration-200
            shadow-warm hover:shadow-warm-md hover:-translate-y-0.5 active:translate-y-0;
-    min-height: 52px;
+    min-height: 44px;
   }
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-6 py-3 text-base
-           bg-parchment-50 hover:bg-parchment-100
-           text-forest-600 font-semibold rounded-xl
-           border-2 border-forest-500
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+           bg-transparent hover:bg-forest-50
+           text-forest-600 font-semibold rounded-lg
+           border border-forest-600
            transition-all duration-200;
-    min-height: 52px;
+    min-height: 44px;
   }
-  .card {
-    @apply bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md
-           transition-shadow duration-300 overflow-hidden;
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-base
+           bg-transparent hover:bg-parchment-100
+           text-forest-600 font-medium rounded-lg
+           transition-all duration-200;
+    min-height: 44px;
   }
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold text-stone-900 mb-2;
-    font-family: theme('fontFamily.heading');
-  }
-  .section-subtitle {
-    @apply text-xl text-stone-500 mb-10;
-  }
-  .badge {
-    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+  .btn-destructive {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+           bg-terra-600 hover:bg-terra-700
+           text-white font-semibold rounded-lg
+           transition-all duration-200;
+    min-height: 44px;
   }
 
-  /* #10 Card press feedback — subtle scale on active state */
+  /* ── Cards ── */
+  .card {
+    @apply bg-parchment-50 rounded-xl border border-parchment-200
+           shadow-warm hover:shadow-warm-md
+           transition-shadow duration-300 overflow-hidden;
+  }
+  .card-elevated {
+    @apply bg-parchment-50 rounded-xl border border-parchment-200
+           shadow-warm-md hover:shadow-warm-lg
+           transition-shadow duration-300 overflow-hidden;
+  }
+
+  /* Card press feedback — subtle scale on active state */
   .card-pressable {
     @apply card cursor-pointer;
     transition: transform 150ms ease, box-shadow 300ms ease;
@@ -111,13 +124,26 @@ html.text-large h3 { font-size: 1.4rem; }
     transform: scale(0.98);
   }
 
-  /* #8 Free badge */
+  /* ── Section headings ── */
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-stone-900 mb-2;
+    font-family: theme('fontFamily.heading');
+  }
+  .section-subtitle {
+    @apply text-lg text-stone-500 mb-10;
+  }
+  .section-header {
+    @apply mb-8 md:mb-12;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+  }
   .badge-free {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
     @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
   }
-
-  /* #6 Happening Now pulse */
   .badge-now {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold;
     @apply bg-red-100 text-red-700 border border-red-200;
@@ -127,31 +153,70 @@ html.text-large h3 { font-size: 1.4rem; }
     @apply w-2 h-2 rounded-full bg-red-500 inline-block;
     animation: pulse-dot 1.5s ease-in-out infinite;
   }
+
+  /* ── Form inputs ── */
+  .input-base {
+    @apply w-full px-4 py-3 text-base
+           bg-white border border-parchment-200 rounded-lg
+           text-stone-800 placeholder-stone-400
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 focus:border-forest-600;
+    min-height: 44px;
+    font-size: max(16px, 1em);
+  }
+  .input-error {
+    @apply border-terra-600 focus:ring-terra-600 focus:border-terra-600;
+  }
+
+  /* ── Feedback patterns ── */
+  .error-banner {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-terra-50 border-l-[3px] border-terra-600
+           text-stone-700 text-sm;
+  }
+  .success-banner {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-forest-50 border-l-[3px] border-forest-600
+           text-stone-700 text-sm;
+  }
+  .info-banner {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-sound-50 border-l-[3px] border-sound-600
+           text-stone-700 text-sm;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center text-center
+           max-w-sm mx-auto py-16 px-4;
+  }
+  .empty-state-icon {
+    @apply text-parchment-300 mb-4;
+  }
+  .empty-state-title {
+    @apply text-lg font-semibold text-stone-700 mb-2;
+    font-family: theme('fontFamily.heading');
+  }
+  .empty-state-text {
+    @apply text-sm text-stone-500 mb-6;
+  }
 }
 
-/* Animations */
+/* ── Animations ── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.8); }
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
+/* Legacy class-based animations (kept for existing usage) */
 .animate-slideUp {
   animation: slideUp 300ms ease-out;
 }
-
 .animate-fadeIn {
   animation: fadeIn 200ms ease-out;
 }
+/* Prefer Tailwind animate-* utilities (fade-in, slide-up, slide-down)
+   defined in tailwind.config.ts for new code. */
 
 /* ── Markdown prose styles (used by MarkdownBody) ── */
 .prose-ww {

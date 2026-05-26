@@ -72,10 +72,7 @@ export default async function FerryAlerts() {
         <div className="flex items-center gap-2.5 mb-5">
           <span className="text-2xl" aria-hidden="true">⛴️</span>
           <div>
-            <h2
-              className="text-lg font-bold text-sound-900 leading-none"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+            <h2 className="text-lg font-bold text-sound-900 leading-none">
               WSF Ferry Alerts
             </h2>
             <p className="text-xs text-sound-600 mt-0.5">Mukilteo / Clinton &nbsp;·&nbsp; Port Townsend / Coupeville</p>

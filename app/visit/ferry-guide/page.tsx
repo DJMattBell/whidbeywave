@@ -43,7 +43,7 @@ function dotColor(s: RouteStatus) {
 
 export default async function FerryGuidePage() {
   const ferry = await fetchFerryBarStatus();
-  const hasMuk = ferry.mukilteoCliton != null;
+  const hasMuk = ferry.mukilteoClinton != null;
   const hasPT  = ferry.ptCoupeville  != null;
 
   return (
@@ -81,11 +81,11 @@ export default async function FerryGuidePage() {
               <div className="space-y-3">
                 {hasMuk && (
                   <div className="flex items-start gap-2.5">
-                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1 ${dotColor(ferry.mukilteoCliton!.status)}`} aria-hidden="true" />
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1 ${dotColor(ferry.mukilteoClinton!.status)}`} aria-hidden="true" />
                     <div>
                       <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
-                      <p className={`text-sm leading-tight ${statusColor(ferry.mukilteoCliton!.status)}`}>
-                        {statusLabel(ferry.mukilteoCliton!.status)}
+                      <p className={`text-sm leading-tight ${statusColor(ferry.mukilteoClinton!.status)}`}>
+                        {statusLabel(ferry.mukilteoClinton!.status)}
                       </p>
                     </div>
                   </div>

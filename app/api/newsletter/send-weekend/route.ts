@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { unsubscribeUrl } from '@/lib/newsletter';
 import { verifyCronRequest } from '@/lib/cronAuth';
 import { CATEGORY_EMOJI } from '@/lib/constants';
+import { escapeHtml } from '@/lib/escapeHtml';
 
-const resend   = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 // ── Types ────────────────────────────────────────────────────
@@ -83,9 +86,9 @@ function formatSubjectRange(friday: string, sunday: string) {
 function buildEventCard(ev: EventRow) {
   const emoji = emojiFor(ev.category);
   const desc  = ev.description
-    ? `<p style="margin:6px 0 0;font-size:13px;color:#57534e;line-height:1.55;">${ev.description}</p>`
+    ? `<p style="margin:6px 0 0;font-size:13px;color:#57534e;line-height:1.55;">${escapeHtml(ev.description)}</p>`
     : '';
-  const locationLine = [ev.time, ev.location, ev.town].filter(Boolean).join(' · ');
+  const locationLine = [ev.time, ev.location, ev.town].filter(Boolean).map(escapeHtml).join(' · ');
 
   return `
     <table width="100%" cellpadding="0" cellspacing="0"
@@ -93,7 +96,7 @@ function buildEventCard(ev: EventRow) {
       <tr>
         <td style="padding:14px 18px;">
           <p style="margin:0;font-size:15px;font-weight:bold;color:#1c3d2c;">
-            ${emoji} ${ev.title}
+            ${emoji} ${escapeHtml(ev.title)}
           </p>
           <p style="margin:3px 0 0;font-size:12px;color:#9ca3af;line-height:1.4;">
             ${locationLine}
@@ -197,7 +200,7 @@ function buildWeekendHtml(
         <tr>
           <td style="padding:28px 36px 8px;">
             <p style="margin:0;font-size:16px;color:#1c3d2c;line-height:1.65;">
-              Hi <strong>${sub.first_name}</strong> —
+              Hi <strong>${escapeHtml(sub.first_name)}</strong> —
               here&rsquo;s what&rsquo;s happening around the island this weekend.
             </p>
           </td>
@@ -305,6 +308,7 @@ export async function GET(request: NextRequest) {
       )
     );
     results.forEach(r => (r.status === 'fulfilled' ? sent++ : failed++));
+    if (i + CHUNK_SIZE < subscribers.length) await new Promise(r => setTimeout(r, 1000));
   }
 
   return NextResponse.json({

@@ -2,8 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
+  title: 'Privacy Policy — WhidbeyWave',
   description: 'How WhidbeyWave.com collects, uses, and protects your information.',
+  openGraph: {
+    title: 'Privacy Policy — WhidbeyWave',
+    description: 'How WhidbeyWave.com collects, uses, and protects your information.',
+    siteName: 'WhidbeyWave',
+  },
 };
 
 export default function PrivacyPolicyPage() {

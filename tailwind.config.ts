@@ -72,6 +72,8 @@ const config: Config = {
         },
       },
       fontFamily: {
+        // Lora is a serif font used intentionally as the default body font.
+        // Mapped to `sans` so Tailwind's default body styling applies it automatically.
         sans:    ['Lora', 'Georgia', 'serif'],
         heading: ['"Playfair Display"', 'Georgia', 'serif'],
       },
@@ -83,11 +85,26 @@ const config: Config = {
       },
       animation: {
         'scroll-left': 'scroll-left 25s linear infinite',
+        'fade-in':     'fadeIn 200ms ease-out',
+        'slide-up':    'slideUp 300ms ease-out',
+        'slide-down':  'slideDown 300ms ease-out',
       },
       keyframes: {
         'scroll-left': {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideDown: {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },

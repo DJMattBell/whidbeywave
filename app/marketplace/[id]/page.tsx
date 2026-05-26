@@ -75,18 +75,18 @@ export default async function ListingDetailPage({
 
         {/* SOLD banner */}
         {listing.sold && (
-          <div className="bg-stone-800 text-white text-sm font-bold text-center py-3 rounded-xl tracking-[0.2em] uppercase mb-6">
+          <div className="bg-stone-800 text-white text-sm font-bold text-center py-3 rounded-lg tracking-[0.2em] uppercase mb-6">
             SOLD — No longer available
           </div>
         )}
 
         {/* Photo gallery */}
-        <div className={`rounded-2xl overflow-hidden mb-6 ${listing.sold ? 'grayscale opacity-60' : ''}`}>
+        <div className={`rounded-xl overflow-hidden mb-6 ${listing.sold ? 'grayscale opacity-60' : ''}`}>
           {photos.length > 0 ? (
             <ImageGallery photos={photos} alt={listing.title} />
           ) : (
             <div
-              className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-amber-100 flex items-center justify-center text-8xl rounded-2xl"
+              className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-amber-100 flex items-center justify-center text-8xl rounded-xl"
               aria-hidden="true"
             >
               {listing.emoji}
@@ -99,10 +99,7 @@ export default async function ListingDetailPage({
           <p className={`text-3xl font-extrabold mb-2 ${free ? 'text-green-600' : 'text-stone-900'}`}>
             {priceLabel}
           </p>
-          <h1
-            className="text-2xl md:text-3xl text-stone-900 leading-snug"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
-          >
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 leading-snug">
             {listing.title}
           </h1>
         </div>

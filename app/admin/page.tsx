@@ -6,6 +6,9 @@ import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 import { supabase } from '@/lib/supabase';
 
+// TODO: Admin auth check should be server-side middleware rather than a
+// client-side email comparison, to avoid exposing the admin email in the
+// NEXT_PUBLIC_ bundle.
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
 type Counts = {

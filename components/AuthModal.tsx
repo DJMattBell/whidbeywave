@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { signInWithMagicLink, signInWithGoogle } from '@/lib/supabase';
 
 type Props = {
@@ -105,7 +106,7 @@ export default function AuthModal({ onClose }: Props) {
           <>
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <img src="/logo.png" alt="" aria-hidden="true" role="presentation" className="w-8 h-8 rounded-full object-cover" />
+                <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                 <h2 id="auth-modal-title" className="text-lg font-bold text-forest-600">
                   Sign in to WhidbeyWave
                 </h2>

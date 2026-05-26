@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient, isConfigured } from '@/lib/supabase';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 
 export const revalidate = 1800; // 30 minutes
@@ -43,11 +43,9 @@ type EventRow = {
 };
 
 async function getWeekendEvents(fridayStr: string, sundayStr: string): Promise<EventRow[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || url.includes('placeholder')) return [];
+  if (!isConfigured) return [];
 
-  const { data } = await createClient(url, key)
+  const { data } = await createServerClient()
     .from('event_submissions')
     .select('id, title, date, time, location, town, category, description')
     .eq('status', 'approved')
@@ -147,7 +145,10 @@ export default async function ThisWeekendPage() {
                         {event.category} · {event.town}
                       </p>
                       <h3 className="text-lg font-bold text-stone-800 mb-2">
-                        {emoji} {event.title}
+                        {emoji}{' '}
+                        <Link href={`/events/${event.id}`} className="hover:text-forest-600 transition-colors">
+                          {event.title}
+                        </Link>
                       </h3>
                       <p className="text-sm text-stone-500 mb-2">🕐 {event.time} · 📍 {event.location}</p>
                       {event.description && (

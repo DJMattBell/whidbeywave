@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient, isConfigured } from '@/lib/supabase';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import AddToCalendar from '@/components/AddToCalendar';
 import ShareButton from '@/components/ShareButton';
@@ -10,11 +10,9 @@ import RecurringSeries from '@/components/RecurringSeries';
 export const revalidate = 300;
 
 async function getEvent(id: string) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || url.includes('placeholder')) return null;
+  if (!isConfigured) return null;
 
-  const supabase = createClient(url, key);
+  const supabase = createServerClient();
   const { data } = await supabase
     .from('event_submissions')
     .select('*')
@@ -26,11 +24,9 @@ async function getEvent(id: string) {
 }
 
 async function getSiblingEvents(recurringEventId: string, currentEventId: string) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || url.includes('placeholder')) return [];
+  if (!isConfigured) return [];
 
-  const supabase = createClient(url, key);
+  const supabase = createServerClient();
   const today = new Date().toISOString().split('T')[0];
 
   const { data } = await supabase
@@ -102,10 +98,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               </span>
             )}
           </div>
-          <h1
-            className="text-2xl md:text-4xl font-bold text-parchment-50 mb-4 leading-snug"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-2xl md:text-4xl font-bold text-parchment-50 mb-4 leading-snug">
             {event.title}
           </h1>
           <div className="flex flex-wrap gap-x-5 gap-y-1 text-parchment-300 text-[15px]">
@@ -124,8 +117,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           <div className="md:col-span-2 space-y-6">
             {event.description && (
               <div>
-                <h2 className="text-lg font-semibold text-stone-800 mb-2"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h2 className="text-lg font-semibold text-stone-800 mb-2">
                   About This Event
                 </h2>
                 <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>
@@ -150,7 +142,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
           {/* Sidebar */}
           <aside className="space-y-4">
-            <div className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5 space-y-3 text-sm text-stone-600">
+            <div className="bg-parchment-50 border border-parchment-200 rounded-xl p-5 space-y-3 text-sm text-stone-600">
               <div>
                 <p className="text-xs text-stone-400 uppercase tracking-wide font-medium mb-0.5">Date</p>
                 <p className="font-semibold text-stone-800">{formatLongDate(event.date)}</p>

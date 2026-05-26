@@ -47,11 +47,10 @@ export default async function MarketplacePage({
     query = query.eq('location', sp.location);
   }
 
-  // Full-text search via Supabase wfts (uses GIN indexes on title + description)
+  // Full-text search via Supabase textSearch (handles special characters safely)
   const q = sp.q?.trim();
   if (q) {
-    const ftsQ = q.replace(/[,()]/g, ' ').trim();
-    query = query.or(`title.wfts(english).${ftsQ},description.wfts(english).${ftsQ}`);
+    query = query.textSearch('title', q, { type: 'websearch', config: 'english' });
   }
 
   const { data: listingsData } = await query;
@@ -111,7 +110,7 @@ export default async function MarketplacePage({
         </div>
 
         {/* Search + location bar */}
-        <div className="bg-parchment-50 border border-parchment-300 rounded-2xl shadow-warm-sm p-4 mb-6 flex flex-col sm:flex-row gap-3">
+        <div className="bg-parchment-50 border border-parchment-200 rounded-xl shadow-warm-sm p-4 mb-6 flex flex-col sm:flex-row gap-3">
           <Suspense fallback={
             <div className="flex-1 relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" aria-hidden="true">🔍</span>
@@ -119,7 +118,7 @@ export default async function MarketplacePage({
                 type="search"
                 defaultValue={sp.q}
                 placeholder="Search listings…"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-parchment-300 text-sm bg-white text-stone-700 placeholder:text-stone-400"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-parchment-200 text-sm bg-white text-stone-700 placeholder:text-stone-400"
                 readOnly
               />
             </div>
@@ -128,7 +127,7 @@ export default async function MarketplacePage({
           </Suspense>
 
           <Suspense fallback={
-            <select className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-parchment-300 text-sm text-stone-600 bg-white" disabled>
+            <select className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-parchment-200 text-sm text-stone-600 bg-white" disabled>
               {allLocations.map(loc => <option key={loc}>{loc}</option>)}
             </select>
           }>
@@ -138,7 +137,7 @@ export default async function MarketplacePage({
           {hasFilters && (
             <Link
               href="/marketplace"
-              className="shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium text-stone-600 border border-parchment-300 hover:border-stone-400 hover:text-stone-700 transition-colors bg-white text-center"
+              className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-600 border border-parchment-200 hover:border-stone-400 hover:text-stone-700 transition-colors bg-white text-center"
             >
               Clear filters
             </Link>
@@ -156,22 +155,22 @@ export default async function MarketplacePage({
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300 mb-16">
-            <div className="text-5xl mb-4" aria-hidden="true">🌾</div>
+          <div className="empty-state mb-16">
+            <div className="empty-state-icon text-5xl">🌾</div>
             {hasFilters ? (
               <>
-                <p className="text-lg text-stone-700 mb-2 font-semibold">Nothing matching those filters</p>
-                <p className="text-stone-600 text-sm mb-5">Try adjusting your search or clearing the filters.</p>
+                <p className="empty-state-title">Nothing matching those filters</p>
+                <p className="empty-state-text">Try adjusting your search or clearing the filters.</p>
                 <Link href="/marketplace" className="btn-primary">Show all listings</Link>
               </>
             ) : (
               <>
-                <p className="text-lg text-stone-700 mb-2 font-semibold">Be the first to post something!</p>
-                <p className="text-stone-600 text-sm mb-5 max-w-sm mx-auto">
+                <p className="empty-state-title">Be the first to post something!</p>
+                <p className="empty-state-text">
                   WhidbeyWave Marketplace is brand new. Help get it started by posting
                   something you&apos;d like to sell, trade, or give away.
                 </p>
-                <Link href="/submit-listing" className="inline-block bg-forest-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-forest-500 transition-colors">
+                <Link href="/submit-listing" className="btn-primary">
                   + Post a Free Listing
                 </Link>
               </>
@@ -187,7 +186,7 @@ export default async function MarketplacePage({
         </div>
 
         {/* Post listing CTA */}
-        <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-2xl p-8 border border-parchment-300 flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200 flex flex-col md:flex-row items-center gap-6">
           <div className="text-5xl" aria-hidden="true">🏷️</div>
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-2xl text-stone-900 mb-1">

@@ -5,6 +5,18 @@ export const metadata: Metadata = {
   title: 'How WhidbeyWave Works — Getting Started Guide',
   description:
     'A simple guide to using WhidbeyWave — find island events, submit your own, ask questions, and connect with Whidbey neighbors.',
+  openGraph: {
+    title: 'How WhidbeyWave Works — Getting Started Guide',
+    description: 'Find island events, submit your own, ask questions, and connect with Whidbey neighbors.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'How WhidbeyWave Works',
+    description: 'Find island events, submit your own, ask questions, and connect with Whidbey neighbors.',
+    images: ['/og-default.png'],
+  },
 };
 
 const sections = [

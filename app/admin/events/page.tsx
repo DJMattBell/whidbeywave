@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
@@ -65,10 +65,6 @@ export default function AdminEventsPage() {
   // Always load all submissions — filter client-side so counts stay accurate on all tabs
   const loadSubmissions = useCallback(async () => {
     setFetching(true);
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     const { data } = await supabase
       .from('event_submissions')
       .select('*')
@@ -187,7 +183,7 @@ export default function AdminEventsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
-          <img src="/logo.png" alt="" aria-hidden="true" role="presentation" className="w-8 h-8 rounded-full object-cover" />
+          <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
           <h1 className="text-3xl text-stone-900"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
             Event Submissions

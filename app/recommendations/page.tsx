@@ -109,7 +109,7 @@ export default function RecommendationsPage() {
     setLoading(true);
     if (!isConfigured) { setLoading(false); return; }
     const { data } = await supabase.from('recommendations').select('*').order('average_rating', { ascending: false });
-    setRecs((data ?? []) as unknown as Recommendation[]);
+    setRecs((data ?? []) as Recommendation[]);
     setLoading(false);
   }
 
@@ -184,7 +184,7 @@ export default function RecommendationsPage() {
       supabase.from('recommendations').select('*').eq('id', recId).single(),
     ]);
     if (reviewsRes.data) setReviewsData(prev => ({ ...prev, [recId]: reviewsRes.data! }));
-    if (recRes.data) setRecs(prev => prev.map(r => r.id === recId ? (recRes.data as unknown as Recommendation) : r));
+    if (recRes.data) setRecs(prev => prev.map(r => r.id === recId ? (recRes.data as Recommendation) : r));
   }
 
   async function submitAddRec(e: React.FormEvent) {
@@ -249,6 +249,7 @@ export default function RecommendationsPage() {
             <input
               type="search" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, town, or keyword…"
+              aria-label="Search recommendations"
               className="w-full pl-10 pr-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700 placeholder:text-stone-400"
             />
           </div>
@@ -264,7 +265,7 @@ export default function RecommendationsPage() {
         <div className="flex flex-wrap gap-2 mb-8">
           {CATEGORIES.map(cat => (
             <button key={cat} onClick={() => setActiveTab(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              className={`px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium border transition-colors ${
                 activeTab === cat
                   ? 'bg-forest-500 text-parchment-50 border-forest-500'
                   : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600'
@@ -292,33 +293,33 @@ export default function RecommendationsPage() {
             ) : (
               <form onSubmit={submitAddRec} className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Name <span className="text-red-400">*</span></label>
-                  <input type="text" required value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
+                  <label htmlFor="rec-name" className="block text-sm font-medium text-stone-700 mb-1.5">Name <span className="text-red-400">*</span></label>
+                  <input id="rec-name" type="text" required value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
                     placeholder="Toby's Tavern"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Category <span className="text-red-400">*</span></label>
-                  <select value={addForm.category} onChange={e => setAddForm(p => ({ ...p, category: e.target.value }))}
+                  <label htmlFor="rec-category" className="block text-sm font-medium text-stone-700 mb-1.5">Category <span className="text-red-400">*</span></label>
+                  <select id="rec-category" value={addForm.category} onChange={e => setAddForm(p => ({ ...p, category: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700">
                     {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Town</label>
-                  <input type="text" value={addForm.town} onChange={e => setAddForm(p => ({ ...p, town: e.target.value }))}
+                  <label htmlFor="rec-town" className="block text-sm font-medium text-stone-700 mb-1.5">Town</label>
+                  <input id="rec-town" type="text" value={addForm.town} onChange={e => setAddForm(p => ({ ...p, town: e.target.value }))}
                     placeholder="Coupeville"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Website</label>
-                  <input type="url" value={addForm.website} onChange={e => setAddForm(p => ({ ...p, website: e.target.value }))}
+                  <label htmlFor="rec-website" className="block text-sm font-medium text-stone-700 mb-1.5">Website</label>
+                  <input id="rec-website" type="url" value={addForm.website} onChange={e => setAddForm(p => ({ ...p, website: e.target.value }))}
                     placeholder="https://…"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Description</label>
-                  <textarea rows={3} value={addForm.description} onChange={e => setAddForm(p => ({ ...p, description: e.target.value }))}
+                  <label htmlFor="rec-description" className="block text-sm font-medium text-stone-700 mb-1.5">Description</label>
+                  <textarea id="rec-description" rows={3} value={addForm.description} onChange={e => setAddForm(p => ({ ...p, description: e.target.value }))}
                     placeholder="What makes this place worth knowing about?"
                     className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
                 </div>

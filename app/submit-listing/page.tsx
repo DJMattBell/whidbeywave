@@ -269,6 +269,7 @@ export default function SubmitListingPage() {
                         src={URL.createObjectURL(file)}
                         alt={`Photo ${i + 1}`}
                         className="w-full h-full object-cover"
+                        onLoad={e => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
                       />
                       <div className="absolute top-1 right-1 p-2 -m-2">
                         <button

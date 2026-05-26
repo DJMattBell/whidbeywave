@@ -37,7 +37,7 @@ export default function ListingOwnerActions({ listing }: { listing: MarketplaceL
 
   if (sold && !listing.sold) {
     return (
-      <div className="bg-stone-100 rounded-xl px-4 py-2 text-sm text-stone-600 font-medium">
+      <div className="bg-stone-100 rounded-lg px-4 py-2 text-sm text-stone-600 font-medium">
         Marked as sold
       </div>
     );
@@ -49,7 +49,7 @@ export default function ListingOwnerActions({ listing }: { listing: MarketplaceL
         {soldState === 'idle' && (
           <button
             onClick={() => setSoldState('confirming')}
-            className="px-4 py-2 rounded-xl border border-stone-200 text-sm text-stone-500 hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 rounded-lg border border-stone-200 text-sm text-stone-500 hover:bg-stone-50 transition-colors"
           >
             Mark as Sold
           </button>
@@ -58,13 +58,13 @@ export default function ListingOwnerActions({ listing }: { listing: MarketplaceL
           <div className="flex gap-2">
             <button
               onClick={handleMarkSold}
-              className="px-4 py-2 rounded-xl bg-stone-800 text-white text-sm font-medium hover:bg-stone-900 transition-colors"
+              className="px-4 py-2 rounded-lg bg-stone-800 text-white text-sm font-medium hover:bg-stone-900 transition-colors"
             >
               Confirm
             </button>
             <button
               onClick={() => setSoldState('idle')}
-              className="px-4 py-2 rounded-xl border border-stone-300 text-stone-600 text-sm hover:bg-stone-50 transition-colors"
+              className="px-4 py-2 rounded-lg border border-stone-300 text-stone-600 text-sm hover:bg-stone-50 transition-colors"
             >
               Cancel
             </button>

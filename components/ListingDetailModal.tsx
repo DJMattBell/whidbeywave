@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { categoryColors } from '@/lib/data';
 import { timeAgo, formatPrice, daysUntilExpiry, type MarketplaceListing } from '@/lib/marketplace';
 import { supabase } from '@/lib/supabase';
@@ -40,11 +41,13 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {images.map((src, i) => (
-          <div key={i} className="min-w-full h-full flex items-center justify-center">
-            <img
+          <div key={i} className="relative min-w-full h-full">
+            <Image
               src={src}
               alt={`${title} — photo ${i + 1}`}
-              className="max-w-full max-h-full object-contain"
+              fill
+              className="object-contain"
+              sizes="(max-width: 640px) 100vw, 36rem"
               draggable={false}
             />
           </div>
@@ -54,11 +57,11 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
       {images.length > 1 && (
         <>
           <button onClick={prev} disabled={current === 0} aria-label="Previous photo"
-            className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex w-9 h-9 items-center justify-center rounded-full bg-stone-900/60 text-white text-lg hover:bg-stone-900/80 transition-colors disabled:opacity-20">
+            className="absolute left-2 top-1/2 -translate-y-1/2 hidden sm:flex w-11 h-11 items-center justify-center rounded-full bg-stone-900/60 text-white text-lg hover:bg-stone-900/80 transition-colors disabled:opacity-20">
             ‹
           </button>
           <button onClick={next} disabled={current === images.length - 1} aria-label="Next photo"
-            className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex w-9 h-9 items-center justify-center rounded-full bg-stone-900/60 text-white text-lg hover:bg-stone-900/80 transition-colors disabled:opacity-20">
+            className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex w-11 h-11 items-center justify-center rounded-full bg-stone-900/60 text-white text-lg hover:bg-stone-900/80 transition-colors disabled:opacity-20">
             ›
           </button>
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -78,7 +81,7 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 
-type SoldState   = 'idle' | 'confirming' | 'saving';
+type SoldState   = 'idle' | 'confirming' | 'saving' | 'error';
 type RenewState  = 'idle' | 'confirming' | 'saving' | 'done';
 type DeleteState = 'idle' | 'confirming' | 'deleting';
 
@@ -136,18 +139,24 @@ export default function ListingDetailModal({
     setSoldState('saving');
     try {
       const token = await getToken();
-      if (!token) return;
+      if (!token) { setSoldState('idle'); return; }
       const res = await fetch('/api/listings/sold', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ id: listing.id }),
       });
-      if ((await res.json()).ok) {
+      const json = await res.json();
+      if (res.ok && json.ok) {
         setSold(true);
         onMarkedSold?.();
+        setSoldState('idle');
+      } else {
+        setSoldState('error');
+        setTimeout(() => setSoldState('idle'), 3000);
       }
-    } finally {
-      setSoldState('idle');
+    } catch {
+      setSoldState('error');
+      setTimeout(() => setSoldState('idle'), 3000);
     }
   }
 
@@ -217,7 +226,7 @@ export default function ListingDetailModal({
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-stone-900/50 text-white text-lg leading-none hover:bg-stone-900/70 transition-colors"
+          className="absolute top-3 right-3 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-stone-900/50 text-white text-lg leading-none hover:bg-stone-900/70 transition-colors"
         >
           ×
         </button>
@@ -390,6 +399,10 @@ export default function ListingDetailModal({
 
                 {soldState === 'saving' && (
                   <p className="text-center text-sm text-stone-400 py-1">Updating…</p>
+                )}
+
+                {soldState === 'error' && (
+                  <p className="text-center text-sm text-red-600 py-1">Something went wrong — please try again.</p>
                 )}
               </>
             )}

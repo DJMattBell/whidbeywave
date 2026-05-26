@@ -103,8 +103,8 @@ export default async function ForumPage({
                   aria-current={isActive ? 'true' : undefined}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                     isActive
-                      ? 'bg-forest-500 text-parchment-50 border-forest-500'
-                      : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600'
+                      ? 'bg-forest-600 text-parchment-50 border-forest-600'
+                      : 'bg-parchment-50 text-stone-600 border-parchment-200 hover:border-forest-400 hover:text-forest-600'
                   }`}
                 >
                   {cat}
@@ -116,7 +116,7 @@ export default async function ForumPage({
 
         {/* Demo mode notice */}
         {!isConfigured && (
-          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
             <strong>Demo mode:</strong> Add your Supabase keys to <code>.env.local</code> to see and post real questions.
           </div>
         )}
@@ -125,10 +125,9 @@ export default async function ForumPage({
         {posts.length === 0 ? (
           <>
             {/* Form first so new users can immediately post */}
-            <section id="ask" aria-label="Ask a question" className="mb-10">
+            <section aria-label="Ask a question" className="mb-10">
               <div className="mb-5">
-                <h2 className="text-2xl text-stone-900"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                <h2 className="text-2xl font-semibold text-stone-900">
                   Ask a Question
                 </h2>
                 <p className="text-stone-500 text-sm mt-1">Neighbors know things no search engine does.</p>
@@ -136,12 +135,12 @@ export default async function ForumPage({
               <NewPostForm />
             </section>
 
-            <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-              <div className="text-5xl mb-4" aria-hidden="true">🌾</div>
-              <p className="text-lg text-stone-700 mb-1 font-semibold">
+            <div className="empty-state">
+              <div className="empty-state-icon text-5xl">🌾</div>
+              <p className="empty-state-title">
                 {activeCategory === 'All' ? 'No questions yet — be the first' : `No posts in "${activeCategory}" yet`}
               </p>
-              <p className="text-stone-600 text-sm">
+              <p className="empty-state-text">
                 {isConfigured ? 'Use the form above to post a question.' : 'Configure Supabase to enable the forum.'}
               </p>
             </div>
@@ -155,7 +154,7 @@ export default async function ForumPage({
                   <div
                     key={post.id}
                     role="listitem"
-                    className="bg-parchment-50 rounded-2xl shadow-warm hover:shadow-warm-md transition-shadow duration-300 overflow-hidden p-5 hover:border-forest-200 border border-transparent"
+                    className="card p-5 hover:border-forest-200 border border-parchment-200"
                   >
                     <Link href={`/forum/${post.id}`} className="flex items-start gap-4 group">
                       {/* Reply count */}
@@ -212,8 +211,7 @@ export default async function ForumPage({
             {/* Ask a question section */}
             <section id="ask" aria-label="Ask a question" className="mt-16 pt-10 border-t border-parchment-200">
               <div className="mb-5">
-                <h2 className="text-2xl text-stone-900"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                <h2 className="text-2xl font-semibold text-stone-900">
                   Ask a Question
                 </h2>
                 <p className="text-stone-500 text-sm mt-1">Neighbors know things no search engine does.</p>

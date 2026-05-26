@@ -5,6 +5,18 @@ export const metadata: Metadata = {
   title: 'About WhidbeyWave',
   description:
     'WhidbeyWave is your neighbor\'s guide to everything happening on Whidbey Island — events, news, marketplace, and community.',
+  openGraph: {
+    title: 'About WhidbeyWave',
+    description: 'Your neighbor\'s guide to everything happening on Whidbey Island — events, news, marketplace, and community.',
+    siteName: 'WhidbeyWave',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About WhidbeyWave',
+    description: 'Your neighbor\'s guide to everything happening on Whidbey Island.',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function AboutPage() {

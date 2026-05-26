@@ -81,7 +81,7 @@ export default function BottomTabBar() {
             onClick={() => setMoreOpen(false)}
           />
           <div className="fixed bottom-[68px] left-0 right-0 z-[60] px-3 pb-2 animate-slideUp">
-            <div className="bg-white rounded-2xl shadow-2xl border border-parchment-200 overflow-hidden max-h-[60vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-2xl border border-parchment-200 overflow-hidden max-h-[60vh] overflow-y-auto">
               <div className="px-4 pt-4 pb-2">
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">More</p>
               </div>
@@ -91,7 +91,7 @@ export default function BottomTabBar() {
                     key={href}
                     href={href}
                     onClick={() => setMoreOpen(false)}
-                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-center transition-colors ${
+                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-lg text-center transition-colors ${
                       isActive(href)
                         ? 'bg-forest-50 text-forest-700'
                         : 'text-stone-600 hover:bg-parchment-100'

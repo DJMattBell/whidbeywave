@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { seedFarmersMarkets } from '@/lib/scrapers/seed-markets';
+import { verifyCronRequest } from '@/lib/cronAuth';
 
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET;
-  const hasValidSecret =
-    cronSecret &&
-    request.headers.get('authorization') === `Bearer ${cronSecret}`;
-
-  if (!hasValidSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const authError = verifyCronRequest(request);
+  if (authError) return authError;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;

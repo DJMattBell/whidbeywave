@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useState } from 'react';
-import Link from 'next/link';
 
 export type Persona = 'local' | 'visitor' | 'ferry' | 'dashboard';
 
@@ -95,14 +95,11 @@ export default function PersonaSelector() {
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-24 text-center">
         <div className="hidden sm:inline-flex items-center gap-2 bg-parchment-50/10 backdrop-blur-sm rounded-full px-5 py-2 text-sm font-medium mb-6 border border-parchment-50/20">
-          <img src="/logo.png" alt="WhidbeyWave logo" className="w-5 h-5 rounded-full object-cover" />
+          <Image src="/logo.png" alt="WhidbeyWave logo" width={20} height={20} className="w-5 h-5 rounded-full object-cover" />
           <span className="text-parchment-200">Whidbey Island, Washington</span>
         </div>
 
-        <h1
-          className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight mb-3 md:mb-4 text-parchment-50"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight mb-3 md:mb-4 text-parchment-50">
           WhidbeyWave
         </h1>
 
@@ -116,13 +113,10 @@ export default function PersonaSelector() {
             <button
               key={key}
               onClick={() => handleSelect(key)}
-              className={`${color} ${hoverColor} border-2 ${borderColor} rounded-2xl p-5 sm:p-6 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-warm-lg group`}
+              className={`${color} ${hoverColor} border ${borderColor} rounded-xl p-5 sm:p-6 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-warm-lg group`}
             >
               <span className="text-3xl sm:text-4xl block mb-2">{emoji}</span>
-              <span
-                className="text-base sm:text-lg font-semibold text-stone-800 block mb-1"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
+              <span className="text-base sm:text-lg font-semibold text-stone-800 block mb-1 font-heading">
                 {label}
               </span>
               <span className="text-xs sm:text-sm text-stone-500 leading-snug block">
@@ -250,7 +244,7 @@ function NewsletterStrip() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="bg-forest-500 hover:bg-forest-400 text-white text-sm
+          className="bg-forest-600 hover:bg-forest-700 text-white text-sm
                      font-medium px-4 py-2 rounded-lg transition-colors
                      disabled:opacity-50 whitespace-nowrap"
         >

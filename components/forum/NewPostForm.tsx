@@ -4,16 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase, isConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/AuthProvider';
+import { FORUM_CATEGORIES } from '@/lib/constants';
 
-const CATEGORIES = [
-  'General',
-  'Recommendations',
-  'Island Life',
-  'Events',
-  'Lost & Found',
-  'For Sale / Free',
-  'Welcome Newcomers',
-];
+const CATEGORIES = FORUM_CATEGORIES.filter(c => c !== 'All');
 
 const CATEGORY_SLUGS: Record<string, string> = {
   'General':           'general',
@@ -105,10 +98,9 @@ export default function NewPostForm() {
   }
 
   return (
-    <div className="mt-8 bg-parchment-50 rounded-2xl border border-parchment-300 shadow-warm-md p-6">
+    <div className="mt-8 bg-parchment-50 rounded-xl border border-parchment-200 shadow-warm-md p-6">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg text-stone-900"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+        <h3 className="text-lg font-semibold text-stone-900">
           Ask the island
         </h3>
         <button onClick={() => setOpen(false)} className="text-stone-600 hover:text-stone-800 text-sm">
@@ -127,7 +119,7 @@ export default function NewPostForm() {
             <label className="block text-sm font-medium text-stone-700 mb-1.5">Category</label>
             <select
               value={categorySlug} onChange={e => setCategory(e.target.value)}
-              className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700"
+              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-700"
             >
               {CATEGORIES.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -144,7 +136,7 @@ export default function NewPostForm() {
                   type="text" required value={anonName} onChange={e => setAnonName(e.target.value)}
                   placeholder="Jane from Langley"
                   maxLength={80}
-                  className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                  className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                 />
               </div>
               <div>
@@ -157,7 +149,7 @@ export default function NewPostForm() {
                   onChange={e => setAnonZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
                   placeholder="98277"
                   maxLength={5}
-                  className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                  className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                 />
                 <p className="text-xs text-stone-600 mt-1">Whidbey zips get a 🌊 Local badge</p>
               </div>
@@ -179,7 +171,7 @@ export default function NewPostForm() {
             <input
               type="text" required value={title} onChange={e => setTitle(e.target.value)}
               placeholder="Best place to get fresh oysters?"
-              className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
             />
           </div>
 
@@ -190,12 +182,12 @@ export default function NewPostForm() {
             <textarea
               rows={4} value={body} onChange={e => setBody(e.target.value)}
               placeholder="Any context that would help locals give a better answer…"
-              className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+              className="w-full px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
             />
           </div>
 
           {status === 'error' && (
-            <p className="text-red-500 text-xs">Something went wrong — please try again.</p>
+            <p className="text-red-500 text-xs" role="alert">Something went wrong — please try again.</p>
           )}
 
           <button type="submit" disabled={status === 'loading'} className="btn-primary disabled:opacity-60">

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { unsubscribeUrl } from '@/lib/newsletter';
 import { verifyCronRequest } from '@/lib/cronAuth';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 
-const resend   = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 // ── Types ────────────────────────────────────────────────────
@@ -253,11 +255,6 @@ export async function GET(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
-  const supabaseAnon = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
   // In test mode, send only to admin — skip the full subscriber fetch
   let subscribers: Subscriber[];
 
@@ -287,7 +284,7 @@ export async function GET(request: NextRequest) {
   const today    = new Date().toISOString().split('T')[0];
   const oneWeek  = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const { data: events } = await supabaseAnon
+  const { data: events } = await supabaseAdmin
     .from('event_submissions')
     .select('id, title, date, time, location, town, category, description')
     .eq('status', 'approved')
@@ -297,7 +294,7 @@ export async function GET(request: NextRequest) {
     .limit(6);
 
   // Fetch recent active forum posts
-  const { data: forumPosts } = await supabaseAnon
+  const { data: forumPosts } = await supabaseAdmin
     .from('forum_posts')
     .select('id, title, reply_count')
     .gt('reply_count', 0)
@@ -305,7 +302,7 @@ export async function GET(request: NextRequest) {
     .limit(3);
 
   // Fetch recent published news posts
-  const { data: newsPosts } = await supabaseAnon
+  const { data: newsPosts } = await supabaseAdmin
     .from('news_posts')
     .select('id, title, excerpt, emoji')
     .eq('published', true)
@@ -338,6 +335,7 @@ export async function GET(request: NextRequest) {
       )
     );
     results.forEach(r => (r.status === 'fulfilled' ? sent++ : failed++));
+    if (i + CHUNK_SIZE < subscribers.length) await new Promise(r => setTimeout(r, 1000));
   }
 
   return NextResponse.json({ ok: true, sent, failed, total: subscribers.length, test: isTest });

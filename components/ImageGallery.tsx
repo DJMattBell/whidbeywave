@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 
 interface Props {
   photos: string[];
@@ -33,6 +34,19 @@ export default function ImageGallery({ photos, alt }: Props) {
     touchStartX.current = null;
   }
 
+  // Lightbox keyboard navigation
+  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, closeLightbox]);
+
   const activeSrc = photos[activeIndex];
 
   return (
@@ -43,13 +57,22 @@ export default function ImageGallery({ photos, alt }: Props) {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={() => setLightboxOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setLightboxOpen(true);
+          }
+        }}
         role="button"
+        tabIndex={0}
         aria-label="Tap to enlarge"
       >
-        <img
+        <Image
           src={activeSrc}
           alt={`${alt} — photo ${activeIndex + 1} of ${photos.length}`}
-          className="w-full h-full object-contain"
+          fill
+          className="object-contain"
+          sizes="(max-width: 640px) 100vw, 600px"
         />
 
         {/* Swipe arrows — desktop only */}
@@ -57,14 +80,14 @@ export default function ImageGallery({ photos, alt }: Props) {
           <>
             <button
               onClick={e => { e.stopPropagation(); prev(); }}
-              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center rounded-full bg-stone-900/60 text-white hover:bg-stone-900/80 transition-colors text-lg"
+              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-stone-900/60 text-white hover:bg-stone-900/80 transition-colors text-lg"
               aria-label="Previous photo"
             >
               ‹
             </button>
             <button
               onClick={e => { e.stopPropagation(); next(); }}
-              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center rounded-full bg-stone-900/60 text-white hover:bg-stone-900/80 transition-colors text-lg"
+              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-stone-900/60 text-white hover:bg-stone-900/80 transition-colors text-lg"
               aria-label="Next photo"
             >
               ›
@@ -94,17 +117,18 @@ export default function ImageGallery({ photos, alt }: Props) {
               onClick={() => setActiveIndex(i)}
               className={`shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
                 i === activeIndex
-                  ? 'border-forest-500'
+                  ? 'border-forest-600'
                   : 'border-parchment-200 hover:border-parchment-400'
               }`}
               aria-label={`Photo ${i + 1}`}
               aria-pressed={i === activeIndex}
             >
-              <img
+              <Image
                 src={src}
                 alt={`${alt} — thumbnail ${i + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
+                fill
+                className="object-cover"
+                sizes="80px"
               />
             </button>
           ))}
@@ -150,12 +174,15 @@ export default function ImageGallery({ photos, alt }: Props) {
           )}
 
           {/* Image */}
-          <img
-            src={activeSrc}
-            alt={`${alt} — photo ${activeIndex + 1} of ${photos.length}`}
-            className="max-w-full max-h-full object-contain rounded-lg"
-            onClick={e => e.stopPropagation()}
-          />
+          <div className="relative w-full h-full max-w-[90vw] max-h-[85vh]" onClick={e => e.stopPropagation()}>
+            <Image
+              src={activeSrc}
+              alt={`${alt} — photo ${activeIndex + 1} of ${photos.length}`}
+              fill
+              className="object-contain rounded-lg"
+              sizes="90vw"
+            />
+          </div>
 
           {/* Counter */}
           {photos.length > 1 && (

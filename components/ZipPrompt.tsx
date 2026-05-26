@@ -63,7 +63,7 @@ export default function ZipPrompt({ user }: { user: User }) {
         </div>
         <button
           onClick={dismiss}
-          className="text-parchment-400 hover:text-parchment-100 transition-colors shrink-0 text-lg leading-none mt-0.5"
+          className="text-parchment-400 hover:text-parchment-100 transition-colors shrink-0 text-lg leading-none mt-0.5 w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Dismiss"
         >
           ×

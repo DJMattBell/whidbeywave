@@ -7,7 +7,7 @@ import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace';
 const ALERT_CATEGORIES = ['All categories', ...MARKETPLACE_CATEGORIES.filter(c => c !== 'All')] as const;
 
 const inputCls =
-  'px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
+  'px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400';
 
 export default function ListingAlertSubscription() {
   const [email, setEmail] = useState('');
@@ -41,7 +41,7 @@ export default function ListingAlertSubscription() {
 
   if (status === 'success') {
     return (
-      <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-2xl p-8 border border-parchment-300 text-center">
+      <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200 text-center">
         <div className="text-4xl mb-3" aria-hidden="true">✉️</div>
         <h3 className="text-lg text-stone-900 font-semibold mb-1">You&apos;re subscribed!</h3>
         <p className="text-stone-600 text-sm leading-relaxed">
@@ -52,7 +52,7 @@ export default function ListingAlertSubscription() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-2xl p-8 border border-parchment-300">
+    <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="text-4xl shrink-0" aria-hidden="true">🔔</div>
         <div className="flex-1">

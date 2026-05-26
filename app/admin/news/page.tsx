@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
@@ -91,10 +91,6 @@ export default function AdminNewsPage() {
 
   const loadPosts = useCallback(async () => {
     setLoadingPosts(true);
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     const { data } = await supabase
       .from('news_posts')
       .select('id, title, slug, emoji, category, read_minutes, published, published_at, post_type, image_url, tags')
@@ -400,7 +396,7 @@ export default function AdminNewsPage() {
             />
             {form.image_url && (
               <div className="mt-2 rounded-xl overflow-hidden border border-parchment-200 max-h-40">
-                <img src={form.image_url} alt="Preview" className="w-full h-40 object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
+                <Image src={form.image_url} alt="Preview" width={600} height={160} className="w-full h-40 object-cover" onError={e => (e.currentTarget.style.display = 'none')} />
               </div>
             )}
           </div>

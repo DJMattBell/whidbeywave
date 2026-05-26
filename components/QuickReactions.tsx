@@ -69,7 +69,7 @@ export default function QuickReactions({ postId }: { postId: string }) {
   if (!mounted) return null;
 
   return (
-    <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
+    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
       {REACTIONS.map(({ key, emoji, label }) => {
         const active = myReaction === key;
         const count = counts[key];

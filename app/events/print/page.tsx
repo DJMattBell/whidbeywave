@@ -1,22 +1,11 @@
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
+import Image from 'next/image';
+import { createServerClient, isConfigured } from '@/lib/supabase';
 import { events as fallbackEvents } from '@/lib/data';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 import PrintTrigger from './PrintTrigger';
 
 export const revalidate = 1800; // 30 minutes
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife':     '🌿',
-  'Arts & Culture':        '🎨',
-  'Farmers Market':        '🥕',
-  'Music & Performance':   '🎵',
-  'Outdoors & Recreation': '🌲',
-  'Film & Media':          '🎬',
-  'Community & Social':    '🤝',
-  'Classes & Workshops':   '📚',
-  'Food & Drink':          '🍽️',
-  'Sports & Fitness':      '🏃',
-};
 
 function fmtDayHeading(dateStr: string) {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
@@ -41,22 +30,19 @@ type PrintEvent = {
 };
 
 async function getEvents(): Promise<PrintEvent[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
   const today = new Date();
   const todayStr  = today.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
   const cutoff    = new Date(today);
   cutoff.setDate(cutoff.getDate() + 14);
   const cutoffStr = cutoff.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 
-  if (!url || !key || url.includes('placeholder')) {
+  if (!isConfigured) {
     return fallbackEvents
       .filter(e => e.date >= todayStr && e.date <= cutoffStr)
       .map(e => ({ ...e, location: e.location ?? '' }));
   }
 
-  const supabase = createClient(url, key);
+  const supabase = createServerClient();
   const { data } = await supabase
     .from('event_submissions')
     .select('id, title, date, time, location, town, category, description')
@@ -71,7 +57,7 @@ async function getEvents(): Promise<PrintEvent[]> {
       .map(e => ({ ...e, location: e.location ?? '' }));
   }
 
-  return data.map((row: any): PrintEvent => ({
+  return data.map((row): PrintEvent => ({
     id:          row.id,
     title:       row.title,
     date:        row.date,
@@ -129,12 +115,12 @@ export default async function PrintPage() {
         {/* Header */}
         <div className="mb-8 border-b-2 border-stone-800 pb-6">
           <div className="flex items-center gap-2 mb-1">
-            <img src="/logo.png" alt="WhidbeyWave logo" className="w-8 h-8 rounded-full object-cover no-print" />
-            <span className="text-2xl font-bold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <Image src="/logo.png" alt="WhidbeyWave logo" width={32} height={32} className="w-8 h-8 rounded-full object-cover no-print" />
+            <span className="text-2xl font-bold text-stone-900 font-heading">
               WhidbeyWave
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-stone-900 mt-2 mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 className="text-3xl font-bold text-stone-900 mt-2 mb-1">
             Whidbey Island Events
           </h1>
           <p className="text-stone-600 text-sm">

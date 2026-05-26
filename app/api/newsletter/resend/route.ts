@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { randomUUID } from 'crypto';
 
-const resend   = new Resend(process.env.RESEND_API_KEY);
+const resend = getResend();
+
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
 export async function POST(request: NextRequest) {

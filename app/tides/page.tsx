@@ -120,8 +120,8 @@ function groupByDay(tides: ParsedTide[]): DayGroup[] {
 function findExtremes(tides: ParsedTide[]): { maxHighId: string; minLowId: string } {
   const highs = tides.filter(t => t.type === 'H');
   const lows  = tides.filter(t => t.type === 'L');
-  const maxHigh = highs.reduce((a, b) => b.height > a.height ? b : a, highs[0]);
-  const minLow  = lows.reduce((a, b)  => b.height < a.height ? b : a, lows[0]);
+  const maxHigh = highs.length > 0 ? highs.reduce((a, b) => b.height > a.height ? b : a, highs[0]) : null;
+  const minLow  = lows.length > 0 ? lows.reduce((a, b)  => b.height < a.height ? b : a, lows[0]) : null;
   return {
     maxHighId: maxHigh?.id ?? '',
     minLowId:  minLow?.id  ?? '',
@@ -201,7 +201,6 @@ export default async function TidesPage() {
           </p>
           <h1
             className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Whidbey Island Tides
           </h1>
@@ -215,10 +214,9 @@ export default async function TidesPage() {
 
         {/* ── NOAA unavailable ─────────────────────────────────────────────── */}
         {failed && (
-          <div className="bg-parchment-100 border border-parchment-300 rounded-2xl p-8 text-center">
-            <p className="text-4xl mb-3" aria-hidden="true">🌧️</p>
-            <p className="text-xl font-semibold text-stone-700 mb-2"
-               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <div className="empty-state">
+            <div className="empty-state-icon text-4xl">🌧️</div>
+            <p className="empty-state-title text-xl">
               Tide data temporarily unavailable
             </p>
             <p className="text-stone-500 leading-relaxed max-w-sm mx-auto">
@@ -242,8 +240,7 @@ export default async function TidesPage() {
             <section>
               <h2
                 className="text-2xl font-semibold text-stone-800 mb-5"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
+                  >
                 Today&apos;s Tides
                 <span className="ml-3 text-sm font-normal text-stone-600">
                   {days[0]?.fullDate}
@@ -253,7 +250,7 @@ export default async function TidesPage() {
               {todayTides.length === 0 ? (
                 <p className="text-stone-600 italic">No tide data for today.</p>
               ) : (
-                <div className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md">
+                <div className="bg-parchment-50 rounded-xl border border-parchment-200 shadow-warm-md">
                   <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500 rounded-t-2xl" />
                   <div className="p-6">
                     <div className={`grid gap-4 pt-4 ${
@@ -280,8 +277,7 @@ export default async function TidesPage() {
             <section>
               <h2
                 className="text-2xl font-semibold text-stone-800 mb-5"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
+                  >
                 7-Day Forecast
               </h2>
 
@@ -289,7 +285,7 @@ export default async function TidesPage() {
                 {days.map((day, di) => (
                   <div
                     key={day.dateStr}
-                    className={`rounded-2xl border ${
+                    className={`rounded-xl border ${
                       di === 0
                         ? 'border-forest-200 bg-forest-50/30'
                         : 'border-parchment-200 bg-parchment-50'
@@ -301,8 +297,7 @@ export default async function TidesPage() {
                     }`}>
                       <span
                         className={`font-bold text-base ${di === 0 ? 'text-forest-800' : 'text-stone-700'}`}
-                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                      >
+                                  >
                         {day.label}
                       </span>
                       <span className="text-sm text-stone-600">{day.fullDate}</span>
@@ -334,8 +329,7 @@ export default async function TidesPage() {
             <section>
               <h2
                 className="text-2xl font-semibold text-stone-800 mb-5"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
+                  >
                 Good to Know
               </h2>
 
@@ -360,12 +354,11 @@ export default async function TidesPage() {
                     color: 'bg-forest-50 border-forest-200',
                   },
                 ].map(({ emoji, title, body, color }) => (
-                  <div key={title} className={`rounded-2xl border p-5 ${color}`}>
+                  <div key={title} className={`rounded-xl border p-5 ${color}`}>
                     <p className="text-2xl mb-2" aria-hidden="true">{emoji}</p>
                     <p
                       className="font-semibold text-stone-800 mb-1.5"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                    >
+                              >
                       {title}
                     </p>
                     <p className="text-sm text-stone-600 leading-relaxed">{body}</p>
@@ -373,7 +366,7 @@ export default async function TidesPage() {
                 ))}
               </div>
 
-              <div className="mt-5 flex items-center justify-between gap-4 bg-parchment-50 rounded-2xl border border-parchment-200 px-6 py-4">
+              <div className="mt-5 flex items-center justify-between gap-4 bg-parchment-50 rounded-xl border border-parchment-200 px-6 py-4">
                 <p className="text-sm text-stone-600">
                   Catching a ferry today? Check live status before you head to the dock.
                 </p>

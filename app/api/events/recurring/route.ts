@@ -154,11 +154,16 @@ export async function PATCH(request: NextRequest) {
 
   // Delete future generated events and regenerate
   const today = new Date().toISOString().split('T')[0];
-  await supabase
+  const { error: deleteError } = await supabase
     .from('event_submissions')
     .delete()
     .eq('recurring_event_id', id)
     .gte('date', today);
+
+  if (deleteError) {
+    console.error('[recurring] delete future events error:', deleteError);
+    return NextResponse.json({ error: 'Failed to delete future events' }, { status: 500 });
+  }
 
   let generated = 0;
   if (template.is_active) {

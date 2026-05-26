@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { getResend } from '@/lib/resend';
 import { createClient } from '@supabase/supabase-js';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 import { escapeHtml } from '@/lib/escapeHtml';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+const resend = getResend();
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAdminRequest(request);
@@ -34,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Update failed' }, { status: 500 });
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
 
     // Email submitter on approval (non-fatal — DB update already succeeded)
     if (action === 'approved' && submission.submitter_email) {

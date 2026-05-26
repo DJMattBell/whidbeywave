@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
@@ -256,7 +257,7 @@ export default function RecurringEventsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
-          <img src="/logo.png" alt="" aria-hidden="true" role="presentation" className="w-8 h-8 rounded-full object-cover" />
+          <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
           <h1 className="text-3xl text-stone-900"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
             Recurring Events

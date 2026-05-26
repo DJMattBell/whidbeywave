@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createServerClient, isConfigured } from '@/lib/supabase';
-import type { ForumPost, ForumReply } from '@/lib/db-types';
+import type { ForumPost, ForumPostRow, ForumReply } from '@/lib/db-types';
 import ReplyForm from '@/components/forum/ReplyForm';
 import LocalBadge from '@/components/LocalBadge';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
@@ -28,11 +28,31 @@ function formatShortDate(dateStr: string) {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  if (!isConfigured) return { title: 'Forum Thread' };
+  if (!isConfigured) return { title: 'Forum Thread — WhidbeyWave' };
   const { id } = await params;
   const db = createServerClient();
   const { data } = await db.from('forum_posts').select('*').eq('id', id).single();
-  return { title: (data as any)?.title ?? 'Forum Thread' };
+  const post = data as ForumPostRow | null;
+  const title = post?.title ?? 'Forum Thread';
+  const body = post?.body ?? '';
+  const description = body.length > 155 ? body.slice(0, 152) + '...' : body || 'A community discussion on WhidbeyWave\'s Ask the Island forum.';
+
+  return {
+    title: `${title} — WhidbeyWave Forum`,
+    description,
+    openGraph: {
+      title: `${title} — WhidbeyWave Forum`,
+      description,
+      siteName: 'WhidbeyWave',
+      images: [{ url: `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Ask the Island')}`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent('Ask the Island')}`],
+    },
+  };
 }
 
 export default async function ForumThreadPage({ params }: { params: Promise<{ id: string }> }) {
@@ -59,8 +79,8 @@ export default async function ForumThreadPage({ params }: { params: Promise<{ id
 
   const post    = postRes.data as unknown as ForumPost;
   const replies = (repliesRes.data ?? []) as ForumReply[];
-  const catName = (post.forum_categories as any)?.name ?? 'General';
-  const catSlug = (post.forum_categories as any)?.slug ?? 'general';
+  const catName = post.forum_categories?.name ?? 'General';
+  const catSlug = post.forum_categories?.slug ?? 'general';
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
@@ -71,7 +91,7 @@ export default async function ForumThreadPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Original post */}
-      <article className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-md p-7 mb-8">
+      <article className="card-elevated p-7 mb-8">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {post.is_pinned && (
             <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800">

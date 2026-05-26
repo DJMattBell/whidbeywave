@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Props {
   listingId: string;
@@ -15,17 +15,36 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
   const [phone, setPhone]     = useState('');
   const [message, setMessage] = useState(`Hi, I'm interested in "${listingTitle}". Is it still available?`);
   const [status, setStatus]   = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const firstInputRef = useRef<HTMLInputElement>(null);
+  const savedOverflow = useRef('');
 
   function openModal() {
     setStatus('idle');
     setOpen(true);
-    document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
     setOpen(false);
-    document.body.style.overflow = '';
   }
+
+  // Escape key handler, auto-focus first input, and overflow management
+  useEffect(() => {
+    if (!open) return;
+    savedOverflow.current = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    // Auto-focus first input after render
+    requestAnimationFrame(() => {
+      firstInputRef.current?.focus();
+    });
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') closeModal();
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = savedOverflow.current;
+    };
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,7 +71,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
     <>
       <button
         onClick={openModal}
-        className="mt-4 w-full py-2.5 rounded-xl bg-forest-50 text-forest-700 font-semibold text-sm hover:bg-forest-100 transition-colors border border-forest-200 text-center"
+        className="mt-4 w-full py-2.5 rounded-lg bg-forest-50 text-forest-700 font-semibold text-sm hover:bg-forest-100 transition-colors border border-forest-200 text-center min-h-[44px]"
       >
         📩 Contact Seller
       </button>
@@ -71,12 +90,12 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
           />
 
           {/* Panel */}
-          <div className="relative bg-parchment-50 rounded-2xl shadow-xl w-full max-w-md border border-parchment-200 overflow-hidden">
+          <div className="relative bg-parchment-50 rounded-xl shadow-xl w-full max-w-md border border-parchment-200 overflow-hidden">
 
             {/* Header */}
             <div className="bg-gradient-to-r from-forest-700 to-forest-600 text-parchment-50 px-6 py-4 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-base" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <p className="font-semibold text-base">
                   Message Seller
                 </p>
                 <p className="text-parchment-300 text-xs mt-0.5 truncate max-w-[240px]">{listingTitle}</p>
@@ -93,8 +112,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
             {status === 'sent' ? (
               <div className="px-6 py-10 text-center">
                 <div className="text-5xl mb-3">🌿</div>
-                <p className="text-stone-800 font-semibold text-lg mb-1"
-                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <p className="text-stone-800 font-semibold text-lg mb-1">
                   Message sent!
                 </p>
                 <p className="text-stone-500 text-sm">{sellerName} will be in touch soon.</p>
@@ -105,12 +123,13 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                   <div>
                     <label className="block text-xs font-medium text-stone-600 mb-1">Your name *</label>
                     <input
+                      ref={firstInputRef}
                       type="text"
                       required
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Jane Smith"
-                      className="w-full px-3 py-2 text-sm border border-parchment-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                      className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                     />
                   </div>
                   <div>
@@ -121,7 +140,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="jane@example.com"
-                      className="w-full px-3 py-2 text-sm border border-parchment-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                      className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                     />
                   </div>
                 </div>
@@ -135,7 +154,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="(360) 555-1234"
-                    className="w-full px-3 py-2 text-sm border border-parchment-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                   />
                 </div>
 
@@ -146,12 +165,12 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                     rows={4}
                     value={message}
                     onChange={e => setMessage(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-parchment-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
                   />
                 </div>
 
                 {status === 'error' && (
-                  <p className="text-sm text-red-600">Something went wrong — please try again.</p>
+                  <p className="text-sm text-red-600" role="alert">Something went wrong — please try again.</p>
                 )}
 
                 <div className="flex gap-3 pt-1">
@@ -165,7 +184,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium text-stone-500 border border-parchment-300 hover:border-stone-400 transition-colors"
+                    className="px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 border border-parchment-200 hover:border-stone-400 transition-colors min-h-[44px]"
                   >
                     Cancel
                   </button>

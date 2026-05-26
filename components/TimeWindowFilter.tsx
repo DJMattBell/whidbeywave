@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 // #7 Time-Window Filters for events
 
 export type TimeWindow = 'today' | 'tomorrow' | 'weekend' | 'week' | 'all';

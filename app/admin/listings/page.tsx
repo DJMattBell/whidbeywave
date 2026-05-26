@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
@@ -60,10 +60,6 @@ export default function AdminListingsPage() {
   // Always load all listings — filter client-side so counts stay accurate on all tabs
   const loadListings = useCallback(async () => {
     setFetching(true);
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     const { data } = await supabase
       .from('listings')
       .select('*')
@@ -258,8 +254,7 @@ export default function AdminListingsPage() {
                         <div className="flex gap-2 flex-wrap">
                           {listing.images.map((url, i) => (
                             <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={url} alt={`Photo ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border border-parchment-200 hover:opacity-80 transition-opacity" />
+                              <Image src={url} alt={`Photo ${i + 1}`} width={80} height={80} className="w-20 h-20 object-cover rounded-lg border border-parchment-200 hover:opacity-80 transition-opacity" />
                             </a>
                           ))}
                         </div>
