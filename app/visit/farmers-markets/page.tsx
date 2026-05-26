@@ -92,10 +92,7 @@ export default function FarmersMarketsPage() {
             </ol>
           </nav>
           <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">🥕 Fresh & Local</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
             Farmers Markets on Whidbey Island
           </h1>
           <p className="text-parchment-300 text-base max-w-xl leading-relaxed">
@@ -108,22 +105,16 @@ export default function FarmersMarketsPage() {
 
         {/* ── Market cards ────────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-6">
             Island Markets
           </h2>
 
           <div className="grid md:grid-cols-2 gap-5">
             {MARKETS.map(({ emoji, name, location, season, hours, body, tip, bg, accent }) => (
-              <div key={name} className={`rounded-2xl border overflow-hidden ${bg}`}>
+              <div key={name} className={`rounded-xl border overflow-hidden ${bg}`}>
                 <div className="p-6">
                   <p className="text-3xl mb-3" aria-hidden="true">{emoji}</p>
-                  <h3
-                    className="text-lg font-bold text-stone-800 mb-1"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <h3 className="text-lg font-bold text-stone-800 mb-1">
                     {name}
                   </h3>
                   <div className="space-y-1 mb-4">
@@ -146,21 +137,15 @@ export default function FarmersMarketsPage() {
 
         {/* ── Seasonal guide ───────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-6">
             What to Expect Each Season
           </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {SEASONS.map(({ season, icon, note }) => (
-              <div key={season} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5">
+              <div key={season} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5">
                 <p className="text-2xl mb-2" aria-hidden="true">{icon}</p>
-                <p
-                  className="font-bold text-stone-800 mb-2"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <p className="font-heading font-bold text-stone-800 mb-2">
                   {season}
                 </p>
                 <p className="text-sm text-stone-600 leading-relaxed">{note}</p>
@@ -170,11 +155,8 @@ export default function FarmersMarketsPage() {
         </section>
 
         {/* ── What to bring ────────────────────────────────────────────── */}
-        <section className="bg-parchment-50 rounded-2xl border border-parchment-200 p-6 sm:p-8">
-          <h2
-            className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+        <section className="bg-parchment-50 rounded-xl border border-parchment-200 p-6 sm:p-8">
+          <h2 className="text-xl font-semibold text-stone-800 mb-4">
             What to Bring
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -196,7 +178,7 @@ export default function FarmersMarketsPage() {
         </section>
 
         {/* ── CTA ─────────────────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-forest-50 rounded-2xl border border-forest-200 px-6 py-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-forest-50 rounded-xl border border-forest-200 px-6 py-5">
           <p className="text-sm text-stone-600">
             See what events are happening this weekend, including any market pop-ups.
           </p>

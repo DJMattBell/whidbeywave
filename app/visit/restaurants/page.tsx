@@ -96,10 +96,7 @@ export default async function RestaurantsPage() {
             </ol>
           </nav>
           <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">🍽️ Where to Eat</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
             Restaurants & Cafes on Whidbey Island
           </h1>
           <p className="text-parchment-300 text-base max-w-xl leading-relaxed">
@@ -113,10 +110,7 @@ export default async function RestaurantsPage() {
         {/* ── Live recommendations ───────────────────────────────────── */}
         {liveRecs.length > 0 && (
           <section>
-            <h2
-              className="text-2xl font-semibold text-stone-800 mb-2"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+            <h2 className="text-2xl font-semibold text-stone-800 mb-2">
               Neighbor Recommendations
             </h2>
             <p className="text-stone-500 text-sm mb-6">Submitted and reviewed by Whidbey Island locals.</p>
@@ -126,10 +120,7 @@ export default async function RestaurantsPage() {
 
         {/* ── Featured spots (always shown) ──────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-2">
             Local Favorites
           </h2>
           <p className="text-stone-500 text-sm mb-6">
@@ -138,14 +129,11 @@ export default async function RestaurantsPage() {
 
           <div className="grid sm:grid-cols-2 gap-5">
             {FEATURED.map(({ name, town, emoji, note, tip, bg }) => (
-              <div key={name} className={`rounded-2xl border p-5 ${bg}`}>
+              <div key={name} className={`rounded-xl border p-5 ${bg}`}>
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">{emoji}</span>
                   <div>
-                    <h3
-                      className="font-bold text-stone-800 leading-snug"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                    >
+                    <h3 className="font-bold text-stone-800 leading-snug">
                       {name}
                     </h3>
                     <p className="text-xs text-stone-600 mt-0.5">📍 {town}</p>
@@ -159,15 +147,12 @@ export default async function RestaurantsPage() {
         </section>
 
         {/* ── CTA ────────────────────────────────────────────────────── */}
-        <div className="bg-parchment-100 rounded-2xl border border-parchment-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-parchment-100 rounded-xl border border-parchment-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <p className="font-semibold text-stone-800 mb-1">Know a great spot we&apos;re missing?</p>
             <p className="text-sm text-stone-500">Add it to Local Picks — your neighbors will thank you.</p>
           </div>
-          <Link
-            href="/recommendations"
-            className="shrink-0 px-5 py-2.5 rounded-xl bg-forest-500 text-parchment-50 text-sm font-semibold hover:bg-forest-600 transition-colors"
-          >
+          <Link href="/recommendations" className="btn-primary shrink-0">
             Add to Local Picks →
           </Link>
         </div>

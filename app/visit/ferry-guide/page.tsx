@@ -60,10 +60,7 @@ export default async function FerryGuidePage() {
             </ol>
           </nav>
           <p className="text-sound-300 font-medium mb-2 tracking-wide uppercase text-sm">🚢 Getting Here</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
             Getting to Whidbey Island
           </h1>
           <p className="text-parchment-300 text-base max-w-xl leading-relaxed">
@@ -77,13 +74,10 @@ export default async function FerryGuidePage() {
         {/* ── Live status widget ─────────────────────────────────────── */}
         {(hasMuk || hasPT) && (
           <section>
-            <h2
-              className="text-xl font-semibold text-stone-800 mb-4"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+            <h2 className="text-xl font-semibold text-stone-800 mb-4">
               Current Ferry Status
             </h2>
-            <div className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5 flex flex-col sm:flex-row gap-6 justify-between items-start">
+            <div className="bg-parchment-50 border border-parchment-200 rounded-xl p-5 flex flex-col sm:flex-row gap-6 justify-between items-start">
               <div className="space-y-3">
                 {hasMuk && (
                   <div className="flex items-start gap-2.5">
@@ -120,23 +114,17 @@ export default async function FerryGuidePage() {
 
         {/* ── Your two options ────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-6">
             Your Two Options
           </h2>
           <div className="grid md:grid-cols-2 gap-5">
 
             {/* Mukilteo ferry */}
-            <div className="bg-sound-50 border border-sound-200 rounded-2xl overflow-hidden">
+            <div className="bg-sound-50 border border-sound-200 rounded-xl overflow-hidden">
               <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">⛴️</p>
-                <h3
-                  className="text-lg font-bold text-stone-800 mb-0.5"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <h3 className="text-lg font-bold text-stone-800 mb-0.5">
                   Mukilteo → Clinton
                 </h3>
                 <p className="text-xs font-semibold uppercase tracking-wider text-sound-600 mb-4">
@@ -178,14 +166,11 @@ export default async function FerryGuidePage() {
             </div>
 
             {/* Deception Pass */}
-            <div className="bg-forest-50 border border-forest-200 rounded-2xl overflow-hidden">
+            <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
               <div className="h-1.5 bg-gradient-to-r from-forest-400 to-amber-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
-                <h3
-                  className="text-lg font-bold text-stone-800 mb-0.5"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <h3 className="text-lg font-bold text-stone-800 mb-0.5">
                   Deception Pass Bridge
                 </h3>
                 <p className="text-xs font-semibold uppercase tracking-wider text-forest-600 mb-4">
@@ -219,11 +204,8 @@ export default async function FerryGuidePage() {
         </section>
 
         {/* ── Once you're on the island ──────────────────────────────── */}
-        <section className="bg-parchment-50 border border-parchment-200 rounded-2xl p-6 sm:p-8">
-          <h2
-            className="text-xl font-semibold text-stone-800 mb-3"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+        <section className="bg-parchment-50 border border-parchment-200 rounded-xl p-6 sm:p-8">
+          <h2 className="text-xl font-semibold text-stone-800 mb-3">
             Once You&apos;re On the Island
           </h2>
           <p className="text-stone-600 leading-relaxed max-w-2xl">
@@ -235,10 +217,7 @@ export default async function FerryGuidePage() {
 
         {/* ── Quick tips ──────────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-6">
             Quick Tips from Locals
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -264,12 +243,9 @@ export default async function FerryGuidePage() {
                 detail: 'Bicycles board first and don\'t count against car capacity. A great option for a car-free island day.',
               },
             ].map(({ emoji, tip, detail }) => (
-              <div key={tip} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5">
+              <div key={tip} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5">
                 <p className="text-2xl mb-2" aria-hidden="true">{emoji}</p>
-                <p
-                  className="font-semibold text-stone-800 mb-1.5 leading-snug"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <p className="font-heading font-semibold text-stone-800 mb-1.5 leading-snug">
                   {tip}
                 </p>
                 <p className="text-sm text-stone-600 leading-relaxed">{detail}</p>
@@ -280,10 +256,7 @@ export default async function FerryGuidePage() {
 
         {/* ── Links ───────────────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-xl font-semibold text-stone-800 mb-4">
             Useful Links
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

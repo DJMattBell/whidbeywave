@@ -15,19 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2
-      className="text-2xl font-semibold text-stone-800 mb-5"
-      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-    >
-      {children}
-    </h2>
-  );
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function VisitPage() {
@@ -39,10 +26,7 @@ export default function VisitPage() {
           <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">
             🗺️ Whidbey Island, Washington
           </p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50">
             Welcome to Whidbey Island
           </h1>
           <p className="text-parchment-200 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -55,10 +39,7 @@ export default function VisitPage() {
 
         {/* ── Explore Whidbey hub cards ──────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-2">
             Explore Whidbey
           </h2>
           <p className="text-stone-500 text-sm mb-6">Quick links to everything you need to plan your visit.</p>
@@ -100,14 +81,11 @@ export default function VisitPage() {
               <Link
                 key={href}
                 href={href}
-                className={`rounded-2xl border p-5 flex flex-col gap-3 hover:-translate-y-0.5 transition-all duration-200 shadow-warm-sm hover:shadow-warm ${bg}`}
+                className={`rounded-xl border p-5 flex flex-col gap-3 hover:-translate-y-0.5 transition-all duration-200 shadow-warm-sm hover:shadow-warm ${bg}`}
               >
                 <span className="text-3xl" aria-hidden="true">{emoji}</span>
                 <div>
-                  <p
-                    className="font-semibold text-stone-800 mb-1 leading-snug"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <p className="font-heading font-semibold text-stone-800 mb-1 leading-snug">
                     {title}
                   </p>
                   <p className="text-sm text-stone-600 leading-relaxed">{desc}</p>
@@ -120,7 +98,7 @@ export default function VisitPage() {
 
         {/* ── Getting Here ──────────────────────────────────────────────── */}
         <section>
-          <SectionHeading>Getting Here</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">Getting Here</h2>
           <p className="text-stone-600 mb-6 max-w-2xl leading-relaxed">
             There are two ways onto the island. Most visitors come by ferry — it&apos;s part of the experience.
           </p>
@@ -128,14 +106,11 @@ export default function VisitPage() {
           <div className="grid md:grid-cols-2 gap-5">
 
             {/* Ferry card */}
-            <div className="bg-sound-50 border border-sound-200 rounded-2xl overflow-hidden">
+            <div className="bg-sound-50 border border-sound-200 rounded-xl overflow-hidden">
               <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">⛴️</p>
-                <h3
-                  className="text-lg font-bold text-stone-800 mb-1"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <h3 className="text-lg font-bold text-stone-800 mb-1">
                   Ferry from Mukilteo
                 </h3>
                 <p className="text-xs font-semibold uppercase tracking-wider text-sound-600 mb-4">
@@ -179,14 +154,11 @@ export default function VisitPage() {
             </div>
 
             {/* Bridge card */}
-            <div className="bg-forest-50 border border-forest-200 rounded-2xl overflow-hidden">
+            <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
               <div className="h-1.5 bg-gradient-to-r from-forest-400 to-amber-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
-                <h3
-                  className="text-lg font-bold text-stone-800 mb-1"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <h3 className="text-lg font-bold text-stone-800 mb-1">
                   Deception Pass Bridge
                 </h3>
                 <p className="text-xs font-semibold uppercase tracking-wider text-forest-600 mb-4">
@@ -218,9 +190,9 @@ export default function VisitPage() {
 
         {/* ── Island at a Glance ────────────────────────────────────────── */}
         <section>
-          <SectionHeading>The Island at a Glance</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">The Island at a Glance</h2>
 
-          <div className="bg-parchment-50 border border-parchment-200 rounded-2xl overflow-hidden">
+          <div className="bg-parchment-50 border border-parchment-200 rounded-xl overflow-hidden">
             <div className="h-1.5 bg-gradient-to-r from-amber-400 to-terra-400" />
             <div className="p-6 grid sm:grid-cols-2 gap-x-10 gap-y-4">
               {[
@@ -245,7 +217,7 @@ export default function VisitPage() {
 
         {/* ── Towns Guide ───────────────────────────────────────────────── */}
         <section>
-          <SectionHeading>The Main Towns</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">The Main Towns</h2>
           <p className="text-stone-600 mb-6 max-w-2xl leading-relaxed">
             Each town has its own personality. Here&apos;s the honest version of what makes each one worth visiting.
           </p>
@@ -283,13 +255,10 @@ export default function VisitPage() {
                 accent:  'text-forest-700',
               },
             ].map(({ emoji, name, where, tagline, body, knowFor, bg, accent }) => (
-              <div key={name} className={`rounded-2xl border overflow-hidden ${bg}`}>
+              <div key={name} className={`rounded-xl border overflow-hidden ${bg}`}>
                 <div className="p-5">
                   <p className="text-3xl mb-2" aria-hidden="true">{emoji}</p>
-                  <h3
-                    className="text-lg font-bold text-stone-800 mb-0.5"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <h3 className="text-lg font-bold text-stone-800 mb-0.5">
                     {name}
                   </h3>
                   <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${accent}`}>{where}</p>
@@ -314,7 +283,7 @@ export default function VisitPage() {
 
         {/* ── Best Times to Visit ───────────────────────────────────────── */}
         <section>
-          <SectionHeading>Best Times to Visit</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">Best Times to Visit</h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -351,12 +320,9 @@ export default function VisitPage() {
                 items:  ['Quiet, local, and peaceful', 'Storm watching from the beaches', 'Holiday markets and local craft fairs', 'Mystery Weekend (Langley, February)'],
               },
             ].map(({ season, months, emoji, color, label, items }) => (
-              <div key={season} className={`rounded-2xl border p-5 ${color}`}>
+              <div key={season} className={`rounded-xl border p-5 ${color}`}>
                 <p className="text-2xl mb-1" aria-hidden="true">{emoji}</p>
-                <p
-                  className="font-bold text-stone-800 mb-0.5"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <p className="font-heading font-bold text-stone-800 mb-0.5">
                   {season}
                 </p>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${label}`}>{months}</p>
@@ -375,7 +341,7 @@ export default function VisitPage() {
 
         {/* ── Things Locals Love ────────────────────────────────────────── */}
         <section>
-          <SectionHeading>Things Locals Love</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">Things Locals Love</h2>
           <p className="text-stone-600 mb-6 max-w-2xl leading-relaxed">
             Not a generic tourist list. These are the things islanders actually do, recommend to friends, and genuinely miss when they leave.
           </p>
@@ -418,13 +384,10 @@ export default function VisitPage() {
                 body: 'Seriously. Local events, farmers markets, music nights, and community happenings are worth planning around. The island has more going on than most visitors expect.',
               },
             ].map(({ emoji, title, body }) => (
-              <div key={title} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5 flex gap-4">
+              <div key={title} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5 flex gap-4">
                 <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">{emoji}</span>
                 <div>
-                  <p
-                    className="font-semibold text-stone-800 mb-1"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <p className="font-heading font-semibold text-stone-800 mb-1">
                     {title}
                   </p>
                   <p className="text-sm text-stone-600 leading-relaxed">{body}</p>
@@ -436,7 +399,7 @@ export default function VisitPage() {
 
         {/* ── Practical Tips ────────────────────────────────────────────── */}
         <section>
-          <SectionHeading>Practical Tips</SectionHeading>
+          <h2 className="text-2xl font-semibold text-stone-800 mb-5">Practical Tips</h2>
           <p className="text-stone-600 mb-6 max-w-2xl leading-relaxed">
             The things the tourism brochures don&apos;t tell you.
           </p>
@@ -480,12 +443,9 @@ export default function VisitPage() {
                 link: null,
               },
             ].map(({ emoji, tip, detail, link }) => (
-              <div key={tip} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5">
+              <div key={tip} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5">
                 <p className="text-2xl mb-2" aria-hidden="true">{emoji}</p>
-                <p
-                  className="font-semibold text-stone-800 mb-1.5 leading-snug"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                >
+                <p className="font-heading font-semibold text-stone-800 mb-1.5 leading-snug">
                   {tip}
                 </p>
                 <p className="text-sm text-stone-600 leading-relaxed">{detail}</p>
@@ -505,10 +465,7 @@ export default function VisitPage() {
         {/* ── Explore the Site CTA ──────────────────────────────────────── */}
         <section className="bg-gradient-to-br from-forest-800 to-sound-800 text-parchment-100 rounded-2xl overflow-hidden">
           <div className="p-8 sm:p-10 text-center">
-            <h2
-              className="text-2xl sm:text-3xl font-bold text-parchment-50 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
+            <h2 className="text-2xl sm:text-3xl font-bold text-parchment-50 mb-3">
               Planning Your Visit?
             </h2>
             <p className="text-parchment-300 text-base max-w-xl mx-auto mb-8 leading-relaxed">

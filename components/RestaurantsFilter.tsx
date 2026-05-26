@@ -30,7 +30,7 @@ export default function RestaurantsFilter({ recs }: { recs: Recommendation[] }) 
           <button
             key={t}
             onClick={() => setTown(t)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+            className={`px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium border transition-colors ${
               town === t
                 ? 'bg-forest-500 text-parchment-50 border-forest-500'
                 : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600'
@@ -42,19 +42,22 @@ export default function RestaurantsFilter({ recs }: { recs: Recommendation[] }) 
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-stone-600 text-sm italic py-4">
-          No restaurants listed for {town} yet. Know one? <a href="/recommendations" className="text-forest-600 underline">Add it to Local Picks</a>.
-        </p>
+        <div className="empty-state">
+          <svg className="empty-state-icon w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <p className="empty-state-title">No listings match your search</p>
+          <p className="empty-state-text">Try different keywords or browse all categories.</p>
+          <a href="/recommendations" className="btn-primary">Browse All</a>
+        </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {filtered.map(rec => (
-            <div key={rec.id} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5">
+            <div key={rec.id} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>
-                  <h3
-                    className="text-base font-bold text-stone-800 leading-snug"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <h3 className="text-base font-bold text-stone-800 leading-snug">
                     {rec.name}
                   </h3>
                   {rec.town && (

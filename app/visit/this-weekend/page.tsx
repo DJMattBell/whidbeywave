@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import { CATEGORY_EMOJI } from '@/lib/constants';
 
 export const revalidate = 1800; // 30 minutes
 
@@ -73,13 +74,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Nature & Wildlife': '🌿', 'Arts & Culture': '🎨', 'Farmers Market': '🥕',
-  'Music & Performance': '🎵', 'Outdoors & Recreation': '🌲', 'Film & Media': '🎬',
-  'Community & Social': '🤝', 'Classes & Workshops': '📚', 'Food & Drink': '🍽️',
-  'Sports & Fitness': '🏃', 'Other': '📅',
-};
-
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default async function ThisWeekendPage() {
@@ -100,10 +94,7 @@ export default async function ThisWeekendPage() {
             </ol>
           </nav>
           <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
-          <h1
-            className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
             This Weekend on Whidbey
           </h1>
           <p className="text-parchment-300 text-base">
@@ -116,25 +107,18 @@ export default async function ThisWeekendPage() {
 
         {/* ── Live Events ───────────────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-6">
             Happening This Weekend
           </h2>
 
           {events.length === 0 ? (
-            <div className="text-center py-14 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-              <p className="text-4xl mb-3" aria-hidden="true">🌾</p>
-              <p
-                className="text-lg font-semibold text-stone-700 mb-2"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Nothing submitted yet for this weekend
-              </p>
-              <p className="text-stone-500 text-sm mb-5 max-w-xs mx-auto leading-relaxed">
-                Check back closer to the weekend — events are usually posted a few days out.
-              </p>
+            <div className="empty-state">
+              <svg className="empty-state-icon w-12 h-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" />
+              </svg>
+              <p className="empty-state-title">No events coming up</p>
+              <p className="empty-state-text">Check back soon or submit your own community event.</p>
               <Link href="/events" className="btn-primary">Browse All Upcoming Events</Link>
             </div>
           ) : (
@@ -147,7 +131,7 @@ export default async function ThisWeekendPage() {
                 return (
                   <article
                     key={event.id}
-                    className="bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm-sm flex flex-col md:flex-row overflow-hidden"
+                    className="bg-parchment-50 rounded-xl border border-parchment-200 shadow-warm-sm flex flex-col md:flex-row overflow-hidden"
                   >
                     {/* Date column */}
                     <div className="md:w-32 bg-gradient-to-br from-forest-600 to-sound-600 text-parchment-100 flex flex-col items-center justify-center py-5 md:py-0 shrink-0">
@@ -162,10 +146,7 @@ export default async function ThisWeekendPage() {
                       <p className="text-xs font-semibold text-stone-600 uppercase tracking-wider mb-1">
                         {event.category} · {event.town}
                       </p>
-                      <h3
-                        className="text-lg font-bold text-stone-800 mb-2"
-                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                      >
+                      <h3 className="text-lg font-bold text-stone-800 mb-2">
                         {emoji} {event.title}
                       </h3>
                       <p className="text-sm text-stone-500 mb-2">🕐 {event.time} · 📍 {event.location}</p>
@@ -182,10 +163,7 @@ export default async function ThisWeekendPage() {
 
         {/* ── Always Good Any Weekend ────────────────────────────────── */}
         <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <h2 className="text-2xl font-semibold text-stone-800 mb-2">
             Always Good Any Weekend
           </h2>
           <p className="text-stone-500 text-sm mb-6">
@@ -237,13 +215,10 @@ export default async function ThisWeekendPage() {
                 link:  { href: '/ferry', label: 'Ferry status' },
               },
             ].map(({ emoji, title, body, link }) => (
-              <div key={title} className="bg-parchment-50 border border-parchment-200 rounded-2xl p-5 flex gap-4">
+              <div key={title} className="bg-parchment-50 border border-parchment-200 rounded-xl p-5 flex gap-4">
                 <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">{emoji}</span>
                 <div>
-                  <p
-                    className="font-semibold text-stone-800 mb-1"
-                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                  >
+                  <p className="font-heading font-semibold text-stone-800 mb-1">
                     {title}
                   </p>
                   <p className="text-sm text-stone-600 leading-relaxed">{body}</p>
