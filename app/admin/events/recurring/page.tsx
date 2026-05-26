@@ -437,7 +437,7 @@ export default function RecurringEventsPage() {
             </div>
           </div>
 
-          {createError && <p className="text-sm text-red-600 font-medium">{createError}</p>}
+          {createError && <p className="text-sm text-terra-600 font-medium">{createError}</p>}
           {createSuccess && <p className="text-sm text-forest-700 font-medium">{createSuccess}</p>}
 
           <button type="submit" disabled={creating} className="btn-primary py-2 px-6 text-sm disabled:opacity-60">
@@ -655,7 +655,7 @@ export default function RecurringEventsPage() {
                             <div className="flex items-center gap-2">
                               <span className="text-xs text-stone-500">Delete future events too?</span>
                               <button onClick={() => handleDelete(t.id, true)} disabled={acting[t.id]}
-                                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-700 border border-red-200 hover:bg-red-200 transition-colors disabled:opacity-40">
+                                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-terra-100 text-terra-700 border border-terra-200 hover:bg-terra-200 transition-colors disabled:opacity-40">
                                 Yes, delete all
                               </button>
                               <button onClick={() => handleDelete(t.id, false)} disabled={acting[t.id]}
@@ -669,7 +669,7 @@ export default function RecurringEventsPage() {
                             </div>
                           ) : (
                             <button onClick={() => setDeleteConfirm(t.id)}
-                              className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors">
+                              className="px-5 py-2 rounded-xl text-sm font-medium bg-terra-50 text-terra-700 border border-terra-200 hover:bg-terra-100 transition-colors">
                               Delete
                             </button>
                           )}

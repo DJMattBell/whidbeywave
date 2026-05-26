@@ -252,7 +252,7 @@ export default function AdminNewsPage() {
           </div>
         )}
         {submitStatus === 'error' && (
-          <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <div className="mb-5 p-4 bg-terra-50 border border-terra-200 rounded-xl text-terra-700 text-sm">
             Something went wrong — check the server logs.
           </div>
         )}
@@ -514,7 +514,7 @@ export default function AdminNewsPage() {
                   disabled={toggling[post.id]}
                   className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-50 ${
                     post.published
-                      ? 'bg-white text-stone-500 border-stone-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
+                      ? 'bg-white text-stone-500 border-stone-200 hover:bg-terra-50 hover:text-terra-600 hover:border-terra-200'
                       : 'bg-white text-forest-600 border-forest-200 hover:bg-forest-50'
                   }`}
                 >

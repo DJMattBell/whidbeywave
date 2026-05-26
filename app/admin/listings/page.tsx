@@ -37,7 +37,7 @@ type Listing = {
 const STATUS_COLORS: Record<string, string> = {
   pending:  'bg-amber-100 text-amber-800 border border-amber-200',
   approved: 'bg-forest-100 text-forest-800 border border-forest-200',
-  rejected: 'bg-red-100 text-red-700 border border-red-200',
+  rejected: 'bg-terra-50 text-terra-700 border border-terra-200',
 };
 
 function fmt(dateStr: string) {
@@ -283,7 +283,7 @@ export default function AdminListingsPage() {
                         <button
                           onClick={() => moderate(listing.id, 'rejected')}
                           disabled={acting[listing.id] || listing.status === 'rejected'}
-                          className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                          className="px-5 py-2 rounded-xl text-sm font-medium bg-terra-50 text-terra-700 border border-terra-200 hover:bg-terra-100 transition-colors disabled:opacity-40"
                         >
                           {acting[listing.id] ? 'Saving…' : '✕ Reject'}
                         </button>

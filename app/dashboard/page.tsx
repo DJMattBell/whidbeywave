@@ -62,14 +62,12 @@ export default async function DashboardPage() {
   return (
     <>
       {/* Header */}
-      <section className="bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100">
+      <section className="bg-parchment-100 border-b border-parchment-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 text-center">
-          <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-parchment-50 mb-2 font-heading"
-          >
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2 font-heading">
             Quick View
           </h1>
-          <p className="text-parchment-200 text-sm sm:text-base">
+          <p className="text-stone-600 text-sm sm:text-base">
             Everything you need, one page
           </p>
         </div>

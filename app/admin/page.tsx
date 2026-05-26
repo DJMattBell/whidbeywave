@@ -118,15 +118,12 @@ export default function AdminDashboard() {
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-900 via-forest-800 to-sound-800 text-parchment-100 py-10">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-forest-300 text-sm font-medium uppercase tracking-wide mb-1">Admin</p>
-              <h1
-                className="text-3xl md:text-4xl font-bold text-parchment-50"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
+              <p className="text-forest-600 text-sm font-medium uppercase tracking-wide mb-1">Admin</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-stone-900">
                 Dashboard
               </h1>
             </div>

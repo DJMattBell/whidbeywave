@@ -34,7 +34,7 @@ type Submission = {
 const STATUS_COLORS = {
   pending:  'bg-amber-100 text-amber-800 border border-amber-200',
   approved: 'bg-forest-100 text-forest-800 border border-forest-200',
-  rejected: 'bg-red-100 text-red-700 border border-red-200',
+  rejected: 'bg-terra-50 text-terra-700 border border-terra-200',
 };
 
 function fmt(dateStr: string) {
@@ -248,7 +248,7 @@ export default function AdminEventsPage() {
             {countLoading ? 'Loading…' : '👥 View Subscriber Count'}
           </button>
           {nlStatus === 'sent'  && <span className="text-sm text-forest-700 font-medium">✓ Test digest sent to admin email</span>}
-          {nlStatus === 'error' && <span className="text-sm text-red-600 font-medium">✕ Failed — check server logs</span>}
+          {nlStatus === 'error' && <span className="text-sm text-terra-600 font-medium">✕ Failed — check server logs</span>}
           {subCount !== null    && (
             <span className="text-sm text-stone-600 font-medium">
               <strong className="text-stone-900">{subCount}</strong> confirmed subscriber{subCount !== 1 ? 's' : ''}
@@ -345,7 +345,7 @@ export default function AdminEventsPage() {
                         <button
                           onClick={() => moderate(sub.id, 'rejected')}
                           disabled={acting[sub.id] || sub.status === 'rejected'}
-                          className="px-5 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                          className="px-5 py-2 rounded-xl text-sm font-medium bg-terra-50 text-terra-700 border border-terra-200 hover:bg-terra-100 transition-colors disabled:opacity-40"
                         >
                           {acting[sub.id] ? 'Saving…' : '✕ Reject'}
                         </button>
