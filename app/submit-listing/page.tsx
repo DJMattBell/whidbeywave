@@ -32,7 +32,7 @@ const CONTACT_METHODS = ['Email', 'Phone call', 'Text message', 'Any'];
 
 const MAX_PHOTOS = 8;
 
-const inputCls = 'w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
+const inputCls = 'input-base';
 const labelCls = 'block text-sm font-medium text-stone-700 mb-1.5';
 
 export default function SubmitListingPage() {
@@ -237,11 +237,11 @@ export default function SubmitListingPage() {
 
   return (
     <>
-      <div className="bg-gradient-to-br from-amber-700 via-forest-700 to-sound-800 text-parchment-100 py-14">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-200 font-medium mb-2 tracking-wide uppercase text-sm">🛒 Island Marketplace</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">List an Item</h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-terra-600 font-medium mb-2 tracking-wide uppercase text-sm">Island Marketplace</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-stone-900">List an Item</h1>
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             No fees — just fill this out and we&apos;ll get it listed. Neighbors helping neighbors.
           </p>
         </div>
@@ -333,7 +333,7 @@ export default function SubmitListingPage() {
 
             <div>
               <label htmlFor="ls-title" className={labelCls}>
-                What are you selling? <span className="text-red-400" aria-hidden="true">*</span>
+                What are you selling? <span className="text-terra-600" aria-hidden="true">*</span>
               </label>
               <input
                 id="ls-title"
@@ -377,7 +377,7 @@ export default function SubmitListingPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="ls-category" className={labelCls}>
-                  Category <span className="text-red-400" aria-hidden="true">*</span>
+                  Category <span className="text-terra-600" aria-hidden="true">*</span>
                 </label>
                 <select
                   id="ls-category"
@@ -462,7 +462,7 @@ export default function SubmitListingPage() {
 
             <div>
               <label htmlFor="ls-description" className={labelCls}>
-                Description <span className="text-red-400" aria-hidden="true">*</span>
+                Description <span className="text-terra-600" aria-hidden="true">*</span>
               </label>
               <textarea
                 id="ls-description"
@@ -498,7 +498,7 @@ export default function SubmitListingPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="ls-contact-email" className={labelCls}>
-                  Email <span className="text-red-400" aria-hidden="true">*</span>
+                  Email <span className="text-terra-600" aria-hidden="true">*</span>
                 </label>
                 <input
                   id="ls-contact-email"
@@ -533,7 +533,7 @@ export default function SubmitListingPage() {
           </div>
 
           {status === 'error' && (
-            <p className="text-red-500 text-base px-1" role="alert">{errorMsg}</p>
+            <p className="text-terra-600 text-base px-1" role="alert">{errorMsg}</p>
           )}
 
           <button

@@ -136,7 +136,7 @@ export default function FeedbackButton() {
                   value={message}
                   onChange={e => setMessage(e.target.value)}
                   placeholder="I noticed that… / It would be great if… / Love the site!"
-                  className="w-full px-3 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
+                  className="input-base resize-none"
                   style={{ minHeight: 100 }}
                 />
               </div>
@@ -150,7 +150,7 @@ export default function FeedbackButton() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-3 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                  className="input-base"
                 />
               </div>
               <button

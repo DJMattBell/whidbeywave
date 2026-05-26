@@ -29,7 +29,7 @@ const TOWNS = [
   'Other',
 ];
 
-const inputCls = 'w-full px-4 py-4 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400';
+const inputCls = 'input-base';
 const labelCls = 'block text-base font-medium text-stone-700 mb-2';
 
 export default function SubmitEventPage() {
@@ -110,13 +110,13 @@ export default function SubmitEventPage() {
 
   return (
     <>
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-14">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-300 font-medium mb-2 tracking-wide uppercase text-sm">📅 Community Calendar</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-parchment-50">
+          <p className="text-amber-700 font-medium mb-2 tracking-wide uppercase text-sm">Community Calendar</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-stone-900">
             Submit an Event
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             Got something happening on Whidbey? Fill this out and we&apos;ll get it on the calendar.
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function SubmitEventPage() {
           {/* Event name */}
           <div>
             <label htmlFor="ev-title" className={labelCls}>
-              Event name <span className="text-red-400" aria-hidden="true">*</span>
+              Event name <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <input
               id="ev-title"
@@ -155,7 +155,7 @@ export default function SubmitEventPage() {
           {/* Date */}
           <div>
             <label htmlFor="ev-date" className={labelCls}>
-              Date <span className="text-red-400" aria-hidden="true">*</span>
+              Date <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <input
               id="ev-date"
@@ -170,7 +170,7 @@ export default function SubmitEventPage() {
           {/* Time */}
           <div>
             <label htmlFor="ev-time" className={labelCls}>
-              Time <span className="text-red-400" aria-hidden="true">*</span>
+              Time <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <input
               id="ev-time"
@@ -186,7 +186,7 @@ export default function SubmitEventPage() {
           {/* Where is it */}
           <div>
             <label htmlFor="ev-location" className={labelCls}>
-              Where is it happening? <span className="text-red-400" aria-hidden="true">*</span>
+              Where is it happening? <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <input
               id="ev-location"
@@ -202,7 +202,7 @@ export default function SubmitEventPage() {
           {/* Town */}
           <div>
             <label htmlFor="ev-town" className={labelCls}>
-              Town <span className="text-red-400" aria-hidden="true">*</span>
+              Town <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <select
               id="ev-town"
@@ -233,7 +233,7 @@ export default function SubmitEventPage() {
           {/* Email */}
           <div>
             <label htmlFor="ev-submitter-email" className={labelCls}>
-              Your email — so we can let you know when it goes live <span className="text-red-400" aria-hidden="true">*</span>
+              Your email — so we can let you know when it goes live <span className="text-terra-600" aria-hidden="true">*</span>
             </label>
             <input
               id="ev-submitter-email"
@@ -270,7 +270,7 @@ export default function SubmitEventPage() {
                     value={form.description}
                     onChange={e => set('description', e.target.value)}
                     placeholder="Tell people what to expect — who it's for, what to bring, cost if any…"
-                    className={inputCls + ' resize-none'}
+                    className="input-base resize-none"
                   />
                 </div>
 
@@ -318,7 +318,7 @@ export default function SubmitEventPage() {
           </div>
 
           {status === 'error' && (
-            <p className="text-red-500 text-sm px-1" role="alert">{errorMsg}</p>
+            <p className="text-terra-600 text-sm px-1" role="alert">{errorMsg}</p>
           )}
 
           <button

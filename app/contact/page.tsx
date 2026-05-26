@@ -5,8 +5,7 @@ import { useState } from 'react';
 const PHONE_DISPLAY = '(360) 926-9101';
 const PHONE_TEL = 'tel:+13609269101';
 
-const inputCls =
-  'w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-transparent text-stone-800 placeholder:text-stone-400';
+const inputCls = 'input-base';
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -51,11 +50,11 @@ export default function ContactPage() {
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-terra-600 to-forest-800 text-parchment-100 py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-terra-200 font-medium mb-2 tracking-wide uppercase text-sm">✉️ Drop Us a Note</p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-parchment-50">Say Hello</h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-terra-600 font-medium mb-2 tracking-wide uppercase text-sm">Drop Us a Note</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-stone-900">Say Hello</h1>
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             We&apos;d love to hear from you — whether it&apos;s an event, a story, something to sell, or just a wave.
           </p>
         </div>
@@ -121,7 +120,7 @@ export default function ContactPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="contact-name" className="block text-base font-medium text-stone-700 mb-2">
-                        Your Name <span className="text-red-400" aria-hidden="true">*</span>
+                        Your Name <span className="text-terra-600" aria-hidden="true">*</span>
                       </label>
                       <input
                         id="contact-name"
@@ -136,7 +135,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label htmlFor="contact-email" className="block text-base font-medium text-stone-700 mb-2">
-                        Email <span className="text-red-400" aria-hidden="true">*</span>
+                        Email <span className="text-terra-600" aria-hidden="true">*</span>
                       </label>
                       <input
                         id="contact-email"
@@ -202,7 +201,7 @@ export default function ContactPage() {
 
                       <div>
                         <label htmlFor="contact-message" className="block text-base font-medium text-stone-700 mb-2">
-                          Your message <span className="text-red-400" aria-hidden="true">*</span>
+                          Your message <span className="text-terra-600" aria-hidden="true">*</span>
                         </label>
                         <textarea
                           id="contact-message"
@@ -231,7 +230,7 @@ export default function ContactPage() {
                       />
 
                       {status === 'error' && (
-                        <p className="text-red-500 text-base" role="alert">{errorMsg}</p>
+                        <p className="text-terra-600 text-base" role="alert">{errorMsg}</p>
                       )}
 
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
