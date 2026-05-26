@@ -30,7 +30,7 @@ export default function MarketplaceSearch({ defaultValue }: { defaultValue?: str
         defaultValue={defaultValue}
         onChange={e => handleChange(e.target.value)}
         placeholder="Search listings…"
-        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-parchment-200 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-sm bg-white text-stone-700 placeholder:text-stone-400"
+        className="input-base pl-10"
       />
     </div>
   );

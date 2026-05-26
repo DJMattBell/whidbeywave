@@ -71,9 +71,9 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
     <>
       <button
         onClick={openModal}
-        className="mt-4 w-full py-2.5 rounded-lg bg-forest-50 text-forest-700 font-semibold text-sm hover:bg-forest-100 transition-colors border border-forest-200 text-center min-h-[44px]"
+        className="btn-primary mt-4 w-full"
       >
-        📩 Contact Seller
+        Contact Seller
       </button>
 
       {open && (
@@ -129,7 +129,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Jane Smith"
-                      className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                      className="input-base"
                     />
                   </div>
                   <div>
@@ -140,7 +140,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="jane@example.com"
-                      className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                      className="input-base"
                     />
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                 </div>
 
                 {status === 'error' && (
-                  <p className="text-sm text-red-600" role="alert">Something went wrong — please try again.</p>
+                  <p className="text-sm text-terra-600" role="alert">Something went wrong — please try again.</p>
                 )}
 
                 <div className="flex gap-3 pt-1">
@@ -184,7 +184,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="px-5 py-2.5 rounded-lg text-sm font-medium text-stone-500 border border-parchment-200 hover:border-stone-400 transition-colors min-h-[44px]"
+                    className="btn-secondary"
                   >
                     Cancel
                   </button>

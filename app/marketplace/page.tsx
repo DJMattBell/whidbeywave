@@ -8,6 +8,7 @@ import MarketplaceLocationFilter from '@/components/MarketplaceLocationFilter';
 import MarketplaceCategoryFilter from '@/components/MarketplaceCategoryFilter';
 import MarketplaceGrid from '@/components/MarketplaceGrid';
 import ListingAlertSubscription from '@/components/ListingAlertSubscription';
+import { ShoppingBag, Search } from 'lucide-react';
 
 export const revalidate = 60;
 
@@ -77,13 +78,13 @@ export default async function MarketplacePage({
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-amber-700 via-forest-700 to-sound-800 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-200 font-medium mb-2 tracking-wide uppercase text-sm">🛒 Things for Sale</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <p className="text-terra-600 font-medium mb-2 tracking-wide uppercase text-sm">Things for Sale</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Island Marketplace
           </h1>
-          <p className="text-parchment-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
             What your neighbors are selling — crafts, gear, farm-fresh, and a little of everything else.
           </p>
         </div>
@@ -156,22 +157,22 @@ export default async function MarketplacePage({
         {/* Listings grid */}
         {listings.length === 0 ? (
           <div className="empty-state mb-16">
-            <div className="empty-state-icon text-5xl">🌾</div>
             {hasFilters ? (
               <>
-                <p className="empty-state-title">Nothing matching those filters</p>
-                <p className="empty-state-text">Try adjusting your search or clearing the filters.</p>
-                <Link href="/marketplace" className="btn-primary">Show all listings</Link>
+                <Search className="empty-state-icon w-12 h-12" />
+                <p className="empty-state-title">Nothing matches your search</p>
+                <p className="empty-state-text">Try different keywords or browse all categories.</p>
+                <Link href="/marketplace" className="btn-primary">Browse all</Link>
               </>
             ) : (
               <>
-                <p className="empty-state-title">Be the first to post something!</p>
+                <ShoppingBag className="empty-state-icon w-12 h-12" />
+                <p className="empty-state-title">No listings yet</p>
                 <p className="empty-state-text">
-                  WhidbeyWave Marketplace is brand new. Help get it started by posting
-                  something you&apos;d like to sell, trade, or give away.
+                  Be the first to post something for sale or free.
                 </p>
                 <Link href="/submit-listing" className="btn-primary">
-                  + Post a Free Listing
+                  Post a listing
                 </Link>
               </>
             )}

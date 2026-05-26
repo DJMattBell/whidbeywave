@@ -22,10 +22,10 @@ export default function ListingCard({
 
   return (
     <article
-      className={`group cursor-pointer rounded-xl overflow-hidden border bg-white transition-all duration-200 flex flex-row sm:flex-col ${
+      className={`card group cursor-pointer flex flex-row sm:flex-col border-l-3 ${
         sold
-          ? 'border-stone-200 opacity-60 grayscale'
-          : 'border-parchment-200 hover:border-parchment-300 hover:shadow-warm'
+          ? 'opacity-60 grayscale border-l-stone-300'
+          : 'border-l-terra-600'
       }`}
       onClick={onClick}
     >
