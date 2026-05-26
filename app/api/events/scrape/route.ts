@@ -10,6 +10,8 @@ import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
 import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
+import { logScrapeRun } from '@/lib/scrapeLog';
+import type { ScrapedEvent } from '@/lib/scrapers/types';
 
 const resend = getResend();
 
@@ -55,19 +57,43 @@ export async function GET(request: NextRequest) {
   // Whale Center only runs on the 1st of each month (events don't change often)
   const runWhaleCenter = dayOfMonth === 1;
 
+  // Wrapper to log each scraper run
+  async function runScraper(name: string, fn: () => Promise<ScrapedEvent[]>): Promise<ScrapedEvent[]> {
+    const startedAt = new Date();
+    try {
+      const events = await fn();
+      await logScrapeRun({
+        source: name,
+        startedAt,
+        eventCount: events.length,
+        status: events.length > 0 ? 'success' : 'partial',
+      });
+      return events;
+    } catch (err) {
+      await logScrapeRun({
+        source: name,
+        startedAt,
+        eventCount: 0,
+        status: 'failed',
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return [];
+    }
+  }
+
   // Run all scrapers in parallel — each has its own 6s timeout; failures return []
   const [
     wicaEvents, oakHarborEvents,
     langleyLibEvents, coupevilleLibEvents,
     thirstyCrabEvents, whidbeyTelEvents, whaleCenterEvents,
   ] = await Promise.all([
-    scrapeWica(),
-    scrapeOakHarbor(),
-    scrapeLangleyLibrary(),
-    scrapeCoupevilleLibrary(),
-    scrapeThirstyCrab(),
-    scrapeWhidbeyTelecomEvents(),
-    runWhaleCenter ? scrapeLangleyWhaleCenter() : Promise.resolve([]),
+    runScraper('WICA', scrapeWica),
+    runScraper('Oak Harbor', scrapeOakHarbor),
+    runScraper('Langley Library', scrapeLangleyLibrary),
+    runScraper('Coupeville Library', scrapeCoupevilleLibrary),
+    runScraper('Thirsty Crab', scrapeThirstyCrab),
+    runScraper('Whidbey Telecom', scrapeWhidbeyTelecomEvents),
+    runWhaleCenter ? runScraper('Langley Whale Center', scrapeLangleyWhaleCenter) : Promise.resolve([]),
   ]);
 
   const candidates = [

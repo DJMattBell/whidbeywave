@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app/ components/ lib/"
+    "lint": "eslint app/ components/ lib/",
+    "smoke": "npx playwright test",
+    "smoke:pages": "npx playwright test tests/smoke/pages.spec.ts",
+    "smoke:mobile": "npx playwright test tests/smoke/mobile.spec.ts"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.54.0",
     "@supabase/supabase-js": "^2.97.0",
     "@vercel/analytics": "^1.6.1",
     "@vercel/og": "^0.11.1",
@@ -23,6 +27,7 @@
     "resend": "^6.9.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

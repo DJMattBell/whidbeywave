@@ -10,8 +10,11 @@ import BottomTabBar from '@/components/BottomTabBar';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import WelcomeSheet from '@/components/WelcomeSheet';
 import BackToTop from '@/components/BackToTop';
+import Script from 'next/script';
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+
+const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -72,6 +75,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {plausibleDomain && (
+          <Script
+            defer
+            data-domain={plausibleDomain}
+            src="https://plausible.io/js/script.js"
+            strategy="afterInteractive"
+          />
+        )}
+      </head>
       <body className="min-h-screen flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           <a
