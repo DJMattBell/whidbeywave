@@ -92,3 +92,93 @@ export function emailCard(innerHtml: string): string {
   <tr><td style="padding:20px 24px;">${innerHtml}</td></tr>
 </table>`;
 }
+
+// ── Reusable email templates ─────────────────────────────────────────
+
+/** Newsletter signup confirmation email. */
+export function emailConfirmation(opts: { firstName: string; confirmUrl: string }): string {
+  return emailLayout({
+    title: 'Confirm your subscription — WhidbeyWave',
+    headerSubtitle: 'Newsletter Subscription',
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        Hey ${escapeHtml(opts.firstName)} — thanks for signing up!
+      </p>
+      <p style="margin:0 0 24px;font-size:16px;color:#57534e;line-height:1.7;">
+        Click below to confirm your subscription. Once confirmed, you'll start receiving our island updates.
+      </p>
+      ${emailButton(opts.confirmUrl, 'Confirm Subscription')}
+      <p style="margin:24px 0 0;font-size:13px;color:#a8a29e;line-height:1.7;">
+        If you didn't sign up, you can safely ignore this email.
+      </p>
+    `,
+  });
+}
+
+/** Welcome email after confirmed signup. */
+export function emailWelcome(opts: { firstName: string; unsubscribeUrl: string }): string {
+  return emailLayout({
+    title: 'Welcome to WhidbeyWave!',
+    headerSubtitle: 'You\'re confirmed',
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        Welcome aboard, ${escapeHtml(opts.firstName)}! You're now part of the WhidbeyWave community.
+      </p>
+      <p style="margin:0 0 24px;font-size:16px;color:#57534e;line-height:1.7;">
+        Expect your first digest on Monday morning — island news, events, and community updates,
+        curated by neighbors for neighbors.
+      </p>
+      ${emailButton(SITE_URL, 'Visit WhidbeyWave')}
+    `,
+    footerHtml: `<p style="margin:0;font-size:12px;color:#a8a29e;line-height:1.7;text-align:center;">
+      <a href="${SITE_URL}" style="color:#255c42;text-decoration:none;">WhidbeyWave.com</a>
+      &nbsp;&middot;&nbsp;
+      <a href="${escapeHtml(opts.unsubscribeUrl)}" style="color:#a8a29e;text-decoration:underline;">Unsubscribe</a>
+    </p>`,
+  });
+}
+
+/** Content approval notification (events, listings, guides). */
+export function emailApproval(opts: {
+  type: 'event' | 'listing' | 'guide';
+  title: string;
+  viewUrl: string;
+}): string {
+  const typeLabel = opts.type === 'event' ? 'event' : opts.type === 'listing' ? 'listing' : 'guide';
+  return emailLayout({
+    title: `Your ${typeLabel} is live — WhidbeyWave`,
+    headerSubtitle: `${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)} Approved`,
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        Great news — your ${typeLabel} has been reviewed and is now live on WhidbeyWave!
+      </p>
+      ${emailCard(`
+        <p style="margin:0;font-size:18px;font-weight:bold;color:#1c3d2c;">${escapeHtml(opts.title)}</p>
+      `)}
+      ${emailButton(opts.viewUrl, `View Your ${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)}`)}
+    `,
+  });
+}
+
+/** Forum reply notification. */
+export function emailForumReply(opts: {
+  postTitle: string;
+  replierName: string;
+  replyBody: string;
+  threadUrl: string;
+}): string {
+  return emailLayout({
+    title: 'New reply to your question — WhidbeyWave',
+    headerSubtitle: 'Forum Reply',
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        <strong style="color:#1c3d2c;">${escapeHtml(opts.replierName)}</strong> replied to your question:
+      </p>
+      ${emailCard(`
+        <p style="margin:0 0 8px;font-size:14px;font-weight:bold;color:#1c3d2c;">${escapeHtml(opts.postTitle)}</p>
+        <p style="margin:0;font-size:14px;color:#57534e;line-height:1.6;">${escapeHtml(opts.replyBody)}</p>
+      `)}
+      ${emailButton(opts.threadUrl, 'View Thread')}
+    `,
+  });
+}

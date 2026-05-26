@@ -45,11 +45,11 @@ function ConfirmBanner() {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
-        <div className="bg-red-50 border border-red-200 rounded-2xl px-6 py-5 flex items-start gap-4">
+        <div className="bg-terra-50 border border-terra-200 rounded-2xl px-6 py-5 flex items-start gap-4">
           <span className="text-3xl shrink-0" aria-hidden="true">🌧️</span>
           <div>
-            <p className="font-semibold text-red-800 text-base">That link didn&apos;t work.</p>
-            <p className="text-red-700 text-sm mt-0.5">
+            <p className="font-semibold text-terra-800 text-base">That link didn&apos;t work.</p>
+            <p className="text-terra-700 text-sm mt-0.5">
               It may have already been used or expired. Sign up again below and we&apos;ll send a fresh one.
             </p>
           </div>
@@ -162,13 +162,13 @@ export default function NewsletterPage() {
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-amber-800 text-parchment-100 py-8 md:py-16">
+      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-300 font-medium mb-2 tracking-wide uppercase text-sm">Weekly Digest</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-parchment-50">
+          <p className="text-amber-700 font-medium mb-2 tracking-wide uppercase text-sm">Weekly Digest</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             The WhidbeyWave Weekly
           </h1>
-          <p className="text-parchment-300 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-stone-600 text-lg max-w-2xl mx-auto leading-relaxed">
             A digest of island news, events, and community updates — delivered every Monday morning.
             No noise, no filler. Just Whidbey.
           </p>
@@ -239,7 +239,7 @@ export default function NewsletterPage() {
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                   <div>
                     <label htmlFor="nl-first-name" className="block text-sm font-medium text-stone-700 mb-1.5">
-                      First name <span className="text-red-400" aria-hidden="true">*</span>
+                      First name <span className="text-terra-600" aria-hidden="true">*</span>
                     </label>
                     <input
                       id="nl-first-name"
@@ -249,13 +249,13 @@ export default function NewsletterPage() {
                       onChange={e => setFirstName(e.target.value)}
                       placeholder="Jane"
                       autoComplete="given-name"
-                      className="w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                      className="input-base"
                     />
                   </div>
 
                   <div>
                     <label htmlFor="nl-email" className="block text-sm font-medium text-stone-700 mb-1.5">
-                      Email address <span className="text-red-400" aria-hidden="true">*</span>
+                      Email address <span className="text-terra-600" aria-hidden="true">*</span>
                     </label>
                     <input
                       id="nl-email"
@@ -265,7 +265,7 @@ export default function NewsletterPage() {
                       onChange={e => setEmail(e.target.value)}
                       placeholder="jane@example.com"
                       autoComplete="email"
-                      className="w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                      className="input-base"
                       aria-describedby={status === 'duplicate' ? 'nl-dup-msg' : status === 'error' ? 'nl-err-msg' : undefined}
                     />
                     {status === 'duplicate' && (
@@ -274,7 +274,7 @@ export default function NewsletterPage() {
                       </p>
                     )}
                     {status === 'error' && (
-                      <p id="nl-err-msg" className="text-red-500 text-sm mt-1" role="alert">
+                      <p id="nl-err-msg" className="text-terra-600 text-sm mt-1" role="alert">
                         Something went wrong. Try again in a moment.
                       </p>
                     )}
