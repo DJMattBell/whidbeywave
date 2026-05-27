@@ -41,7 +41,7 @@ async function fetchEventsTodayCount(): Promise<number | null> {
 
 function FerryDotCompact({ status }: { status: string }) {
   const cls =
-    status === 'cancelled' ? 'bg-red-400' :
+    status === 'cancelled' ? 'bg-terra-400' :
     status === 'delays'    ? 'bg-amber-400' :
                              'bg-green-400';
   return <span className={`inline-block w-1.5 h-1.5 rounded-full ${cls}`} aria-hidden="true" />;

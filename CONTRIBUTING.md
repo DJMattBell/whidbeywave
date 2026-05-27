@@ -109,6 +109,7 @@ Use the helpers from `@/lib/email` for consistent styling:
 - **Tone:** Warm, unhurried, small-town Pacific Northwest
 - **No:** Sharp gradients, glowing effects, startup/SaaS aesthetics
 - **Always:** Mobile-first
+- **Banned:** `red-*` Tailwind classes — use `terra-*` instead. An ESLint rule enforces this in JSX. The only exception is `.badge-now` in `globals.css`.
 
 ### Adding Event Scrapers
 

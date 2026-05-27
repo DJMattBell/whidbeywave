@@ -16,4 +16,16 @@ module.exports = [
   {
     ignores: ['.next/**', 'node_modules/**'],
   },
+  {
+    files: ['**/*.tsx', '**/*.jsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXAttribute[name.name="className"] Literal[value=/\\bred-/]',
+          message: 'Use terra-* instead of red-*. See DESIGN.md color semantics. Exception: .badge-now in globals.css.',
+        },
+      ],
+    },
+  },
 ]
