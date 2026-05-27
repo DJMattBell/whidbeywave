@@ -14,7 +14,7 @@ import { getLeadStory } from '@/lib/lead-story';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
-  Calendar, Gift, Newspaper, ShoppingBag,
+  Calendar, Newspaper, ShoppingBag,
   MessageCircle, Tag, Star, MapPinned, MapPin,
 } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
@@ -56,32 +56,19 @@ export default async function HomePage() {
     emoji: p.emoji ?? '📰',
   }));
 
+  // Combined marketplace listings (free + for-sale, mixed naturally)
   const now = new Date().toISOString();
-  const { data: featuredListingsData } = await supabase
+  const { data: marketplaceData } = await supabase
     .from('listings')
     .select('id, title, price, is_free, category, location, emoji, images')
     .eq('status', 'approved')
     .eq('sold', false)
     .or(`expires_at.is.null,expires_at.gt.${now}`)
     .order('created_at', { ascending: false })
-    .limit(3);
-  const featuredListings = (featuredListingsData ?? []) as {
+    .limit(4);
+  const marketplaceListings = (marketplaceData ?? []) as {
     id: string; title: string; price: number | null; is_free: boolean;
     category: string; location: string; emoji: string; images: string[];
-  }[];
-
-  // Free listings for "Neighbors are giving" section
-  const { data: freeListingsData } = await supabase
-    .from('listings')
-    .select('id, title, location, images, emoji, created_at')
-    .eq('status', 'approved')
-    .eq('sold', false)
-    .eq('is_free', true)
-    .or(`expires_at.is.null,expires_at.gt.${now}`)
-    .order('created_at', { ascending: false })
-    .limit(8);
-  const freeListings = (freeListingsData ?? []) as {
-    id: string; title: string; location: string; images: string[]; emoji: string; created_at: string;
   }[];
 
   // Forum threads for news section fallback (Issue 1)
@@ -111,7 +98,7 @@ export default async function HomePage() {
   type FallbackItem =
     | { type: 'news'; data: typeof latestNews[number] }
     | { type: 'forum'; data: typeof forumThreads[number] }
-    | { type: 'listing'; data: typeof featuredListings[number] }
+    | { type: 'listing'; data: typeof marketplaceListings[number] }
     | { type: 'pick'; data: typeof recommendations[number] };
 
   let newsSectionItems: FallbackItem[] = latestNews.map(n => ({ type: 'news' as const, data: n }));
@@ -122,7 +109,7 @@ export default async function HomePage() {
   }
   if (newsSectionItems.length < 3) {
     const remaining = 3 - newsSectionItems.length;
-    newsSectionItems = [...newsSectionItems, ...featuredListings.slice(0, remaining).map(l => ({ type: 'listing' as const, data: l }))];
+    newsSectionItems = [...newsSectionItems, ...marketplaceListings.slice(0, remaining).map(l => ({ type: 'listing' as const, data: l }))];
   }
   if (newsSectionItems.length < 3) {
     const remaining = 3 - newsSectionItems.length;
@@ -387,86 +374,43 @@ export default async function HomePage() {
     </section>
   );
 
-  // "Neighbors are giving" section — only shows with ≥2 free listings
-  const flashGivesSection = freeListings.length >= 2 ? (
-    <section key="flash-gives" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-      <div className="flex items-end justify-between mb-6">
+  // Combined Neighborhood Marketplace — free + for-sale in one classifieds section
+  const marketplaceSection = marketplaceListings.length > 0 ? (
+    <section key="marketplace" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+      <div className="flex items-end justify-between mb-10">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Gift size={20} className="text-forest-600" />
-            <h2 className="text-xl font-bold text-stone-900">Neighbors are giving</h2>
-          </div>
-          <p className="text-stone-500 text-sm">Free items from around the island</p>
+          <h2 className="section-title">Neighborhood Marketplace</h2>
+          <p className="section-subtitle mb-0">From your neighbors</p>
         </div>
-        <Link href="/marketplace?cat=Free+Stuff" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
-          See all free →
+        <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
+          Browse the marketplace →
         </Link>
       </div>
-      <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-none md:grid md:grid-cols-4 md:overflow-visible motion-reduce:overflow-visible">
-        {freeListings.map(listing => (
-          <Link
-            key={listing.id}
-            href={`/marketplace/${listing.id}`}
-            className="card-pressable group shrink-0 w-[200px] md:w-auto snap-start"
-          >
-            <div className="h-1 bg-gradient-to-r from-forest-500 to-forest-300" />
-            <div className="relative bg-parchment-100 h-28 flex items-center justify-center overflow-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {marketplaceListings.map((listing) => (
+          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group">
+            <div className="relative bg-parchment-100 h-28 flex items-center justify-center overflow-hidden rounded-t-xl">
               {listing.images?.[0]
-                ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="200px" />
+                ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
                 : <span className="text-4xl">{listing.emoji}</span>
               }
             </div>
             <div className="p-3">
-              <span className="badge-free text-xs mb-1">Free</span>
-              <h3 className="text-sm font-semibold text-stone-800 line-clamp-1 group-hover:text-forest-600 transition-colors">
+              <h3 className="text-sm font-semibold text-stone-800 line-clamp-1 group-hover:text-forest-600 transition-colors mb-1">
                 {listing.title}
               </h3>
-              <p className="text-xs text-stone-500 mt-0.5">📍 {listing.location}</p>
+              <p className={`text-sm font-bold mb-0.5 ${listing.is_free ? 'text-forest-600' : 'text-stone-800'}`}>
+                {formatPrice(listing.price, listing.is_free)}
+              </p>
+              <p className="text-xs text-stone-500 truncate">{listing.location}</p>
             </div>
           </Link>
         ))}
       </div>
-      <div className="text-center mt-4 sm:hidden">
-        <Link href="/marketplace?cat=Free+Stuff" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
-          See all free items →
+      <div className="text-center mt-6 sm:hidden">
+        <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
+          Browse the marketplace →
         </Link>
-      </div>
-    </section>
-  ) : null;
-
-  const listingsSection = featuredListings.length > 0 ? (
-    <section key="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-      <div className="flex items-end justify-between mb-10">
-        <div>
-          <h2 className="section-title">Things for Sale</h2>
-          <p className="section-subtitle mb-0">Your neighbors are letting some things go</p>
-        </div>
-        <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
-          See everything →
-        </Link>
-      </div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {featuredListings.map((listing) => (
-          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group">
-            <div className="relative bg-gradient-to-br from-parchment-200 to-amber-100 h-32 flex items-center justify-center overflow-hidden">
-              {listing.images?.[0]
-                ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" />
-                : <span className="text-5xl">{listing.emoji}</span>
-              }
-            </div>
-            <div className="p-5">
-              <span className={`badge ${categoryColors[listing.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
-                {listing.category}
-              </span>
-              <h3 className="text-stone-900 font-semibold mb-1 group-hover:text-forest-600 transition-colors">
-                {listing.title}
-              </h3>
-              <p className="text-forest-600 font-bold text-lg mb-1">{formatPrice(listing.price, listing.is_free)}</p>
-              <p className="text-sm text-stone-600 mb-3">📍 {listing.location}</p>
-              <p className="text-sm text-forest-600">View listing →</p>
-            </div>
-          </Link>
-        ))}
       </div>
     </section>
   ) : null;
@@ -542,9 +486,8 @@ export default async function HomePage() {
         <CommunityVoiceCard excludeThreadId={leadStory?.leadForumThreadId} />
       </Suspense>
       {todayBlock}
-      {flashGivesSection}
       {newsSection}
-      {listingsSection}
+      {marketplaceSection}
       {closingCta}
       {visitorCta}
     </>
