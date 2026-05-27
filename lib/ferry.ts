@@ -3,6 +3,10 @@
 
 const BASE = 'https://www.wsdot.wa.gov/ferries/api/schedule/rest';
 
+// ── Beta terminals for community wait reports (Phase 20) ────────────────────
+// Expand to ['Clinton', 'Mukilteo', 'Coupeville', 'Port Townsend'] in Phase 20b
+export const SUPPORTED_FERRY_TERMINALS = ['Clinton', 'Mukilteo'] as const;
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export type RouteStatus = 'on-schedule' | 'delays' | 'cancelled';
