@@ -198,17 +198,26 @@ export default function RecommendationsPage() {
       return;
     }
 
-    const { error } = await supabase.from('recommendations').insert({
-      name: addForm.name.trim(),
-      category: addForm.category,
-      description: addForm.description.trim() || null,
-      town: addForm.town.trim() || null,
-      address: addForm.address.trim() || null,
-      website: addForm.website.trim() || null,
-      submitted_by: user?.id ?? null,
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setAddStatus('error'); return; }
+
+    const res = await fetch('/api/recommendations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        name: addForm.name.trim(),
+        category: addForm.category,
+        description: addForm.description.trim() || null,
+        town: addForm.town.trim() || null,
+        address: addForm.address.trim() || null,
+        website: addForm.website.trim() || null,
+      }),
     });
 
-    if (error) { setAddStatus('error'); }
+    if (!res.ok) { setAddStatus('error'); }
     else { setAddStatus('success'); loadRecs(); }
   }
 
