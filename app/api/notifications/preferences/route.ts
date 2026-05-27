@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await auth.supabase
     .from('notification_preferences')
-    .select('channel, event_type, enabled')
+    .select('channel, event_type, enabled, scope')
     .eq('user_id', auth.user.id);
 
   if (error) {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   const auth = await verifyUserRequest(request);
   if ('error' in auth) return auth.error;
 
-  let updates: { channel: string; event_type: string; enabled: boolean }[];
+  let updates: { channel: string; event_type: string; enabled: boolean; scope?: Record<string, unknown> }[];
   try {
     const json = await request.json();
     updates = json.updates;
@@ -31,12 +31,17 @@ export async function POST(request: NextRequest) {
   }
 
   for (const u of updates) {
-    await auth.supabase.from('notification_preferences').upsert({
+    const row: Record<string, unknown> = {
       user_id: auth.user.id,
       channel: u.channel,
       event_type: u.event_type,
       enabled: u.enabled,
-    }, { onConflict: 'user_id,channel,event_type' });
+    };
+    if (u.scope !== undefined) row.scope = u.scope;
+    await auth.supabase.from('notification_preferences').upsert(
+      row,
+      { onConflict: 'user_id,channel,event_type' }
+    );
   }
 
   return NextResponse.json({ ok: true });

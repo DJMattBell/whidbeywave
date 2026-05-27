@@ -11,6 +11,7 @@ import HeroSection from '@/components/home/HeroSection';
 import LeadStoryCard from '@/components/home/LeadStoryCard';
 import CommunityVoiceCard from '@/components/home/CommunityVoiceCard';
 import { getLeadStory } from '@/lib/lead-story';
+import FlashGiveCTA from '@/components/home/FlashGiveCTA';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
@@ -428,7 +429,8 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
-      <div className="text-center mt-6 sm:hidden">
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FlashGiveCTA />
         <Link href="/marketplace" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
           Browse the marketplace →
         </Link>

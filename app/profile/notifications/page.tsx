@@ -8,7 +8,7 @@ import AuthModal from '@/components/AuthModal';
 import NotificationOptIn from '@/components/NotificationOptIn';
 import { Bell } from 'lucide-react';
 
-type Pref = { channel: string; event_type: string; enabled: boolean };
+type Pref = { channel: string; event_type: string; enabled: boolean; scope?: { towns?: string[]; categories?: string[] } | null };
 
 const EVENT_TYPES = [
   {
@@ -175,7 +175,14 @@ export default function NotificationPreferencesPage() {
                   <div className="divide-y divide-parchment-200">
                     {group.types.map(type => (
                       <div key={type.key} className="px-5 py-4">
-                        <p className="text-sm font-medium text-stone-800 mb-3">{type.label}</p>
+                        <p className="text-sm font-medium text-stone-800 mb-1">{type.label}</p>
+                        {(() => {
+                          const scopePref = prefs.find(p => p.event_type === type.key && p.scope);
+                          const towns = scopePref?.scope?.towns;
+                          return towns && towns.length > 0 ? (
+                            <p className="text-xs text-stone-500 mb-2">Filtered to: {towns.join(', ')}</p>
+                          ) : <div className="mb-2" />;
+                        })()}
                         <div className="flex gap-4">
                           {CHANNELS.map(channel => {
                             const enabled = isEnabled(type.key, channel);
