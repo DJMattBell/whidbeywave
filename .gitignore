@@ -10,7 +10,31 @@ out/
 .env.local
 .env.*.local
 
-# misc
+# TypeScript incremental build cache
+tsconfig.tsbuildinfo
+
+# Claude Code workspace
+.claude/
+
+# Vercel CLI
+.vercel/
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Build outputs
+*.tar.gz
+
+# macOS
 .DS_Store
 *.pem
 npm-debug.log*
+
+# iCloud conflict copies (defensive)
+* 2.*
+* 3.*
+* 4.*
+*\ 2.*
+*\ 3.*
+*\ 4.*
