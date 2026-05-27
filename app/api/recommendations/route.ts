@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUserRequest } from '@/lib/userAuth';
+import { createServiceClient } from '@/lib/supabase';
 
 const ALLOWED_CATEGORIES = [
   'Restaurants & Cafes', 'Contractors & Trades', 'Health & Wellness',
@@ -71,5 +72,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to add recommendation' }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, recommendation: rec });
+  // Check if this is the user's first recommendation — one-time notification prompt
+  let showNotificationPrompt = false;
+  if (!user.user_metadata?.first_recommendation_prompt_shown) {
+    try {
+      const serviceClient = createServiceClient();
+      await serviceClient.auth.admin.updateUserById(user.id, {
+        user_metadata: { ...user.user_metadata, first_recommendation_prompt_shown: true },
+      });
+      showNotificationPrompt = true;
+    } catch {
+      // Non-fatal — prompt just won't show
+    }
+  }
+
+  return NextResponse.json({ ok: true, recommendation: rec, showNotificationPrompt });
 }

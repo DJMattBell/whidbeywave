@@ -5,6 +5,8 @@ import { supabase, isConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 import ShareButton from '@/components/ShareButton';
+import NotificationOptIn from '@/components/NotificationOptIn';
+import { Bell } from 'lucide-react';
 import type { Recommendation, Review } from '@/lib/db-types';
 
 const CATEGORIES = [
@@ -104,6 +106,7 @@ export default function RecommendationsPage() {
   const [addOpen, setAddOpen]   = useState(false);
   const [addForm, setAddForm]   = useState({ name: '', category: 'Restaurants & Cafes', description: '', town: '', address: '', website: '' });
   const [addStatus, setAddStatus] = useState<'idle'|'loading'|'success'|'error'>('idle');
+  const [showRecNotifPrompt, setShowRecNotifPrompt] = useState(false);
 
   async function loadRecs() {
     setLoading(true);
@@ -217,8 +220,14 @@ export default function RecommendationsPage() {
       }),
     });
 
-    if (!res.ok) { setAddStatus('error'); }
-    else { setAddStatus('success'); loadRecs(); }
+    if (!res.ok) {
+      setAddStatus('error');
+    } else {
+      const json = await res.json();
+      if (json.showNotificationPrompt) setShowRecNotifPrompt(true);
+      setAddStatus('success');
+      loadRecs();
+    }
   }
 
   const filtered = recs.filter(r => {
@@ -293,9 +302,35 @@ export default function RecommendationsPage() {
               <button onClick={() => setAddOpen(false)} className="text-stone-600 hover:text-stone-800 text-sm">Cancel</button>
             </div>
             {addStatus === 'success' ? (
-              <div className="text-center py-6">
-                <div className="text-4xl mb-2">🌿</div>
-                <p className="text-forest-700 font-semibold">Thanks for the tip! It&apos;s been added.</p>
+              <div className="space-y-4">
+                <div className="text-center py-6">
+                  <div className="text-4xl mb-2">🌿</div>
+                  <p className="text-forest-700 font-semibold">Thanks for the tip! It&apos;s been added.</p>
+                </div>
+                {showRecNotifPrompt && (
+                  <div className="bg-parchment-50 rounded-xl border border-parchment-200 p-5">
+                    <div className="flex items-start gap-3">
+                      <Bell className="text-forest-600 shrink-0 mt-0.5" size={20} />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-stone-800 mb-1">
+                          Get notified when this place hits milestones?
+                        </p>
+                        <p className="text-xs text-stone-600 mb-3">
+                          We&apos;ll let you know when your recommendation reaches 5, 10, or 25 reviews.
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <NotificationOptIn />
+                          <button
+                            onClick={() => setShowRecNotifPrompt(false)}
+                            className="text-xs text-stone-500 hover:text-stone-700 transition-colors"
+                          >
+                            Not now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <form onSubmit={submitAddRec} className="grid sm:grid-cols-2 gap-4">
