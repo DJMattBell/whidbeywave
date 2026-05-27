@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FerryPageData, RouteFullData, RouteStatus, Departure } from '@/lib/ferry';
+import DataStatus from '@/components/DataStatus';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -214,10 +215,11 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
     <div>
       {/* Live indicator + refresh bar */}
       <div className="flex items-center justify-center gap-3 text-sm text-stone-500 mb-6">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Live
-        </span>
+        <DataStatus
+          state={fetchError ? 'on-island-time' : 'live'}
+          label="WSDOT Ferry Schedule"
+          lastUpdated={data.mukilteoClinton?.lastUpdated ?? data.ptCoupeville?.lastUpdated ?? null}
+        />
         <span className="text-stone-300">·</span>
         <span>
           Refreshes in {mins}:{secs.toString().padStart(2, '0')}
@@ -228,12 +230,6 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
         >
           Refresh now
         </button>
-        {fetchError && (
-          <>
-            <span className="text-stone-300">·</span>
-            <span className="text-terra-600 text-xs">Ferry status is on island time — showing last good data</span>
-          </>
-        )}
       </div>
 
       {/* Not configured */}

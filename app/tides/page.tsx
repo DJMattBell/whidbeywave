@@ -187,6 +187,7 @@ function TideEntry({
 export default async function TidesPage() {
   const allTides = await fetchTides();
   const failed   = allTides === null;
+  const fetchedAt = failed ? null : new Date().toISOString();
 
   const days       = allTides ? groupByDay(allTides)    : [];
   const extremes   = allTides ? findExtremes(allTides)  : { maxHighId: '', minLowId: '' };
@@ -210,6 +211,7 @@ export default async function TidesPage() {
             <DataStatus
               state={failed ? 'on-island-time' : 'live'}
               label="NOAA Tide Data"
+              lastUpdated={fetchedAt}
             />
           </div>
         </div>
