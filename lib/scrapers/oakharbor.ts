@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 const RSS_URL =
   'https://www.oakharbor.gov/RSSFeed.aspx?ModID=58&CID=All-0&ShowAll=True';
@@ -11,7 +12,7 @@ const RSS_URL =
 function toDateString(raw: string): string | null {
   const d = new Date(raw);
   if (isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  return toPacificDateString(d);
 }
 
 /**

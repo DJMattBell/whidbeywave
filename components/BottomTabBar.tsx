@@ -3,15 +3,20 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import {
+  Waves, Newspaper, BookOpen, MessageCircle, Star,
+  ArrowLeftRight, Mail, Map, Zap, Search, MessageSquare, Info,
+} from 'lucide-react';
 
-// #1 Bottom Tab Bar + #2 Hide-on-Scroll + #17 Ferry Status Pill
+// Bottom tab bar: Home | Events | Ferry | Marketplace | More
+// Ferry promoted to top-level per homepage redesign (replaces Community)
 
 const tabs = [
-  { href: '/',            label: 'Home',       icon: HomeIcon,        activeIcon: HomeIconFilled },
-  { href: '/events',      label: 'Events',     icon: CalendarIcon,    activeIcon: CalendarIconFilled },
-  { href: '/forum',       label: 'Community',  icon: PeopleIcon,      activeIcon: PeopleIconFilled },
-  { href: '/marketplace', label: 'Marketplace',icon: BagIcon,         activeIcon: BagIconFilled },
-  { href: '/more',        label: 'More',       icon: MoreIcon,        activeIcon: MoreIconFilled },
+  { href: '/',            label: 'Home',        icon: HomeIcon,     activeIcon: HomeIconFilled },
+  { href: '/events',      label: 'Events',      icon: CalendarIcon, activeIcon: CalendarIconFilled },
+  { href: '/ferry',       label: 'Ferry',       icon: ShipIcon,     activeIcon: ShipIconFilled },
+  { href: '/marketplace', label: 'Marketplace', icon: BagIcon,      activeIcon: BagIconFilled },
+  { href: '/more',        label: 'More',        icon: MoreIcon,     activeIcon: MoreIconFilled },
 ];
 
 export default function BottomTabBar() {
@@ -21,7 +26,7 @@ export default function BottomTabBar() {
   const lastScrollY = useRef(0);
   const moreRef = useRef<HTMLDivElement>(null);
 
-  // #2 Hide-on-scroll
+  // Hide-on-scroll
   useEffect(() => {
     function onScroll() {
       const y = window.scrollY;
@@ -55,18 +60,18 @@ export default function BottomTabBar() {
   }
 
   const moreLinks = [
-    { href: '/ferry',           emoji: '🚢', label: 'Ferry Status' },
-    { href: '/tides',           emoji: '🌊', label: 'Tides' },
-    { href: '/news',            emoji: '📰', label: 'Island News' },
-    { href: '/guides',          emoji: '📖', label: 'Guides' },
-    { href: '/recommendations', emoji: '⭐', label: 'Local Picks' },
-    { href: '/barter',          emoji: '🔄', label: 'Barter & Trade' },
-    { href: '/newsletter',      emoji: '📬', label: 'Newsletter' },
-    { href: '/visit',           emoji: '🗺️', label: 'Visitor Guide' },
-    { href: '/dashboard',       emoji: '⚡', label: 'Quick View' },
-    { href: '/search',          emoji: '🔍', label: 'Search' },
-    { href: '/contact',         emoji: '👋', label: 'Say Hello' },
-    { href: '/about',           emoji: '🏝️', label: 'About' },
+    { href: '/tides',           Icon: Waves,            label: 'Tides' },
+    { href: '/forum',           Icon: MessageCircle,    label: 'Community' },
+    { href: '/news',            Icon: Newspaper,        label: 'Island News' },
+    { href: '/guides',          Icon: BookOpen,         label: 'Guides' },
+    { href: '/recommendations', Icon: Star,             label: 'Local Picks' },
+    { href: '/barter',          Icon: ArrowLeftRight,   label: 'Barter & Trade' },
+    { href: '/newsletter',      Icon: Mail,             label: 'Newsletter' },
+    { href: '/visit',           Icon: Map,              label: 'Visitor Guide' },
+    { href: '/dashboard',       Icon: Zap,              label: 'Quick View' },
+    { href: '/search',          Icon: Search,           label: 'Search' },
+    { href: '/contact',         Icon: MessageSquare,    label: 'Say Hello' },
+    { href: '/about',           Icon: Info,             label: 'About' },
   ];
 
   const moreActive = moreLinks.some(l => isActive(l.href));
@@ -86,18 +91,18 @@ export default function BottomTabBar() {
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">More</p>
               </div>
               <div className="grid grid-cols-3 gap-1 px-3 pb-3">
-                {moreLinks.map(({ href, emoji, label }) => (
+                {moreLinks.map(({ href, Icon, label }) => (
                   <Link
                     key={href}
                     href={href}
                     onClick={() => setMoreOpen(false)}
-                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-lg text-center transition-colors ${
+                    className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg text-center transition-colors ${
                       isActive(href)
                         ? 'bg-forest-50 text-forest-700'
                         : 'text-stone-600 hover:bg-parchment-100'
                     }`}
                   >
-                    <span className="text-xl">{emoji}</span>
+                    <Icon size={20} />
                     <span className="text-[11px] font-medium leading-tight">{label}</span>
                   </Link>
                 ))}
@@ -160,7 +165,7 @@ export default function BottomTabBar() {
   );
 }
 
-// Simple SVG icons (outlined + filled variants for active state)
+// SVG icons — outline + filled variants
 function HomeIcon() {
   return (
     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -190,17 +195,17 @@ function CalendarIconFilled() {
     </svg>
   );
 }
-function PeopleIcon() {
+function ShipIcon() {
   return (
     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 18h1.5a1.5 1.5 0 001.28-.72l.44-.66a1.5 1.5 0 012.56 0l.44.66a1.5 1.5 0 001.28.72h1.5a1.5 1.5 0 001.28-.72l.44-.66a1.5 1.5 0 012.56 0l.44.66a1.5 1.5 0 001.28.72h1.5M4 15l-1.5 3M20 15l1.5 3M6.5 15l1-9h9l1 9M12 6V3" />
     </svg>
   );
 }
-function PeopleIconFilled() {
+function ShipIconFilled() {
   return (
     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 17.243a11.948 11.948 0 00-3.312 1.688 5.988 5.988 0 01-.425-1.372A3.75 3.75 0 016.31 14.81a5.97 5.97 0 00-.001 2.433zm11.38 0a5.97 5.97 0 000-2.432 3.75 3.75 0 013.737 2.75 5.99 5.99 0 01-.425 1.37 11.955 11.955 0 00-3.312-1.688zM12 12.75a5.25 5.25 0 00-5.21 4.563 11.958 11.958 0 0010.42 0A5.25 5.25 0 0012 12.75z" />
+      <path d="M12 3a.75.75 0 01.75.75V6h3.5a.75.75 0 01.743.648l1 9a.75.75 0 01-.743.852H6.75a.75.75 0 01-.743-.852l1-9A.75.75 0 017.75 6h3.5V3.75A.75.75 0 0112 3zM3.75 18h1.5a1.5 1.5 0 001.28-.72l.44-.66a1.5 1.5 0 012.56 0l.44.66a1.5 1.5 0 001.28.72h1.5a1.5 1.5 0 001.28-.72l.44-.66a1.5 1.5 0 012.56 0l.44.66a1.5 1.5 0 001.28.72h1.5a.75.75 0 010 1.5h-1.5a3 3 0 01-2.56-1.44l-.44-.66-.44.66A3 3 0 0112.75 19.5h-1.5a3 3 0 01-2.56-1.44l-.44-.66-.44.66A3 3 0 015.25 19.5h-1.5a.75.75 0 010-1.5z" />
     </svg>
   );
 }

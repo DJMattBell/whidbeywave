@@ -1,4 +1,5 @@
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 // Orca Network / Langley Whale Center events — Squarespace JSON API
 const WHALE_CENTER_URL = 'https://www.orcanetwork.org/events?format=json';
@@ -8,10 +9,6 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').trim();
 }
 
-/** Convert ms timestamp to YYYY-MM-DD in Pacific time */
-function formatDate(ms: number): string {
-  return new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-}
 
 /** Convert ms timestamp to HH:MM AM/PM in Pacific time */
 function formatTime(ms: number): string {
@@ -42,7 +39,7 @@ export async function scrapeLangleyWhaleCenter(): Promise<ScrapedEvent[]> {
       const startDate = typeof evt.startDate === 'number' ? evt.startDate : null;
       if (!startDate) continue;
 
-      const date = formatDate(startDate);
+      const date = toPacificDateString(startDate);
       const time = formatTime(startDate);
 
       // Build description from excerpt, stripped of HTML

@@ -9,6 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Two-tier card system:
+        // Tier 1 (live/dynamic — weather, ferry, tides): sound-50 bg, sound-200 border
+        // Tier 2 (browse/navigate — action cards, content): parchment-100 bg, parchment-200 border
+        // Primary CTA: forest-600. Hero text: parchment-50 on dark gradient.
+
         // Deep Pacific Northwest forest green — primary brand color
         forest: {
           50:  '#edf4f0',

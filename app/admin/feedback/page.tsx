@@ -60,8 +60,7 @@ export default function AdminFeedbackPage() {
         <div className="min-h-[60vh] flex items-center justify-center px-4">
           <div className="text-center">
             <div className="text-5xl mb-4">🔒</div>
-            <h1 className="text-2xl text-stone-800 mb-2"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+            <h1 className="text-2xl font-semibold text-stone-800 mb-2">
               Admin access only
             </h1>
             <p className="text-stone-500 mb-5 text-sm">You need to be signed in as an admin.</p>
@@ -77,8 +76,7 @@ export default function AdminFeedbackPage() {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center">
           <div className="text-5xl mb-4">🌧️</div>
-          <h1 className="text-2xl text-stone-800 mb-2"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+          <h1 className="text-2xl font-semibold text-stone-800 mb-2">
             Not authorized
           </h1>
           <p className="text-stone-500 text-sm">This page is restricted to site administrators.</p>
@@ -94,8 +92,7 @@ export default function AdminFeedbackPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">💬</span>
-          <h1 className="text-3xl text-stone-900"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
+          <h1 className="text-3xl font-bold text-stone-900">
             Site Feedback
           </h1>
         </div>

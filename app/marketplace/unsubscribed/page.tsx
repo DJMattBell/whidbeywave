@@ -11,8 +11,7 @@ export default function UnsubscribedPage() {
       <div className="text-center max-w-md">
         <div className="text-6xl mb-5" aria-hidden="true">🌿</div>
         <h1
-          className="text-2xl text-stone-800 mb-3"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
+          className="text-2xl font-bold text-stone-800 mb-3"
         >
           You&apos;re unsubscribed
         </h1>

@@ -8,3 +8,8 @@ export type ScrapedEvent = {
   description: string | null;
   source: string;      // 'WICA' | 'Oak Harbor'
 };
+
+/** Convert a Date (or ms timestamp) to YYYY-MM-DD in Pacific time */
+export function toPacificDateString(d: Date | number): string {
+  return new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/components/AuthProvider';
+import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
 import type { ForumPostRow, EventSubmissionRow, Review } from '@/lib/db-types';
 
@@ -43,7 +43,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAdmin();
   const [authOpen, setAuthOpen]     = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [posts, setPosts]           = useState<ForumPostRow[]>([]);
@@ -128,7 +128,6 @@ export default function ProfilePage() {
   }
 
   const displayName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Islander';
-  const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   return (
     <>
@@ -179,8 +178,7 @@ export default function ProfilePage() {
           <div className="text-center py-20">
             <div className="text-5xl mb-4" aria-hidden="true">🔒</div>
             <h2
-              className="text-2xl text-stone-800 mb-2"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+              className="text-2xl font-semibold text-stone-800 mb-2"
             >
               Sign in to see your profile
             </h2>
@@ -240,8 +238,7 @@ export default function ProfilePage() {
             {/* Forum posts */}
             <section className="mb-10">
               <h2
-                className="text-2xl text-stone-900 mb-4"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                className="text-2xl font-semibold text-stone-900 mb-4"
               >
                 Your Questions
                 <span className="ml-2 text-base font-normal text-stone-600">({posts.length})</span>
@@ -284,8 +281,7 @@ export default function ProfilePage() {
             {/* Submitted events */}
             <section className="mb-10">
               <h2
-                className="text-2xl text-stone-900 mb-4"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                className="text-2xl font-semibold text-stone-900 mb-4"
               >
                 Submitted Events
                 <span className="ml-2 text-base font-normal text-stone-600">({events.length})</span>
@@ -328,8 +324,7 @@ export default function ProfilePage() {
             {/* My Listings */}
             <section className="mb-10">
               <h2
-                className="text-2xl text-stone-900 mb-4"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                className="text-2xl font-semibold text-stone-900 mb-4"
               >
                 My Listings
                 <span className="ml-2 text-base font-normal text-stone-600">({myListings.length})</span>
@@ -378,8 +373,7 @@ export default function ProfilePage() {
             {/* Reviews */}
             <section className="mb-10">
               <h2
-                className="text-2xl text-stone-900 mb-4"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                className="text-2xl font-semibold text-stone-900 mb-4"
               >
                 Your Reviews
                 <span className="ml-2 text-base font-normal text-stone-600">({reviews.length})</span>

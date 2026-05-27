@@ -1,4 +1,5 @@
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 const WICA_URLS = [
   'https://www.wicaonline.org/events-calendar?format=json',
@@ -19,10 +20,6 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-/** Convert ms timestamp to YYYY-MM-DD in Pacific time */
-function formatDate(ms: number): string {
-  return new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-}
 
 /** Convert ms timestamp to HH:MM AM/PM in Pacific time */
 function formatTime(ms: number): string {
@@ -82,7 +79,7 @@ export async function scrapeWica(): Promise<ScrapedEvent[]> {
       const startDate = typeof item.startDate === 'number' ? item.startDate : null;
       if (!startDate) continue;
 
-      const date = formatDate(startDate);
+      const date = toPacificDateString(startDate);
       const time = formatTime(startDate);
 
       const location = extractLocation(

@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
         <div className="prose prose-stone max-w-none space-y-8 text-stone-700 text-base leading-relaxed">
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Who We Are
             </h2>
             <p>
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Information We Collect
             </h2>
 
@@ -59,7 +59,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               How We Use Your Information
             </h2>
             <p>We use the information we collect to:</p>
@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Third-Party Services
             </h2>
             <p>We use the following third-party services to operate WhidbeyWave:</p>
@@ -91,7 +91,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Data Retention
             </h2>
             <p>
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Your Rights
             </h2>
             <p>You have the right to:</p>
@@ -115,7 +115,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Children&apos;s Privacy
             </h2>
             <p>
@@ -125,7 +125,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Changes to This Policy
             </h2>
             <p>
@@ -135,7 +135,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Contact Us
             </h2>
             <p>

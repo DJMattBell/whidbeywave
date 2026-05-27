@@ -143,8 +143,7 @@ export default function HowItWorksPage() {
             <div className="flex items-center gap-4 mb-5">
               <span className="text-4xl" aria-hidden="true">{icon}</span>
               <h2
-                className="text-2xl text-stone-900 leading-snug"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+                className="text-2xl font-semibold text-stone-900 leading-snug"
               >
                 {heading}
               </h2>
@@ -168,8 +167,7 @@ export default function HowItWorksPage() {
           <div className="flex items-center gap-4 mb-5">
             <span className="text-4xl" aria-hidden="true">📞</span>
             <h2
-              className="text-2xl text-stone-900 leading-snug"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+              className="text-2xl font-semibold text-stone-900 leading-snug"
             >
               Still have questions? We&rsquo;re real people.
             </h2>

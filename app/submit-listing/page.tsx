@@ -189,8 +189,7 @@ export default function SubmitListingPage() {
         <div className="min-h-[60vh] flex items-center justify-center px-4">
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">🏷️</div>
-            <h1 className="text-2xl text-stone-800 mb-2"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+            <h1 className="text-2xl font-semibold text-stone-800 mb-2">
               Sign in to list an item
             </h1>
             <p className="text-stone-500 mb-5 text-sm leading-relaxed">

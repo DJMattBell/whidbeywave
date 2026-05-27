@@ -102,7 +102,7 @@ export default async function FerryAlerts() {
       {freshAlerts.length > 2 && (
         <p className="text-xs text-sound-600 mt-2">
           <a href="/ferry" className="hover:text-sound-800 underline underline-offset-2 transition-colors">
-            {freshAlerts.length - 2} more alert{freshAlerts.length - 2 !== 1 ? 's' : ''} on the ferry page →
+            See all {freshAlerts.length} ferry alert{freshAlerts.length !== 1 ? 's' : ''} →
           </a>
         </p>
       )}

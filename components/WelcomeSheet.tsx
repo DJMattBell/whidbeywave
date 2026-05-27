@@ -83,7 +83,6 @@ export default function WelcomeSheet() {
               <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={56} height={56} className="w-14 h-14 rounded-full object-cover mx-auto mb-2" />
               <h2
                 className="text-xl font-bold text-stone-800"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 Welcome to WhidbeyWave
               </h2>

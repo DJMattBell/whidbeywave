@@ -5,33 +5,9 @@
 import Link from 'next/link';
 import { fetchFerryBarStatus } from '@/lib/ferry';
 import { createServerClient, isConfigured } from '@/lib/supabase';
+import { WMO_ICONS, WMO_LABELS } from '@/lib/wmo-codes';
 import type { RouteStatus } from '@/lib/ferry';
-
-// ── Weather code maps (same coords as WeatherTideWidget) ────────────────────
-
-const WMO_ICONS: Record<number, string> = {
-  0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
-  45: '🌫️', 48: '🌫️',
-  51: '🌦️', 53: '🌦️', 55: '🌦️',
-  61: '🌧️', 63: '🌧️', 65: '🌧️',
-  66: '🌨️', 67: '🌨️',
-  71: '🌨️', 73: '🌨️', 75: '🌨️', 77: '🌨️',
-  80: '🌦️', 81: '🌦️', 82: '🌦️',
-  85: '🌨️', 86: '🌨️',
-  95: '⛈️', 96: '⛈️', 99: '⛈️',
-};
-
-const WMO_LABELS: Record<number, string> = {
-  0: 'Clear', 1: 'Mostly clear', 2: 'Partly cloudy', 3: 'Overcast',
-  45: 'Foggy', 48: 'Foggy',
-  51: 'Light drizzle', 53: 'Drizzle', 55: 'Heavy drizzle',
-  61: 'Light rain', 63: 'Rain', 65: 'Heavy rain',
-  66: 'Freezing rain', 67: 'Freezing rain',
-  71: 'Light snow', 73: 'Snow', 75: 'Heavy snow', 77: 'Snow grains',
-  80: 'Rain showers', 81: 'Rain showers', 82: 'Heavy showers',
-  85: 'Snow showers', 86: 'Snow showers',
-  95: 'Thunderstorm', 96: 'Thunderstorm', 99: 'Thunderstorm',
-};
+import { ShoppingBag } from 'lucide-react';
 
 // ── Data fetch helpers ───────────────────────────────────────────────────────
 
@@ -286,7 +262,7 @@ export default async function TodayWidget() {
           <Link href="/marketplace" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
             <SectionLabel>New Listings</SectionLabel>
             <div className="flex items-center gap-2.5">
-              <span className="text-2xl leading-none" aria-hidden="true">🛒</span>
+              <ShoppingBag size={24} className="text-forest-600 shrink-0" aria-hidden="true" />
               <div>
                 <p className="text-xl font-bold text-stone-800 leading-none">{listingsCount}</p>
                 <p className="text-xs text-stone-600 mt-0.5">new today</p>

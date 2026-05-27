@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 const PAGE_URL = 'https://sno-isle.bibliocommons.com/v2/events?location=langley';
 
@@ -104,7 +105,7 @@ function isoToDate(iso: string): string | null {
   try {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return null;
-    return d.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+    return toPacificDateString(d);
   } catch {
     return null;
   }

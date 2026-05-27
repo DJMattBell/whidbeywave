@@ -278,8 +278,7 @@ export default function RecommendationsPage() {
         {addOpen && (
           <div className="mb-10 bg-parchment-50 rounded-2xl border border-parchment-300 shadow-warm-md p-6">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg text-stone-900"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+              <h3 className="text-lg font-semibold text-stone-900">
                 Suggest a place
               </h3>
               <button onClick={() => setAddOpen(false)} className="text-stone-600 hover:text-stone-800 text-sm">Cancel</button>
@@ -342,8 +341,7 @@ export default function RecommendationsPage() {
         {filtered.length === 0 && !loading ? (
           <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
             <div className="text-5xl mb-4">🌾</div>
-            <p className="text-lg text-stone-700 mb-1"
-               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+            <p className="text-lg text-stone-700 mb-1 font-heading font-semibold">
               Nothing here yet
             </p>
             <p className="text-stone-600 text-sm">
@@ -368,8 +366,7 @@ export default function RecommendationsPage() {
                           <span className="badge bg-parchment-200 text-stone-600 text-xs">{rec.category}</span>
                           {rec.town && <span className="text-xs text-stone-600">📍 {rec.town}</span>}
                         </div>
-                        <h2 className="text-lg text-stone-900 leading-snug"
-                            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+                        <h2 className="text-lg font-semibold text-stone-900 leading-snug">
                           {rec.name}
                         </h2>
                       </div>

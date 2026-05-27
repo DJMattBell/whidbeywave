@@ -1,4 +1,5 @@
 import type { RecurringEventRow } from './db-types';
+import { toPacificDateString } from './scrapers/types';
 
 /**
  * Generate an array of YYYY-MM-DD date strings for a recurring event template
@@ -48,7 +49,7 @@ export function generateDates(
         }
       }
       while (cur <= rangeEnd) {
-        dates.push(formatDate(cur));
+        dates.push(toPacificDateString(cur));
         cur.setDate(cur.getDate() + step);
       }
       break;
@@ -62,7 +63,7 @@ export function generateDates(
         const targetDate = new Date(cur.getFullYear(), cur.getMonth(), dom, 12);
         // Handle months that don't have the target day (e.g. Feb 31 → skip)
         if (targetDate.getMonth() === cur.getMonth() && targetDate >= rangeStart && targetDate <= rangeEnd) {
-          dates.push(formatDate(targetDate));
+          dates.push(toPacificDateString(targetDate));
         }
         cur.setMonth(cur.getMonth() + 1);
       }
@@ -84,7 +85,7 @@ export function generateDates(
         }
       }
       while (cur <= rangeEnd) {
-        dates.push(formatDate(cur));
+        dates.push(toPacificDateString(cur));
         cur.setDate(cur.getDate() + interval);
       }
       break;
@@ -94,12 +95,6 @@ export function generateDates(
   return dates;
 }
 
-function formatDate(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
 
 /** Human-readable recurrence summary, e.g. "Every Saturday" */
 export function recurrenceSummary(t: Pick<RecurringEventRow, 'recurrence_type' | 'day_of_week' | 'day_of_month' | 'custom_interval_days'>): string {

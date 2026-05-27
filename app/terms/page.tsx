@@ -28,7 +28,7 @@ export default function TermsOfServicePage() {
         <div className="prose prose-stone max-w-none space-y-8 text-stone-700 text-base leading-relaxed">
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Welcome
             </h2>
             <p>
@@ -40,7 +40,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Using WhidbeyWave
             </h2>
             <p>WhidbeyWave is a free community resource. You may use the site to:</p>
@@ -56,7 +56,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Your Account
             </h2>
             <p>
@@ -69,7 +69,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Content You Submit
             </h2>
             <p>
@@ -84,7 +84,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Community Guidelines
             </h2>
             <p>WhidbeyWave is built for neighbors. When using the site, you agree not to:</p>
@@ -102,7 +102,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Marketplace
             </h2>
             <p>
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Events &amp; Information
             </h2>
             <p>
@@ -126,7 +126,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Disclaimer of Warranties
             </h2>
             <p>
@@ -137,7 +137,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Limitation of Liability
             </h2>
             <p>
@@ -149,7 +149,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Changes to These Terms
             </h2>
             <p>
@@ -160,7 +160,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-stone-900" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-xl font-semibold text-stone-900">
               Contact Us
             </h2>
             <p>

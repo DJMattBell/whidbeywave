@@ -40,7 +40,6 @@ export default function BarterPage() {
 
         <h2
           className="text-3xl font-bold text-stone-800 mb-5"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Something good is coming
         </h2>

@@ -81,8 +81,7 @@ export default function AdminDashboard() {
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
           <div className="text-5xl mb-4">🔒</div>
           <h1
-            className="text-2xl text-stone-800 mb-2"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+            className="text-2xl font-semibold text-stone-800 mb-2"
           >
             Admin Dashboard
           </h1>
@@ -98,8 +97,7 @@ export default function AdminDashboard() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="text-5xl mb-4">🚫</div>
         <h1
-          className="text-2xl text-stone-800 mb-2"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
+          className="text-2xl font-semibold text-stone-800 mb-2"
         >
           Not Authorized
         </h1>
@@ -138,7 +136,6 @@ export default function AdminDashboard() {
           <div className="mb-8">
             <h2
               className="text-xl font-semibold text-stone-800 mb-4"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
               Needs Your Attention
             </h2>
@@ -181,7 +178,6 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h2
             className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Manage
           </h2>
@@ -224,7 +220,6 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h2
             className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Site Stats
           </h2>
@@ -240,7 +235,6 @@ export default function AdminDashboard() {
         <div>
           <h2
             className="text-xl font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Quick Links
           </h2>
@@ -274,8 +268,7 @@ function AdminCard({
       )}
       <span className="text-3xl">{emoji}</span>
       <span
-        className="text-sm font-semibold text-stone-800"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        className="text-sm font-semibold text-stone-800 font-heading"
       >
         {label}
       </span>

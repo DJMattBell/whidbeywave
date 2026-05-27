@@ -46,8 +46,7 @@ function CallbackHandler() {
         {status === 'success' && (
           <>
             <div className="text-5xl mb-4">🌿</div>
-            <p className="text-forest-700 font-semibold"
-               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <p className="text-forest-700 font-semibold font-heading">
               You&apos;re signed in. Welcome back.
             </p>
             <p className="text-stone-600 text-sm mt-1">Redirecting you home…</p>
@@ -56,8 +55,7 @@ function CallbackHandler() {
         {status === 'error' && (
           <>
             <div className="text-5xl mb-4">🌧️</div>
-            <p className="text-stone-700 font-semibold"
-               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <p className="text-stone-700 font-semibold font-heading">
               That link didn&apos;t work.
             </p>
             <p className="text-stone-600 text-sm mt-1">It may have expired. Try signing in again.</p>

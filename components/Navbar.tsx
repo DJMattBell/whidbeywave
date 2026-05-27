@@ -3,70 +3,104 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import {
+  Calendar, Newspaper, BookOpen, Ship, Map, Utensils, Carrot,
+  Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
+  Plus, Search, User, Bell, LogOut,
+} from 'lucide-react';
 
 const mainLinks = [
-  { href: '/',        label: 'Home' },
-  { href: '/about',   label: 'About' },
-  { href: '/events',  label: "What's Going On" },
-  { href: '/news',    label: 'Island News' },
-  { href: '/guides',  label: 'Guides' },
+  { href: '/events',  label: "What's On",   Icon: Calendar },
+  { href: '/news',    label: 'News',         Icon: Newspaper },
+  { href: '/guides',  label: 'Guides',       Icon: BookOpen },
+  { href: '/ferry',   label: 'Ferry',        Icon: Ship },
 ];
-
-const contactLink = { href: '/contact', label: 'Say Hello' };
 
 const visitLinks = [
-  { href: '/visit',                 label: '🗺️ Visitor Guide' },
-  { href: '/visit/this-weekend',    label: '📅 This Weekend' },
-  { href: '/visit/restaurants',     label: '🍽️ Restaurants' },
-  { href: '/visit/farmers-markets', label: '🥕 Farmers Markets' },
-  { href: '/visit/ferry-guide',     label: '🚢 Getting Here' },
+  { href: '/visit',                 label: 'Visitor Guide',  Icon: Map },
+  { href: '/visit/this-weekend',    label: 'This Weekend',   Icon: Calendar },
+  { href: '/visit/restaurants',     label: 'Restaurants',     Icon: Utensils },
+  { href: '/visit/farmers-markets', label: 'Farmers Markets', Icon: Carrot },
+  { href: '/visit/ferry-guide',     label: 'Getting Here',   Icon: Ship },
 ];
 
-const searchLink = { href: '/search', label: 'Search' };
+const communityLinks = [
+  { href: '/tides',           label: 'Tides',           Icon: Waves },
+  { href: '/forum',           label: 'Ask the Island',  Icon: MessageCircle },
+  { href: '/recommendations', label: 'Local Picks',     Icon: Star },
+  { href: '/marketplace',     label: 'Buy & Sell',      Icon: ShoppingBag },
+  { href: '/barter',          label: 'Barter & Trade',  Icon: ArrowLeftRight },
+  { href: '/newsletter',      label: 'Newsletter',      Icon: Mail },
+];
 
-const baseCommunityLinks = [
-  { href: '/ferry',           label: '🚢 Ferry Status' },
-  { href: '/tides',           label: '🌊 Tides' },
-  { href: '/forum',           label: 'Ask the Island' },
-  { href: '/recommendations', label: 'Local Picks' },
-  { href: '/marketplace',     label: 'Buy & Sell' },
-  { href: '/barter',          label: '🔄 Barter & Trade' },
-  { href: '/newsletter',      label: 'Newsletter' },
+const mobileMainLinks = [
+  { href: '/',        label: 'Home' },
+  { href: '/events',  label: "What's On" },
+  { href: '/news',    label: 'News' },
+  { href: '/guides',  label: 'Guides' },
+  { href: '/ferry',   label: 'Ferry' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen]     = useState(false);
-  const [visitOpen, setVisitOpen]   = useState(false);
-  const [submitOpen, setSubmitOpen] = useState(false);
-  const [authOpen, setAuthOpen]     = useState(false);
+  const [menuOpen, setMenuOpen]         = useState(false);
+  const [visitOpen, setVisitOpen]       = useState(false);
+  const [communityOpen, setCommunityOpen] = useState(false);
+  const [submitOpen, setSubmitOpen]     = useState(false);
+  const [profileOpen, setProfileOpen]   = useState(false);
+  const [authOpen, setAuthOpen]         = useState(false);
   const { user, signOut } = useAuth();
 
-  const visitActive = pathname.startsWith('/visit');
+  const profileRef = useRef<HTMLDivElement>(null);
+  const communityRef = useRef<HTMLDivElement>(null);
 
-  const communityLinks = [
-    ...(user ? [
-      { href: '/profile', label: '👤 My Profile' },
-      { href: '/profile/notifications', label: '🔔 Notifications' },
-    ] : []),
-    ...baseCommunityLinks,
-  ];
+  const visitActive = pathname.startsWith('/visit');
+  const communityActive = communityLinks.some(
+    l => pathname === l.href || pathname.startsWith(l.href + '/')
+  );
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+      if (communityRef.current && !communityRef.current.contains(e.target as Node)) {
+        setCommunityOpen(false);
+      }
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  const chevron = (open: boolean) => (
+    <svg
+      className={`w-3 h-3 transition-transform shrink-0 ${open ? 'rotate-180' : ''}`}
+      viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.75"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4 4-4" />
+    </svg>
+  );
 
   return (
     <>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
       <header className="sticky top-0 z-50">
-
-        {/* Main bar */}
         <div className="bg-parchment-50/95 backdrop-blur-md border-b border-parchment-300 shadow-warm-sm">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-16">
 
               {/* Logo */}
-              <Link href="/" className="flex items-center gap-2 group">
+              <Link href="/" className="flex items-center gap-2 group shrink-0">
                 <Image src="/logo.png" alt="WhidbeyWave logo" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                 <span className="text-xl font-bold text-forest-600 group-hover:text-forest-500 transition-colors">
                   WhidbeyWave
@@ -74,15 +108,15 @@ export default function Navbar() {
               </Link>
 
               {/* Desktop nav */}
-              <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+              <nav className="hidden md:flex items-center gap-1 ml-4" aria-label="Main navigation">
                 {mainLinks.map(({ href, label }) => {
-                  const active = pathname === href;
+                  const active = pathname === href || pathname.startsWith(href + '/');
                   return (
                     <Link
                       key={href}
                       href={href}
                       aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         active
                           ? 'bg-forest-600 text-parchment-50'
                           : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
@@ -103,155 +137,188 @@ export default function Navbar() {
                     onClick={() => setVisitOpen(v => !v)}
                     aria-expanded={visitOpen}
                     aria-haspopup="menu"
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
                       visitActive
                         ? 'bg-forest-600 text-parchment-50'
                         : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
                     }`}
                   >
-                    <span>🗺️</span>
-                    <span>Visit Whidbey</span>
-                    <svg
-                      className={`w-3 h-3 transition-transform shrink-0 ${visitOpen ? 'rotate-180' : ''}`}
-                      viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.75"
-                      aria-hidden="true"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4 4-4" />
-                    </svg>
+                    Visit{chevron(visitOpen)}
                   </button>
 
                   {visitOpen && (
                     <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[210px] z-50">
-                    <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
-                      {visitLinks.map(({ href, label }) => {
-                        const active = href === '/visit'
-                          ? pathname === '/visit'
-                          : pathname.startsWith(href);
-                        return (
-                          <Link
-                            key={href}
-                            href={href}
-                            onClick={() => setVisitOpen(false)}
-                            className={`flex items-center px-4 py-2.5 text-sm font-medium transition-colors ${
-                              active
-                                ? 'bg-forest-50 text-forest-700'
-                                : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
-                            }`}
-                          >
-                            {label}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                      <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
+                        {visitLinks.map(({ href, label, Icon }) => {
+                          const active = href === '/visit'
+                            ? pathname === '/visit'
+                            : pathname.startsWith(href);
+                          return (
+                            <Link
+                              key={href}
+                              href={href}
+                              onClick={() => setVisitOpen(false)}
+                              className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${
+                                active
+                                  ? 'bg-forest-50 text-forest-700'
+                                  : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
+                              }`}
+                            >
+                              <Icon size={16} className="shrink-0" aria-hidden="true" />
+                              {label}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* Contact */}
-                {(() => {
-                  const active = pathname === contactLink.href;
-                  return (
-                    <Link
-                      href={contactLink.href}
-                      aria-current={active ? 'page' : undefined}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-forest-600 text-parchment-50'
-                          : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
-                      }`}
-                    >
-                      {contactLink.label}
-                    </Link>
-                  );
-                })()}
+                {/* Community dropdown */}
+                <div
+                  ref={communityRef}
+                  className="relative"
+                  onMouseEnter={() => setCommunityOpen(true)}
+                  onMouseLeave={() => setCommunityOpen(false)}
+                >
+                  <button
+                    onClick={() => setCommunityOpen(v => !v)}
+                    aria-expanded={communityOpen}
+                    aria-haspopup="menu"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
+                      communityActive
+                        ? 'bg-forest-600 text-parchment-50'
+                        : 'text-stone-600 hover:text-forest-600 hover:bg-forest-50'
+                    }`}
+                  >
+                    Community{chevron(communityOpen)}
+                  </button>
+
+                  {communityOpen && (
+                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[200px] z-50">
+                      <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
+                        {communityLinks.map(({ href, label, Icon }) => {
+                          const active = pathname === href || pathname.startsWith(href + '/');
+                          return (
+                            <Link
+                              key={href}
+                              href={href}
+                              onClick={() => setCommunityOpen(false)}
+                              className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${
+                                active
+                                  ? 'bg-forest-50 text-forest-700'
+                                  : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
+                              }`}
+                            >
+                              <Icon size={16} className="shrink-0" aria-hidden="true" />
+                              {label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </nav>
 
-              {/* Submit dropdown — desktop */}
-              <div
-                className="hidden md:flex items-center ml-2 relative"
-                onMouseEnter={() => setSubmitOpen(true)}
-                onMouseLeave={() => setSubmitOpen(false)}
-              >
-                <button
-                  onClick={() => setSubmitOpen(v => !v)}
-                  aria-expanded={submitOpen}
-                  aria-haspopup="menu"
-                  className="px-4 py-2 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-600 hover:text-parchment-50 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
+              {/* Desktop right side: Submit + Search + Profile */}
+              <div className="hidden md:flex items-center gap-1 ml-auto pl-2">
+                {/* Submit dropdown — pill style */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setSubmitOpen(true)}
+                  onMouseLeave={() => setSubmitOpen(false)}
                 >
-                  <span aria-hidden="true">＋</span>
-                  <span>Submit</span>
-                  <svg
-                    className={`w-3 h-3 transition-transform shrink-0 ${submitOpen ? 'rotate-180' : ''}`}
-                    viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.75"
-                    aria-hidden="true"
+                  <button
+                    onClick={() => setSubmitOpen(v => !v)}
+                    aria-expanded={submitOpen}
+                    aria-haspopup="menu"
+                    className="px-4 py-2 rounded-full text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-600 hover:text-parchment-50 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m1 1 4 4 4-4" />
-                  </svg>
-                </button>
+                    <Plus size={16} aria-hidden="true" />
+                    Submit
+                    {chevron(submitOpen)}
+                  </button>
 
-                {submitOpen && (
-                  <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[190px] z-50">
-                  <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
-                    <Link
-                      href="/submit-event"
-                      onClick={() => setSubmitOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
-                    >
-                      <span aria-hidden="true">📅</span> Submit an Event
-                    </Link>
-                    <Link
-                      href="/submit-listing"
-                      onClick={() => setSubmitOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
-                    >
-                      <span aria-hidden="true">🏷️</span> Post a Listing
-                    </Link>
-                  </div>
-                  </div>
-                )}
-              </div>
+                  {submitOpen && (
+                    <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[190px] z-50">
+                      <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
+                        <Link
+                          href="/submit-event"
+                          onClick={() => setSubmitOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                        >
+                          <Calendar size={16} aria-hidden="true" /> Submit an Event
+                        </Link>
+                        <Link
+                          href="/submit-listing"
+                          onClick={() => setSubmitOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
+                        >
+                          <ShoppingBag size={16} aria-hidden="true" /> Post a Listing
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-              {/* Search + notifications icons — desktop */}
-              <div className="hidden md:flex items-center gap-2 ml-2">
+                {/* Search */}
                 <Link
-                  href={searchLink.href}
+                  href="/search"
                   aria-label="Search"
                   className={`p-2 rounded-lg transition-colors ${
-                    pathname === searchLink.href
+                    pathname === '/search'
                       ? 'bg-forest-600 text-parchment-50'
                       : 'text-stone-500 hover:text-forest-600 hover:bg-forest-50'
                   }`}
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  <Search size={20} aria-hidden="true" />
                 </Link>
-                {user && (
-                  <Link
-                    href="/profile/notifications"
-                    aria-label="Notification preferences"
-                    className={`p-2 rounded-lg transition-colors ${
-                      pathname === '/profile/notifications'
-                        ? 'bg-forest-600 text-parchment-50'
-                        : 'text-stone-500 hover:text-forest-600 hover:bg-forest-50'
-                    }`}
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                  </Link>
-                )}
-              </div>
 
-              {/* Auth button — desktop */}
-              <div className="hidden md:flex items-center gap-2 ml-0">
+                {/* Profile dropdown (logged in) or Sign in (logged out) */}
                 {user ? (
-                  <button
-                    onClick={signOut}
-                    className="px-3 py-2 rounded-lg text-sm font-medium text-stone-500 hover:text-forest-600 hover:bg-forest-50 transition-colors min-h-[44px]"
-                  >
-                    Sign out
-                  </button>
+                  <div ref={profileRef} className="relative">
+                    <button
+                      onClick={() => setProfileOpen(v => !v)}
+                      aria-expanded={profileOpen}
+                      aria-haspopup="menu"
+                      aria-label="Account menu"
+                      className={`p-2 rounded-lg transition-colors ${
+                        profileOpen
+                          ? 'bg-forest-600 text-parchment-50'
+                          : 'text-stone-500 hover:text-forest-600 hover:bg-forest-50'
+                      }`}
+                    >
+                      <User size={20} aria-hidden="true" />
+                    </button>
+
+                    {profileOpen && (
+                      <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[180px] z-50">
+                        <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
+                          <Link
+                            href="/profile"
+                            onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                          >
+                            <User size={16} aria-hidden="true" /> My Profile
+                          </Link>
+                          <Link
+                            href="/profile/notifications"
+                            onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                          >
+                            <Bell size={16} aria-hidden="true" /> Notifications
+                          </Link>
+                          <button
+                            onClick={() => { setProfileOpen(false); signOut(); }}
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
+                          >
+                            <LogOut size={16} aria-hidden="true" /> Sign out
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <button
                     onClick={() => setAuthOpen(true)}
@@ -262,16 +329,9 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Mobile: auth + hamburger */}
+              {/* Mobile: sign in + hamburger */}
               <div className="md:hidden flex items-center gap-2">
-                {user ? (
-                  <button
-                    onClick={signOut}
-                    className="text-xs text-stone-500 px-3 py-2 rounded-lg hover:bg-parchment-200 transition-colors"
-                  >
-                    Sign out
-                  </button>
-                ) : (
+                {!user && (
                   <button
                     onClick={() => setAuthOpen(true)}
                     className="text-xs font-medium bg-forest-600 text-parchment-50 px-3 py-2 rounded-lg hover:bg-forest-700 transition-colors"
@@ -326,8 +386,9 @@ export default function Navbar() {
 
               {/* Drawer body */}
               <div className="flex-1 overflow-y-auto py-3">
-                {[...mainLinks, contactLink].map(({ href, label }) => {
-                  const active = pathname === href;
+                {/* Main links */}
+                {mobileMainLinks.map(({ href, label }) => {
+                  const active = href === '/' ? pathname === '/' : (pathname === href || pathname.startsWith(href + '/'));
                   return (
                     <Link
                       key={href}
@@ -345,17 +406,15 @@ export default function Navbar() {
                   );
                 })}
                 <Link
-                  href={searchLink.href}
+                  href="/search"
                   onClick={() => setMenuOpen(false)}
                   className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors ${
-                    pathname === searchLink.href
+                    pathname === '/search'
                       ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
                       : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                   }`}
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  <Search size={16} aria-hidden="true" />
                   Search
                 </Link>
 
@@ -364,7 +423,7 @@ export default function Navbar() {
                   <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
                     Visit Whidbey
                   </p>
-                  {visitLinks.map(({ href, label }) => {
+                  {visitLinks.map(({ href, label, Icon }) => {
                     const active = href === '/visit'
                       ? pathname === '/visit'
                       : pathname.startsWith(href);
@@ -373,137 +432,105 @@ export default function Navbar() {
                         key={href}
                         href={href}
                         onClick={() => setMenuOpen(false)}
-                        className={`block pl-7 pr-5 py-2.5 text-sm font-medium transition-colors ${
+                        className={`flex items-center gap-2.5 pl-7 pr-5 py-2.5 text-sm font-medium transition-colors ${
                           active
                             ? 'bg-forest-50 text-forest-700'
                             : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
                         }`}
                       >
+                        <Icon size={16} className="shrink-0" aria-hidden="true" />
                         {label}
                       </Link>
                     );
                   })}
                 </div>
 
-                {/* Quick Links */}
+                {/* Community */}
                 <div className="mt-2 border-t border-parchment-200 pt-2">
                   <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
-                    Quick Links
+                    Community
                   </p>
-                  {communityLinks.map(({ href, label }) => {
+                  {communityLinks.map(({ href, label, Icon }) => {
                     const active = pathname === href || pathname.startsWith(href + '/');
                     return (
                       <Link
                         key={href}
                         href={href}
                         onClick={() => setMenuOpen(false)}
-                        className={`block px-5 py-2.5 text-sm font-medium transition-colors ${
+                        className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
                           active
                             ? 'bg-forest-50 text-forest-700'
                             : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
                         }`}
                       >
+                        <Icon size={16} className="shrink-0" aria-hidden="true" />
                         {label}
                       </Link>
                     );
                   })}
                 </div>
+
+                {/* Profile section (logged in) */}
+                {user && (
+                  <div className="mt-2 border-t border-parchment-200 pt-2">
+                    <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                      Account
+                    </p>
+                    <Link
+                      href="/profile"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
+                        pathname === '/profile'
+                          ? 'bg-forest-50 text-forest-700'
+                          : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                      }`}
+                    >
+                      <User size={16} className="shrink-0" aria-hidden="true" />
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/profile/notifications"
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
+                        pathname === '/profile/notifications'
+                          ? 'bg-forest-50 text-forest-700'
+                          : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                      }`}
+                    >
+                      <Bell size={16} className="shrink-0" aria-hidden="true" />
+                      Notifications
+                    </Link>
+                    <button
+                      onClick={() => { setMenuOpen(false); signOut(); }}
+                      className="flex items-center gap-2.5 w-full px-5 py-2.5 text-sm font-medium text-stone-600 hover:bg-parchment-100 hover:text-forest-600 transition-colors"
+                    >
+                      <LogOut size={16} className="shrink-0" aria-hidden="true" />
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Drawer footer — submit + auth */}
+              {/* Drawer footer — submit */}
               <div className="border-t border-parchment-200 px-5 py-4 space-y-2">
                 <Link
                   href="/submit-event"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-forest-600 text-parchment-50 hover:bg-forest-700 transition-colors"
                 >
-                  <span aria-hidden="true">📅</span> Submit an Event
+                  <Calendar size={16} aria-hidden="true" /> Submit an Event
                 </Link>
                 <Link
                   href="/submit-listing"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-50 transition-colors"
                 >
-                  <span aria-hidden="true">🏷️</span> Post a Listing
+                  <ShoppingBag size={16} aria-hidden="true" /> Post a Listing
                 </Link>
               </div>
             </nav>
           </div>
         </div>
-
-        {/* Community strip — desktop */}
-        <div className="hidden md:block bg-forest-50 border-b border-parchment-200">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <nav className="flex items-center gap-1 h-10" aria-label="Community navigation">
-              <span className="text-xs font-semibold text-forest-700 mr-2 flex items-center gap-1" aria-hidden="true">
-                🌿 Community
-              </span>
-              {communityLinks.map(({ href, label }, i) => {
-                const active = pathname === href || pathname.startsWith(href + '/');
-                return (
-                  <span key={href} className="flex items-center gap-1">
-                    {i > 0 && <span className="text-parchment-400 text-xs" aria-hidden="true">·</span>}
-                    <Link
-                      href={href}
-                      aria-current={active ? 'page' : undefined}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-forest-600 text-parchment-50'
-                          : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'
-                      }`}
-                    >
-                      {label}
-                    </Link>
-                  </span>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-
-        {/* Community strip — mobile (always visible, horizontal scroll) */}
-        <div className="md:hidden bg-forest-50 border-b border-parchment-200 relative overflow-x-auto overflow-y-hidden scrollbar-none">
-          {/* Right-edge fade to signal scrollability */}
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-forest-50 to-transparent pointer-events-none z-10" aria-hidden="true" />
-          <nav className="flex items-center gap-1 px-4 h-10 w-max" aria-label="Community navigation">
-            {/* Search — pinned first, visually distinct pill */}
-            <Link
-              href="/search"
-              aria-current={pathname === '/search' ? 'page' : undefined}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
-                pathname === '/search'
-                  ? 'bg-forest-600 text-parchment-50'
-                  : 'bg-forest-100 text-forest-700 hover:bg-forest-200 hover:text-forest-900'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Search
-            </Link>
-            <span className="text-parchment-400 text-xs shrink-0" aria-hidden="true">·</span>
-            {communityLinks.map(({ href, label }, i) => {
-              const active = pathname === href || pathname.startsWith(href + '/');
-              return (
-                <span key={href} className="flex items-center gap-1 shrink-0">
-                  {i > 0 && <span className="text-parchment-400 text-xs" aria-hidden="true">·</span>}
-                  <Link
-                    href={href}
-                    aria-current={active ? 'page' : undefined}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                      active
-                        ? 'bg-forest-600 text-parchment-50'
-                        : 'text-forest-700 hover:text-forest-900 hover:bg-forest-100'
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                </span>
-              );
-            })}
-          </nav>
-        </div>
-
       </header>
     </>
   );

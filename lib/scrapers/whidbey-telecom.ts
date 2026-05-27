@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 const WHIDBEY_TEL_URL = 'https://www.whidbeytel.com/events/';
 
@@ -24,7 +25,7 @@ function parseDate(raw: string): string | null {
     const startStr = `${rangeMatch[1]}, ${rangeMatch[2]}`;
     const d = new Date(startStr);
     if (!isNaN(d.getTime())) {
-      return formatDate(d);
+      return toPacificDateString(d);
     }
   }
 
@@ -35,25 +36,19 @@ function parseDate(raw: string): string | null {
   if (rangeWithYear) {
     const d = new Date(rangeWithYear[1]);
     if (!isNaN(d.getTime())) {
-      return formatDate(d);
+      return toPacificDateString(d);
     }
   }
 
   // Single date: "March 8, 2026" or "March 8 2026"
   const d = new Date(trimmed);
   if (!isNaN(d.getTime())) {
-    return formatDate(d);
+    return toPacificDateString(d);
   }
 
   return null;
 }
 
-function formatDate(d: Date): string {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
 
 function guessCategory(title: string): string {
   const t = title.toLowerCase();

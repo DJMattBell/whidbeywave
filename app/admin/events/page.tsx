@@ -135,8 +135,7 @@ export default function AdminEventsPage() {
         <div className="min-h-[60vh] flex items-center justify-center px-4">
           <div className="text-center">
             <div className="text-5xl mb-4">🔒</div>
-            <h1 className="text-2xl text-stone-800 mb-2"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+            <h1 className="text-2xl font-semibold text-stone-800 mb-2">
               Admin access only
             </h1>
             <p className="text-stone-500 mb-5 text-sm">You need to be signed in as an admin.</p>
@@ -152,8 +151,7 @@ export default function AdminEventsPage() {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center">
           <div className="text-5xl mb-4">🌧️</div>
-          <h1 className="text-2xl text-stone-800 mb-2"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}>
+          <h1 className="text-2xl font-semibold text-stone-800 mb-2">
             Not authorized
           </h1>
           <p className="text-stone-500 text-sm">This page is restricted to site administrators.</p>
@@ -180,8 +178,7 @@ export default function AdminEventsPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
-          <h1 className="text-3xl text-stone-900"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}>
+          <h1 className="text-3xl font-bold text-stone-900">
             Event Submissions
           </h1>
         </div>
@@ -224,8 +221,7 @@ export default function AdminEventsPage() {
 
       {/* Newsletter Tools */}
       <div className="mb-10 bg-parchment-50 rounded-2xl border border-parchment-200 shadow-warm p-6">
-        <h2 className="text-lg font-semibold text-stone-800 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+        <h2 className="text-lg font-semibold text-stone-800 mb-4">
           📬 Newsletter Tools
         </h2>
         <div className="flex flex-wrap gap-3 items-center">
@@ -276,8 +272,7 @@ export default function AdminEventsPage() {
                     {sub.status}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-stone-900 truncate"
-                       style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <p className="font-semibold text-stone-900 truncate font-heading">
                       {sub.title}
                     </p>
                     <p className="text-xs text-stone-400 mt-0.5">

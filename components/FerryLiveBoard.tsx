@@ -24,20 +24,14 @@ function statusLabel(s: RouteStatus) {
 function StatusBadge({ status }: { status: RouteStatus }) {
   if (status === 'cancelled') {
     return (
-      <span
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold"
-        style={{ background: 'var(--color-terra-50, #FEE2E2)', color: 'var(--color-terra-800, #991B1B)' }}
-      >
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-terra-50 text-terra-800">
         <span>✕</span> CANCELLED
       </span>
     );
   }
   if (status === 'delays') {
     return (
-      <span
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold"
-        style={{ background: '#FEF3C7', color: '#B45309' }}
-      >
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-700">
         <span>⚠</span> DELAYS
       </span>
     );

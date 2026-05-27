@@ -1,44 +1,24 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { cookies } from 'next/headers';
 import { formatShortDate, categoryColors } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import { formatPrice } from '@/lib/marketplace';
 import { createServerClient } from '@/lib/supabase';
-import WeatherTideWidget from '@/components/WeatherTideWidget';
-import FerryAlerts from '@/components/FerryAlerts';
 import TodayWidget from '@/components/TodayWidget';
 import AddToCalendar from '@/components/AddToCalendar';
-import ChipFilters from '@/components/ChipFilters';
-import { getFilterFromCookie, type FilterChip } from '@/lib/chipFilters';
-import FerryStatusPill from '@/components/FerryStatusPill';
-import { SkeletonCard } from '@/components/SkeletonCard';
+import FerryAlerts from '@/components/FerryAlerts';
+import HeroSection from '@/components/home/HeroSection';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
-import { Calendar, Gift, Newspaper } from 'lucide-react';
+import {
+  Calendar, Gift, Newspaper, ShoppingBag, BookOpen,
+  MessageCircle, Ship, Waves,
+} from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
 
 export const revalidate = 300; // 5 minutes
 
-// ChipFilters reads cookie directly — no persona gate
-
-function getGreeting(): string {
-  const hour = new Date().toLocaleString('en-US', {
-    hour: 'numeric',
-    hour12: false,
-    timeZone: 'America/Los_Angeles',
-  });
-  const h = parseInt(hour, 10);
-  if (h < 12) return 'Good morning, Whidbey';
-  if (h < 17) return 'Good afternoon, Whidbey';
-  return 'Good evening, Whidbey';
-}
-
 export default async function HomePage() {
-  const cookieStore = await cookies();
-  const filterRaw = cookieStore.get('whidbey-filter')?.value ?? cookieStore.get('ww-persona')?.value;
-  const activeFilter: FilterChip = getFilterFromCookie(filterRaw);
-
   const supabase = createServerClient();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 
@@ -126,106 +106,69 @@ export default async function HomePage() {
     ],
   };
 
-  const greeting = getGreeting();
-
   // ── Section builders ──────────────────────────────────────────────────────
 
-  const heroSection = (
-    <section key="hero" className="bg-parchment-100 border-b border-parchment-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 text-center">
-        <p className="text-sm text-stone-500 mb-2">{greeting}</p>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2 md:mb-3 text-stone-900">
-          WhidbeyWave
-        </h1>
-        <p className="text-base md:text-lg text-stone-600 max-w-lg mx-auto mb-4 md:mb-6">
-          {activeFilter === 'visitors'
-            ? 'Your guide to the best of Whidbey Island'
-            : 'The easiest way to see what\u2019s happening on Whidbey Island'}
-        </p>
-        <Link href="/events" className="btn-primary">
-          See What&apos;s On
-        </Link>
-      </div>
-    </section>
-  );
-
-  const mobileQuickAccess = (
-    <section key="mobile-quick" className="md:hidden bg-parchment-50 border-b border-parchment-200">
-      {/* Ferry status pill */}
-      <div className="px-4 pt-3">
-        <Suspense fallback={null}>
-          <FerryStatusPill />
-        </Suspense>
-      </div>
-      <div className="flex overflow-x-auto gap-3 px-4 py-4 scrollbar-none">
-        {[
-          { emoji: '📅', label: "What's On",   href: '/events'      },
-          { emoji: '📰', label: 'Island News',  href: '/news'        },
-          { emoji: '📖', label: 'Guides',        href: '/guides'      },
-          { emoji: '🛒', label: 'Buy & Sell',   href: '/marketplace' },
-          { emoji: '🚢', label: 'Ferry',         href: '/ferry'       },
-          { emoji: '🌊', label: 'Tides',         href: '/tides'       },
-        ].map(({ emoji, label, href }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-forest-50 hover:border-forest-300 transition-colors min-w-[80px] text-center"
-          >
-            <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
-            <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
-          </Link>
-        ))}
-        <Link
-          href="/submit-event"
-          className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-forest-600 border border-forest-700 hover:bg-forest-700 transition-colors min-w-[80px] text-center"
-        >
-          <span className="text-2xl leading-none" aria-hidden="true">➕</span>
-          <span className="text-xs font-semibold text-parchment-50 whitespace-nowrap">Submit</span>
-        </Link>
-      </div>
-    </section>
-  );
-
-  const desktopQuickLinks = (
-    <section key="desktop-quick" className="hidden md:block bg-parchment-50 border-b border-parchment-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-        {[
-          { emoji: '📅', label: "What's Going On", href: '/events',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
-          { emoji: '📰', label: 'Island News',      href: '/news',        color: 'bg-sound-50 text-sound-700 hover:bg-sound-100' },
-          { emoji: '📖', label: 'Guides',           href: '/guides',      color: 'bg-forest-50 text-forest-700 hover:bg-forest-100' },
-          { emoji: '🛒', label: 'Buy & Sell',       href: '/marketplace', color: 'bg-amber-50 text-amber-800 hover:bg-amber-100' },
-          { emoji: '💬', label: 'Ask the Island',   href: '/forum',       color: 'bg-terra-50 text-terra-800 hover:bg-terra-100' },
-        ].map(({ emoji, label, href, color }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex flex-col items-center gap-2 py-5 rounded-xl font-semibold text-sm ${color} shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200`}
-          >
-            <span className="text-3xl">{emoji}</span>
-            <span>{label}</span>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-
+  // Tier 1 — live/dynamic data (sound-50 accent)
   const todayBlock = (
-    <section key="today" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-      <div className="card border-l-[3px] border-l-sound-600 p-5">
+    <section key="today" id="today-panel" className="bg-sound-50 border-b border-sound-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
         <Suspense fallback={
           <div className="animate-pulse space-y-3">
-            <div className="h-4 bg-parchment-200 rounded w-40" />
-            <div className="h-20 bg-parchment-200 rounded-xl" />
+            <div className="h-4 bg-sound-100 rounded w-40" />
+            <div className="h-20 bg-sound-100 rounded-xl" />
           </div>
         }>
           <TodayWidget />
         </Suspense>
         <Suspense fallback={null}>
-          <WeatherTideWidget />
-        </Suspense>
-        <Suspense fallback={null}>
           <FerryAlerts />
         </Suspense>
+      </div>
+    </section>
+  );
+
+  // Tier 2 — browse/navigate action cards (parchment-100)
+  const actionCards = (
+    <section key="actions" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+      {/* Mobile: horizontal scroll */}
+      <div className="md:hidden flex overflow-x-auto gap-3 scrollbar-none">
+        {([
+          { Icon: Calendar,      label: "What's On",   href: '/events' },
+          { Icon: Newspaper,     label: 'News',         href: '/news' },
+          { Icon: BookOpen,      label: 'Guides',       href: '/guides' },
+          { Icon: ShoppingBag,   label: 'Buy & Sell',  href: '/marketplace' },
+          { Icon: Ship,          label: 'Ferry',        href: '/ferry' },
+          { Icon: Waves,         label: 'Tides',        href: '/tides' },
+        ] as const).map(({ Icon, label, href }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-parchment-200 transition-colors min-w-[80px] text-center"
+          >
+            <Icon size={24} className="text-forest-600" aria-hidden="true" />
+            <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Desktop: grid */}
+      <div className="hidden md:grid grid-cols-5 gap-4">
+        {([
+          { Icon: Calendar,      label: "What's Going On", href: '/events' },
+          { Icon: Newspaper,     label: 'Island News',      href: '/news' },
+          { Icon: BookOpen,      label: 'Guides',           href: '/guides' },
+          { Icon: ShoppingBag,   label: 'Buy & Sell',      href: '/marketplace' },
+          { Icon: MessageCircle, label: 'Ask the Island',  href: '/forum' },
+        ] as const).map(({ Icon, label, href }) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex flex-col items-center gap-2 py-5 rounded-xl font-semibold text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200"
+          >
+            <Icon size={28} className="text-forest-600" aria-hidden="true" />
+            <span>{label}</span>
+          </Link>
+        ))}
       </div>
     </section>
   );
@@ -263,7 +206,10 @@ export default async function HomePage() {
                 <h3 className="text-lg font-semibold text-stone-900 mb-2 group-hover:text-forest-600 transition-colors">
                   {event.title}
                 </h3>
-                <p className="text-sm text-stone-600 mb-1">📅 <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}</p>
+                <p className="text-sm text-stone-600 mb-1">
+                  <Calendar size={14} className="inline -mt-0.5 mr-1" aria-hidden="true" />
+                  <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}
+                </p>
                 <p className="text-sm text-stone-600 mb-4">📍 {event.town}</p>
                 <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description}</p>
                 <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-parchment-200">
@@ -428,9 +374,7 @@ export default async function HomePage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <span className="text-4xl">🗺️</span>
           <div className="flex-1">
-            <h2
-              className="text-xl font-semibold text-stone-800 mb-1"
-            >
+            <h2 className="text-xl font-semibold text-stone-800 mb-1">
               Planning your visit?
             </h2>
             <p className="text-stone-600 text-sm">
@@ -481,39 +425,18 @@ export default async function HomePage() {
     </section>
   );
 
-  // ── Assemble page based on chip filter ──────────────────────────────────
-
-  // Visitors filter: visitor CTA first, no marketplace
-  if (activeFilter === 'visitors') {
-    return (
-      <>
-        <JsonLd data={jsonLd} />
-        {heroSection}
-        <ChipFilters active={activeFilter} />
-        {mobileQuickAccess}
-        {desktopQuickLinks}
-        {todayBlock}
-        {visitorCta}
-        {eventsSection}
-        {newsSection}
-        {closingCta}
-      </>
-    );
-  }
-
-  // All other filters: full local layout with chip row
+  // ── One unified layout ──────────────────────────────────────────────────
   return (
     <>
       <JsonLd data={jsonLd} />
-      {heroSection}
-      <ChipFilters active={activeFilter} />
-      {mobileQuickAccess}
-      {desktopQuickLinks}
+      <HeroSection />
       {todayBlock}
+      {actionCards}
       {eventsSection}
       {flashGivesSection}
       {newsSection}
       {listingsSection}
+      {visitorCta}
       {closingCta}
     </>
   );
