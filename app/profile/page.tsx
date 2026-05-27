@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { MessageCircle, Calendar, ShoppingBag, Star } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
+import EmptyState from '@/components/EmptyState';
 import type { ForumPostRow, EventSubmissionRow, Review } from '@/lib/db-types';
 
 type MyListing = {
@@ -247,12 +249,7 @@ export default function ProfilePage() {
               {dataLoading ? (
                 <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : posts.length === 0 ? (
-                <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t posted any questions yet.</p>
-                  <Link href="/forum" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
-                    Ask the Island →
-                  </Link>
-                </div>
+                <EmptyState icon={MessageCircle} headline="You haven't posted any questions yet." action={{ label: "Ask a question", href: "/forum" }} />
               ) : (
                 <div className="space-y-3">
                   {posts.map(post => (
@@ -290,12 +287,7 @@ export default function ProfilePage() {
               {dataLoading ? (
                 <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : events.length === 0 ? (
-                <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t submitted any events yet.</p>
-                  <Link href="/submit-event" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
-                    Submit an Event →
-                  </Link>
-                </div>
+                <EmptyState icon={Calendar} headline="You haven't submitted any events yet." action={{ label: "Submit an event", href: "/submit-event" }} />
               ) : (
                 <div className="space-y-3">
                   {events.map(ev => (
@@ -333,12 +325,7 @@ export default function ProfilePage() {
               {dataLoading ? (
                 <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : myListings.length === 0 ? (
-                <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t posted any listings yet.</p>
-                  <Link href="/submit-listing" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
-                    Post a Listing →
-                  </Link>
-                </div>
+                <EmptyState icon={ShoppingBag} headline="You haven't posted any listings yet." action={{ label: "Post a listing", href: "/submit-listing" }} />
               ) : (
                 <div className="space-y-3">
                   {myListings.map(listing => (
@@ -382,12 +369,7 @@ export default function ProfilePage() {
               {dataLoading ? (
                 <div className="text-stone-600 text-sm py-4">Loading…</div>
               ) : reviews.length === 0 ? (
-                <div className="bg-parchment-50 rounded-xl border border-dashed border-parchment-300 p-6 text-center">
-                  <p className="text-stone-600 text-sm mb-3">You haven&apos;t written any reviews yet.</p>
-                  <Link href="/recommendations" className="text-forest-600 hover:text-forest-800 text-sm font-medium transition-colors">
-                    Explore Local Picks →
-                  </Link>
-                </div>
+                <EmptyState icon={Star} headline="You haven't written any reviews yet." action={{ label: "Browse recommendations", href: "/recommendations" }} />
               ) : (
                 <div className="space-y-3">
                   {reviews.map(rev => (

@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { MessageSquare } from 'lucide-react';
 import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
+import EmptyState from '@/components/EmptyState';
 import { supabase } from '@/lib/supabase';
 
 type Feedback = {
@@ -123,10 +125,7 @@ export default function AdminFeedbackPage() {
 
       {/* List */}
       {items.length === 0 ? (
-        <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-          <div className="text-4xl mb-3">🌿</div>
-          <p className="text-stone-500 text-sm">No feedback yet.</p>
-        </div>
+        <EmptyState icon={MessageSquare} headline="No feedback yet." />
       ) : (
         <div className="space-y-3">
           {items.map(item => (

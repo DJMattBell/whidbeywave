@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { MessageCircle } from 'lucide-react';
 import { supabase, isConfigured } from '@/lib/supabase';
+import EmptyState from '@/components/EmptyState';
 
 type Comment = {
   id: string;
@@ -75,7 +77,7 @@ export default function NewsCommentSection({ slug }: { slug: string }) {
       {loading ? (
         <p className="text-sm text-stone-600 mb-4">Loading comments…</p>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-stone-500 mb-4">No comments yet — be the first.</p>
+        <EmptyState icon={MessageCircle} headline="No comments yet — be the first." />
       ) : (
         <div className="space-y-3 mb-6">
           {comments.map(c => (

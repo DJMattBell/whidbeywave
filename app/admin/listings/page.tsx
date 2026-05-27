@@ -3,8 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ShoppingBag } from 'lucide-react';
 import { useAdmin } from '@/lib/useAdmin';
 import AuthModal from '@/components/AuthModal';
+import EmptyState from '@/components/EmptyState';
 import { supabase } from '@/lib/supabase';
 
 async function getToken(): Promise<string | null> {
@@ -185,12 +187,7 @@ export default function AdminListingsPage() {
 
       {/* Listings list */}
       {displayed.length === 0 ? (
-        <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-          <div className="text-4xl mb-3">🌾</div>
-          <p className="text-stone-500 text-sm">
-            {fetching ? 'Loading…' : `No ${filter === 'all' ? '' : filter} listings.`}
-          </p>
-        </div>
+        <EmptyState icon={ShoppingBag} headline={fetching ? 'Loading…' : `No ${filter === 'all' ? '' : filter} listings.`} />
       ) : (
         <div className="space-y-4">
           {displayed.map(listing => {
