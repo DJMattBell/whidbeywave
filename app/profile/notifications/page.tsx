@@ -50,6 +50,7 @@ export default function NotificationPreferencesPage() {
 
   useEffect(() => {
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- skip loading when no user
       setPrefsLoading(false);
       return;
     }

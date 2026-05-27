@@ -13,26 +13,13 @@ export default function ImageGallery({ photos, alt }: Props) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
-  if (photos.length === 0) return null;
-
-  function prev() {
+  const prev = useCallback(() => {
     setActiveIndex(i => (i - 1 + photos.length) % photos.length);
-  }
-  function next() {
-    setActiveIndex(i => (i + 1) % photos.length);
-  }
+  }, [photos.length]);
 
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-  }
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 40) {
-      dx < 0 ? next() : prev();
-    }
-    touchStartX.current = null;
-  }
+  const next = useCallback(() => {
+    setActiveIndex(i => (i + 1) % photos.length);
+  }, [photos.length]);
 
   // Lightbox keyboard navigation
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
@@ -45,7 +32,21 @@ export default function ImageGallery({ photos, alt }: Props) {
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, closeLightbox]);
+  }, [lightboxOpen, closeLightbox, next, prev]);
+
+  if (photos.length === 0) return null;
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) {
+      dx < 0 ? next() : prev();
+    }
+    touchStartX.current = null;
+  }
 
   const activeSrc = photos[activeIndex];
 

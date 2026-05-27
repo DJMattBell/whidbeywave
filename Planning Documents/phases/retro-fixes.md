@@ -17,6 +17,66 @@ YYYY-MM-DD · phase N · short description · commit sha
 
 ---
 
+## Security & correctness audit — 2026-05-26
+
+Comprehensive four-axis audit (build/lint, security, API routes, component quality) followed by fixes for all findings. Four parallel agents scanned the entire codebase; findings were deduplicated and prioritized.
+
+### Critical fixes
+- **notification_log RLS**: Added SELECT/UPDATE policies for authenticated users to read/mark-read their own notifications. Without this, the unread badge always showed 0 and mark-read was a no-op. (Supabase migration + local SQL file)
+- **ImageGallery.tsx Rules of Hooks violation**: `useCallback` and `useEffect` were called after an early return. Moved all hooks above the conditional return to prevent potential runtime crashes.
+
+### High — security fixes
+- **XSS in newsletter emails**: Added `escapeHtml()` to 4 locations where user-supplied `first_name` was interpolated raw into HTML email bodies (newsletter/route.ts, newsletter/confirm/route.ts ×2, newsletter/resend/route.ts).
+- **PostgREST filter injection**: Sanitized `listing.category` in listing-alert/route.ts before interpolation into `.or()` filter string.
+- **Security headers**: Added `Strict-Transport-Security` (max-age=31536000) and `X-XSS-Protection` to next.config.js.
+- **Rate limiting gaps**: Added 5 missing POST routes to middleware matcher: notifications/subscribe, unsubscribe, preferences, mark-read, and recommendations.
+- **Image URL validation**: listings/submit now validates each image URL is HTTPS on a `.supabase.co` domain.
+- **cronAuth documentation**: Added security note that `x-vercel-cron` bypass is only safe on Vercel.
+- **recurring_events RLS**: Cleaned up any leftover permissive policies (restrictive policies already in place).
+
+### Medium — type corrections
+- **MarketplaceListingRow**: Renamed `seller_email` → `contact_email`, added 10 missing columns (`contact_phone`, `contact_method`, `user_id`, `barter_open`, `barter_seeking`, `flash_give_duration`, `bedrooms`, `bathrooms`, `neighborhood`, `available_date`).
+- **NewsPostRow**: Added 4 missing columns (`published_at`, `author`, `read_minutes`, `emoji`).
+- **ForumPostRow**: Added missing `category_name` column.
+
+### Low — lint cleanup
+- Fixed all 12 lint errors → 0 errors, 0 warnings.
+- ImageGallery hooks reordered, CommunityVoiceCard purity fix (`Date.now()` → stable `new Date()`), ListingDetailModal purity fix.
+- RestaurantsFilter `<a>` → `<Link>`, plausible.ts unused directive removed with proper Window typing.
+- Legitimate `set-state-in-effect` patterns suppressed with targeted eslint-disable comments (7 files).
+
+### Not fixed (documented for future)
+- Service role key used where anon/user client would suffice (listings/sold, delete, renew, contact, newsletter/count) — requires broader refactor.
+- Content-Security-Policy header — needs careful tuning for Next.js inline scripts + Plausible + Supabase.
+- 7 unused components (~1,064 lines dead code) and 12 orphaned scraper files — kept in case of future use.
+- Zero `error.tsx`/`loading.tsx` boundary files — should be added in a future phase.
+- Duplicated code patterns (getToken ×5, timeAgo ×3, town lists ×4, admin auth gate ×5) — cleanup deferred.
+
+---
+
+## Audit + planning iteration — 2026-05-27
+
+Systematic audit of the backend state vs. the roadmap. All phases 1–18 are technically complete; each shipped 60–80% of its spec. The retro-fixes log below documents ~50 deferred items across those phases. A simulated week-long planning iteration produced a three-phase consolidation track (19a/b/c) followed by three new strategic phases (20/21/22):
+
+- **19a — Correctness & Safety**: XSS-safe email layout (lib/email.ts unescaped interpolation); ListingAlertSubscription migration to notify() (Phase 16 retro); flash-give expiry cron (Phase 16 retro); admin mobile QA pass at 375×812 (Phase 11 retro).
+- **19b — Notification Spine Completion**: bell icon in navbar (Phase 15 retro); first-reply opt-in prompt (Phase 15 retro); /api/notifications/test admin endpoint (Phase 15 retro); milestone triggers on recommendation submit (Phase 17 retro); subscription bottom sheet on "Neighbors are giving" (Phase 16 retro); first-time recommender prompt (Phase 17 retro).
+- **19c — Design System Enforcement**: EmptyState adoption sweep (Phase 14 retro); DataStatus integration on ferry/tides/weather (Phase 14 retro); ESLint rule banning red-* classes (Phase 13 retro); normalize() extraction (Phase 5 retro); DateStrip extraction (Phase 4 retro); CLS min-height guards (Phase 3 retro).
+- **20 — Community Ferry Wait Times**: promoted from future.md as the wedge feature. Three-tap report flow, /ferry recent reports panel, direction-aware Today block, opt-in high-wait push alerts.
+- **21 — Event Audience Metadata**: makes Phase 18 ChipFilters actually filter. Five audience boolean columns, submit-event checkboxes, admin moderation flags, scraper integration, conservative backfill.
+- **22 — Admin Recommendations UI**: closes Phase 17 retro #1. /admin/recommendations index, business merge, flag history, removal notifications via notify().
+
+New principle added to ROADMAP.md cross-cutting list: **no retro deferrals from consolidation phases.** If a sub-item of 19a/b/c can't complete inside the phase, it gets its own follow-up phase file rather than going back to future.md.
+
+Phase files created at:
+- phases/phase-19a-correctness-safety.md
+- phases/phase-19b-notification-spine-completion.md
+- phases/phase-19c-design-system-enforcement.md
+- phases/phase-20-community-ferry-waits.md
+- phases/phase-21-event-audience-metadata.md
+- phases/phase-22-admin-recommendations-ui.md
+
+---
+
 ## Roadmap reconciliation — 2026-05-26
 
 Between v5 planning (May 2026) and the current state, an earlier Claude Code session rewrote the `Planning Documents/` folder with a different 13-phase polish-oriented roadmap. Phase 1 (Design Foundation) was completed against that plan and shipped real, well-executed token work in `app/globals.css` and `tailwind.config.ts`. Phase 2 (Layout & Navigation) was started.

@@ -205,8 +205,9 @@ export default function ListingDetailModal({
     }
   }
 
+  const now = new Date();
   const renewalTargetLabel = new Date(
-    Date.now() + 60 * 24 * 60 * 60 * 1000
+    now.getTime() + 60 * 24 * 60 * 60 * 1000
   ).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   return (

@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     const { data: subscribers, error } = await supabase
       .from('listing_alerts')
       .select('email, category, unsubscribe_token')
-      .or(`category.is.null,category.eq.${listing.category}`);
+      .or(`category.is.null,category.eq.${listing.category.replace(/[^a-zA-Z0-9& /'-]/g, '')}`);
 
     if (error) {
       console.error('listing_alerts query error:', error);

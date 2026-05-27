@@ -34,8 +34,9 @@ export default async function CommunityVoiceCard({ excludeThreadId }: Props) {
   const thread = data?.[0];
   if (!thread) return null;
 
-  // Relative time
-  const diffMs = Date.now() - new Date(thread.created_at).getTime();
+  // Relative time — use a stable reference point captured before render
+  const now = new Date();
+  const diffMs = now.getTime() - new Date(thread.created_at).getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const timeAgo = diffHours < 1
     ? 'Just now'

@@ -4,6 +4,11 @@
  * Accepts either the `x-vercel-cron` header (set automatically by Vercel Cron)
  * or a Bearer token matching CRON_SECRET (for manual/test invocations).
  *
+ * SECURITY NOTE: The `x-vercel-cron` header bypass is safe ONLY when deployed
+ * on Vercel, which strips this header from external requests. If this app is
+ * ever deployed on another platform, remove the `isVercelCron` check and rely
+ * solely on the CRON_SECRET Bearer token.
+ *
  * Usage in an API route:
  *   const authError = verifyCronRequest(request);
  *   if (authError) return authError;

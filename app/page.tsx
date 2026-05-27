@@ -251,7 +251,7 @@ export default async function HomePage() {
       {(
         <div className="grid md:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
-            <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group flex flex-col">
+            <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group flex flex-col min-h-[280px]">
               <div className="h-1 bg-forest-600" />
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-3">
@@ -313,7 +313,7 @@ export default async function HomePage() {
             if (item.type === 'news') {
               const post = item.data;
               return (
-                <Link key={`news-${post.id}`} href={`/news#${post.slug}`} className="card-pressable p-6 group">
+                <Link key={`news-${post.id}`} href={`/news#${post.slug}`} className="card-pressable p-6 group min-h-[240px]">
                   <div className="flex items-start gap-4">
                     <div className="text-4xl shrink-0">{post.emoji}</div>
                     <div>
@@ -410,7 +410,7 @@ export default async function HomePage() {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {marketplaceListings.map((listing) => (
-          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group">
+          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group min-h-[200px]">
             <div className="relative bg-parchment-100 h-28 flex items-center justify-center overflow-hidden rounded-t-xl">
               {listing.images?.[0]
                 ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />

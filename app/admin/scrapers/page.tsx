@@ -69,6 +69,7 @@ export default function AdminScrapersPage() {
       setLoading(false);
     }
     if (isAdmin) fetchLogs();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- skip loading state when not admin
     else setLoading(false);
   }, [isAdmin]);
 

@@ -14,6 +14,7 @@ export function useAdmin() {
 
   useEffect(() => {
     if (authLoading || !user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset derived state when auth changes
       setIsAdmin(null);
       return;
     }

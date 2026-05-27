@@ -64,6 +64,7 @@ export type ForumPostRow = {
   title: string;
   body: string | null;
   category_id: string | null;
+  category_name: string | null;
   author_id: string | null;
   author_name: string;
   author_email: string | null;
@@ -171,6 +172,10 @@ export type NewsPostRow = {
   category: string | null;
   published: boolean;
   post_type: string;
+  published_at: string | null;
+  author: string | null;
+  read_minutes: number | null;
+  emoji: string | null;
   created_at: string;
   tags: string[];
 };
@@ -186,10 +191,20 @@ export type MarketplaceListingRow = {
   images: string[];
   emoji: string;
   seller_name: string;
-  seller_email: string;
+  contact_email: string;
+  contact_phone: string | null;
+  contact_method: string | null;
+  user_id: string | null;
   status: string;
   sold: boolean;
   expires_at: string | null;
+  barter_open: boolean;
+  barter_seeking: string | null;
+  flash_give_duration: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  neighborhood: string | null;
+  available_date: string | null;
   created_at: string;
 };
 

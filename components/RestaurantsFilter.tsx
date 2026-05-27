@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import type { Recommendation } from '@/lib/db-types';
 
 const TOWNS = ['All', 'Langley', 'Coupeville', 'Oak Harbor', 'Freeland'];
@@ -49,7 +50,7 @@ export default function RestaurantsFilter({ recs }: { recs: Recommendation[] }) 
           </svg>
           <p className="empty-state-title">No listings match your search</p>
           <p className="empty-state-text">Try different keywords or browse all categories.</p>
-          <a href="/recommendations" className="btn-primary">Browse All</a>
+          <Link href="/recommendations/" className="btn-primary">Browse All</Link>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">

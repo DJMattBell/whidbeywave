@@ -7,6 +7,7 @@ export default function TextSizeFooterToggle() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration guard
     setMounted(true);
     const saved = localStorage.getItem('whidbey-text-size');
     if (saved === 'large') setLarge(true);

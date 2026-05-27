@@ -71,6 +71,7 @@ export default function Navbar() {
     } catch { /* silent */ }
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount/user change
   useEffect(() => { fetchUnread(); }, [fetchUnread]);
 
   const profileRef = useRef<HTMLDivElement>(null);
@@ -119,6 +120,7 @@ export default function Navbar() {
 
   // Close drawer on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync UI with route change
     setMenuOpen(false);
   }, [pathname]);
 

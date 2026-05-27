@@ -51,6 +51,7 @@ export default function ChipFilters({ active }: { active?: FilterChip }) {
     if (typeof document === 'undefined') return;
     const currentCookie = getFilterCookie();
     if (currentCookie !== selected) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from cookie on mount
       setSelected(currentCookie);
     }
     // Delete old cookie regardless

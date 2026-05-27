@@ -47,11 +47,16 @@ const LIMITS: Record<string, { max: number; windowMs: number }> = {
   '/api/listings/submit':    { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
   '/api/listings/subscribe': { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
   '/api/feedback':           { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
-  '/api/listings/contact':   { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
-  '/api/news/create':        { max: 20, windowMs: 60 * 60 * 1000 },  // 20 / hour (admin)
-  '/api/news/toggle':        { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
-  '/api/events/moderate':    { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
-  '/api/listings/moderate':  { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
+  '/api/listings/contact':           { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
+  '/api/notifications/subscribe':    { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
+  '/api/notifications/unsubscribe':  { max: 5,  windowMs: 60 * 60 * 1000 },  // 5 / hour
+  '/api/notifications/preferences':  { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
+  '/api/notifications/mark-read':    { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour
+  '/api/recommendations':            { max: 10, windowMs: 60 * 60 * 1000 },  // 10 / hour
+  '/api/news/create':                { max: 20, windowMs: 60 * 60 * 1000 },  // 20 / hour (admin)
+  '/api/news/toggle':                { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
+  '/api/events/moderate':            { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
+  '/api/listings/moderate':          { max: 30, windowMs: 60 * 60 * 1000 },  // 30 / hour (admin)
 };
 
 // ── Middleware ───────────────────────────────────────────────────────────────
@@ -97,5 +102,10 @@ export const config = {
     '/api/news/toggle',
     '/api/events/moderate',
     '/api/listings/moderate',
+    '/api/notifications/subscribe',
+    '/api/notifications/unsubscribe',
+    '/api/notifications/preferences',
+    '/api/notifications/mark-read',
+    '/api/recommendations',
   ],
 };

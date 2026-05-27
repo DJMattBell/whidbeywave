@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
+import { escapeHtml } from '@/lib/escapeHtml';
 
 const resend = getResend();
 
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
       await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
         to: sub.email,
-        subject: `You're in, ${sub.first_name} — welcome to the WhidbeyWave Weekly 🌊`,
+        subject: `You're in, ${escapeHtml(sub.first_name)} — welcome to the WhidbeyWave Weekly 🌊`,
         html: `
           <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
             <div style="background:#1a4a33;padding:20px 28px;border-radius:12px 12px 0 0;">
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
             </div>
             <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
               <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">
-                Welcome to the neighborhood, ${sub.first_name}. 🌿
+                Welcome to the neighborhood, ${escapeHtml(sub.first_name)}. 🌿
               </h2>
               <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">
                 Your subscription is confirmed. You'll receive the WhidbeyWave Weekly every Monday morning —

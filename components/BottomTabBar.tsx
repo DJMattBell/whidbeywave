@@ -30,6 +30,7 @@ export default function BottomTabBar() {
   // Text-size toggle state
   useEffect(() => {
     const saved = localStorage.getItem('whidbey-text-size');
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync from localStorage on mount
     if (saved === 'large') setTextLarge(true);
   }, []);
 

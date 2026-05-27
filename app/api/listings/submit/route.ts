@@ -81,7 +81,17 @@ export async function POST(request: NextRequest) {
           contact_email: contact_email.trim(),
           contact_phone: contact_phone?.trim() || null,
           contact_method: contact_method || null,
-          images: Array.isArray(images) ? images.slice(0, 8) : [],
+          images: Array.isArray(images)
+            ? images
+                .slice(0, 8)
+                .filter((url: unknown) => {
+                  if (typeof url !== 'string') return false;
+                  try {
+                    const parsed = new URL(url);
+                    return parsed.protocol === 'https:' && parsed.hostname.endsWith('.supabase.co');
+                  } catch { return false; }
+                })
+            : [],
           emoji: '🏷️',
           status: 'pending',
           user_id: user.id,
