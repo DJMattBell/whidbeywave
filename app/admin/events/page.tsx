@@ -325,7 +325,7 @@ export default function AdminEventsPage() {
                           className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
                         />
                       </div>
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
                         <button
                           onClick={() => moderate(sub.id, 'approved')}
                           disabled={acting[sub.id] || sub.status === 'approved'}

@@ -264,7 +264,7 @@ export default function AdminListingsPage() {
 
                     {/* Action buttons — available for any status so admin can correct mistakes */}
                     <div className="border-t border-parchment-200 pt-4">
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
                         <button
                           onClick={() => moderate(listing.id, 'approved')}
                           disabled={acting[listing.id] || listing.status === 'approved'}

@@ -159,7 +159,7 @@ export default function AdminScrapersPage() {
                             'text-terra-600'
                           }`}>{run.status}</span>
                           {run.error && (
-                            <span className="text-terra-500 truncate max-w-[200px]" title={run.error}>
+                            <span className="text-terra-500 truncate flex-1 min-w-0" title={run.error}>
                               {run.error}
                             </span>
                           )}

@@ -363,7 +363,7 @@ export default function AdminNewsPage() {
               Body <span className="text-stone-400 font-normal normal-case ml-1">— supports markdown: **bold**, *italic*, ## headings, - lists, [links](url)</span>
             </label>
             <textarea
-              rows={14}
+              rows={8}
               value={form.body}
               onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
               placeholder={form.post_type === 'guide'

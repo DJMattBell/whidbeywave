@@ -372,7 +372,7 @@ export default function RecurringEventsPage() {
             {['weekly', 'biweekly'].includes(form.recurrence_type) && (
               <div className="mb-3">
                 <label className="block text-xs text-stone-500 mb-1">Day of week</label>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {DAY_NAMES.map((name, i) => (
                     <button key={i} type="button"
                       onClick={() => setForm(f => ({ ...f, day_of_week: i }))}
