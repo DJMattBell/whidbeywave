@@ -9,6 +9,7 @@ import AddToCalendar from '@/components/AddToCalendar';
 import FerryAlerts from '@/components/FerryAlerts';
 import HeroSection from '@/components/home/HeroSection';
 import LeadStoryCard from '@/components/home/LeadStoryCard';
+import CommunityVoiceCard from '@/components/home/CommunityVoiceCard';
 import { getLeadStory } from '@/lib/lead-story';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
@@ -541,6 +542,9 @@ export default async function HomePage() {
       {todayBlock}
       {actionCards}
       {eventsSection}
+      <Suspense fallback={null}>
+        <CommunityVoiceCard excludeThreadId={leadStory?.leadForumThreadId} />
+      </Suspense>
       {flashGivesSection}
       {newsSection}
       {listingsSection}
