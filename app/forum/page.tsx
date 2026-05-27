@@ -9,6 +9,7 @@ import { isWhidbeyLocal } from '@/lib/whidbey-zips';
 import QuickReactions from '@/components/QuickReactions';
 import { SkeletonFeed } from '@/components/SkeletonCard';
 import { MessageCircle } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 export const metadata: Metadata = {
   title: 'Ask the Island — Whidbey Island Community Forum',
@@ -136,15 +137,11 @@ export default async function ForumPage({
               <NewPostForm />
             </section>
 
-            <div className="empty-state">
-              <MessageCircle className="empty-state-icon w-12 h-12" />
-              <p className="empty-state-title">
-                {activeCategory === 'All' ? "Nobody's asked about this yet" : `No posts in "${activeCategory}" yet`}
-              </p>
-              <p className="empty-state-text">
-                {isConfigured ? 'Start the conversation with your neighbors.' : 'Configure Supabase to enable the forum.'}
-              </p>
-            </div>
+            <EmptyState
+              icon={MessageCircle}
+              headline={activeCategory === 'All' ? "Nobody's asked about this yet" : `No posts in "${activeCategory}" yet`}
+              subtext={isConfigured ? 'Start the conversation with your neighbors.' : 'Configure Supabase to enable the forum.'}
+            />
           </>
         ) : (
           <>

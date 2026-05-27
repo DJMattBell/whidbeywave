@@ -6,6 +6,7 @@ import { createServerClient } from '@/lib/supabase';
 import { formatDate, formatShortDate, categoryColors } from '@/lib/data';
 import { JsonLd } from '@/components/JsonLd';
 import { Newspaper } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 import { normalizePost } from '@/lib/normalize-post';
 
 export const revalidate = 300;
@@ -109,13 +110,13 @@ export default async function NewsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
 
         {!featured ? (
-          <div className="empty-state mb-12">
-            <Newspaper className="empty-state-icon w-12 h-12" />
-            <p className="empty-state-title">The newsroom is between stories</p>
-            <p className="empty-state-text">Stories from the island will appear here.</p>
-            <Link href="/contact" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
-              Got a story? Share it →
-            </Link>
+          <div className="mb-12">
+            <EmptyState
+              icon={Newspaper}
+              headline="The newsroom is between stories"
+              subtext="Stories from the island will appear here."
+              action={{ label: "Got a story? Share it", href: "/contact" }}
+            />
           </div>
         ) : (
           <>

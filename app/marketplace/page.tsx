@@ -9,6 +9,7 @@ import MarketplaceCategoryFilter from '@/components/MarketplaceCategoryFilter';
 import MarketplaceGrid from '@/components/MarketplaceGrid';
 import ListingAlertSubscription from '@/components/ListingAlertSubscription';
 import { ShoppingBag, Search } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 export const revalidate = 60;
 
@@ -156,25 +157,21 @@ export default async function MarketplacePage({
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <div className="empty-state mb-16">
+          <div className="mb-16">
             {hasFilters ? (
-              <>
-                <Search className="empty-state-icon w-12 h-12" />
-                <p className="empty-state-title">Nothing matches your search</p>
-                <p className="empty-state-text">Try different keywords or browse all categories.</p>
-                <Link href="/marketplace" className="btn-primary">Browse all</Link>
-              </>
+              <EmptyState
+                icon={Search}
+                headline="Nothing matches your search"
+                subtext="Try different keywords or browse all categories."
+                action={{ label: "Browse all", href: "/marketplace" }}
+              />
             ) : (
-              <>
-                <ShoppingBag className="empty-state-icon w-12 h-12" />
-                <p className="empty-state-title">No listings yet</p>
-                <p className="empty-state-text">
-                  Be the first to post something for sale or free.
-                </p>
-                <Link href="/submit-listing" className="btn-primary">
-                  Post a listing
-                </Link>
-              </>
+              <EmptyState
+                icon={ShoppingBag}
+                headline="No listings yet"
+                subtext="Be the first to post something for sale or free."
+                action={{ label: "Post a listing", href: "/submit-listing" }}
+              />
             )}
           </div>
         ) : (

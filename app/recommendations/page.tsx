@@ -6,7 +6,8 @@ import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 import ShareButton from '@/components/ShareButton';
 import NotificationOptIn from '@/components/NotificationOptIn';
-import { Bell } from 'lucide-react';
+import { Bell, Leaf, Star } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 import type { Recommendation, Review } from '@/lib/db-types';
 
 const CATEGORIES = [
@@ -383,15 +384,11 @@ export default function RecommendationsPage() {
         </p>
 
         {filtered.length === 0 && !loading ? (
-          <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-            <div className="text-5xl mb-4">🌾</div>
-            <p className="text-lg text-stone-700 mb-1 font-heading font-semibold">
-              Nothing here yet
-            </p>
-            <p className="text-stone-600 text-sm">
-              {isConfigured ? 'Be the first to suggest a place in this category.' : 'Configure Supabase to see recommendations.'}
-            </p>
-          </div>
+          <EmptyState
+            icon={Leaf}
+            headline="Nothing here yet"
+            subtext={isConfigured ? 'Be the first to suggest a place in this category.' : 'Configure Supabase to see recommendations.'}
+          />
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {filtered.map(rec => {
@@ -449,7 +446,10 @@ export default function RecommendationsPage() {
                       {revLoading && <p className="text-xs text-stone-600">Loading reviews…</p>}
 
                       {!revLoading && revs.length === 0 && rf.status !== 'success' && (
-                        <p className="text-xs text-stone-600 italic">No reviews yet — yours could be first.</p>
+                        <EmptyState
+                          icon={Star}
+                          headline="No reviews yet — yours could be first."
+                        />
                       )}
 
                       {!revLoading && revs.map(rev => (

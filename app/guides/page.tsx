@@ -7,6 +7,7 @@ import { formatShortDate, categoryColors } from '@/lib/data';
 import GuidesFilter from '@/components/GuidesFilter';
 import { JsonLd } from '@/components/JsonLd';
 import { BookOpen } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 import { normalizePost } from '@/lib/normalize-post';
 
 export const revalidate = 300;
@@ -46,10 +47,12 @@ function GuidesGrid({ guides, cat }: { guides: ReturnType<typeof normalizePost>[
 
   if (filtered.length === 0) {
     return (
-      <div className="empty-state mb-12">
-        <BookOpen className="empty-state-icon w-12 h-12" />
-        <p className="empty-state-title">No guides in this category yet</p>
-        <p className="empty-state-text">Check back soon or browse all guides.</p>
+      <div className="mb-12">
+        <EmptyState
+          icon={BookOpen}
+          headline="No guides in this category yet"
+          subtext="Check back soon or browse all guides."
+        />
       </div>
     );
   }
@@ -149,15 +152,13 @@ export default async function GuidesPage({
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
 
         {guides.length === 0 ? (
-          <div className="empty-state mb-12">
-            <BookOpen className="empty-state-icon w-12 h-12" />
-            <p className="empty-state-title">Guides are on the way</p>
-            <p className="empty-state-text">
-              We&apos;re putting together practical guides to help you navigate island life.
-            </p>
-            <Link href="/news" className="text-forest-600 hover:text-forest-800 font-medium text-sm transition-colors">
-              Read the latest news →
-            </Link>
+          <div className="mb-12">
+            <EmptyState
+              icon={BookOpen}
+              headline="Guides are on the way"
+              subtext="We're putting together practical guides to help you navigate island life."
+              action={{ label: "Read the latest news", href: "/news" }}
+            />
           </div>
         ) : (
           <>

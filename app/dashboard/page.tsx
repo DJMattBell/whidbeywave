@@ -7,6 +7,8 @@ import { createServerClient } from '@/lib/supabase';
 import { formatShortDate, categoryColors } from '@/lib/data';
 import AddToCalendar from '@/components/AddToCalendar';
 import { CATEGORY_EMOJI } from '@/lib/constants';
+import { Sun } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 export const metadata: Metadata = {
   title: 'Quick View — Whidbey Island at a Glance',
@@ -117,9 +119,11 @@ export default async function DashboardPage() {
           Happening Today
         </h2>
         {todayList.length === 0 ? (
-          <div className="card p-6 text-center">
-            <p className="text-stone-500">Quiet day on the island — enjoy the calm.</p>
-          </div>
+          <EmptyState
+            icon={Sun}
+            headline="Quiet day on the island"
+            subtext="Enjoy the calm."
+          />
         ) : (
           <div className="grid gap-3">
             {todayList.map((event) => (

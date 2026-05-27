@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase, isConfigured } from '@/lib/supabase';
 import type { ForumPostRow, Recommendation } from '@/lib/db-types';
+import { Search as SearchIcon } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 type EventResult = { id: string; title: string; date: string; town: string; category: string; description: string };
 type NewsResult = { id: string; title: string; excerpt: string; slug: string; emoji: string; category: string; post_type?: string };
@@ -284,22 +286,21 @@ function SearchBody() {
           )}
 
           {total === 0 && currentQ && !loading && (
-            <div className="text-center py-16 bg-parchment-100 rounded-2xl border border-dashed border-parchment-300">
-              <div className="text-5xl mb-4" aria-hidden="true">🔍</div>
-              <p className="text-lg font-semibold text-stone-700 mb-2">Nothing found</p>
-              <p className="text-stone-600 text-sm">Try different keywords — we&apos;re a small island!</p>
-            </div>
+            <EmptyState
+              icon={SearchIcon}
+              headline="Nothing found"
+              subtext="Try different keywords — we're a small island!"
+            />
           )}
         </div>
       )}
 
       {!query.trim() && !currentQ && (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4" aria-hidden="true">🌊</div>
-          <p className="text-stone-500 text-base">
-            Type something to search across events, news, marketplace, forum, and local picks.
-          </p>
-        </div>
+        <EmptyState
+          icon={SearchIcon}
+          headline="Type something to search"
+          subtext="Search across events, news, marketplace, forum, and local picks."
+        />
       )}
     </div>
   );
