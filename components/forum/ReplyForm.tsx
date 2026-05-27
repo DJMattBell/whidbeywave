@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase, isConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/AuthProvider';
+import NotificationOptIn from '@/components/NotificationOptIn';
+import { Bell } from 'lucide-react';
 
 export default function ReplyForm({ postId }: { postId: string }) {
   const router = useRouter();
@@ -12,6 +14,7 @@ export default function ReplyForm({ postId }: { postId: string }) {
   const [anonName, setAnonName] = useState('');
   const [anonZip, setAnonZip]   = useState('');
   const [status, setStatus]     = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [showNotifPrompt, setShowNotifPrompt] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,6 +45,8 @@ export default function ReplyForm({ postId }: { postId: string }) {
       if (!res.ok) {
         setStatus('error');
       } else {
+        const json = await res.json();
+        if (json.showNotificationPrompt) setShowNotifPrompt(true);
         setStatus('success');
         router.refresh();
       }
@@ -66,9 +71,36 @@ export default function ReplyForm({ postId }: { postId: string }) {
 
   if (status === 'success') {
     return (
-      <div className="text-center py-6 bg-forest-50 rounded-xl border border-forest-100">
-        <div className="text-3xl mb-2">🌿</div>
-        <p className="text-forest-700 font-semibold text-sm">Your reply was posted — thank you!</p>
+      <div className="space-y-4">
+        <div className="text-center py-6 bg-forest-50 rounded-xl border border-forest-100">
+          <div className="text-3xl mb-2">🌿</div>
+          <p className="text-forest-700 font-semibold text-sm">Your reply was posted — thank you!</p>
+        </div>
+
+        {showNotifPrompt && (
+          <div className="bg-parchment-50 rounded-xl border border-parchment-200 p-5">
+            <div className="flex items-start gap-3">
+              <Bell className="text-forest-600 shrink-0 mt-0.5" size={20} />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-stone-800 mb-1">
+                  Want a heads-up when someone replies?
+                </p>
+                <p className="text-xs text-stone-600 mb-3">
+                  Get notified when neighbors respond to your forum questions.
+                </p>
+                <div className="flex items-center gap-3">
+                  <NotificationOptIn />
+                  <button
+                    onClick={() => setShowNotifPrompt(false)}
+                    className="text-xs text-stone-500 hover:text-stone-700 transition-colors"
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
