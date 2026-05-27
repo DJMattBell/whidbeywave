@@ -71,8 +71,33 @@ export default function Navbar() {
     } catch { /* silent */ }
   }, [user]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount/user change
-  useEffect(() => { fetchUnread(); }, [fetchUnread]);
+  // Fetch on mount + poll every 60s; pause when tab is hidden
+  useEffect(() => {
+    fetchUnread();
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    function startPolling() {
+      if (!interval) interval = setInterval(fetchUnread, 60_000);
+    }
+    function stopPolling() {
+      if (interval) { clearInterval(interval); interval = null; }
+    }
+    function onVisibility() {
+      if (document.visibilityState === 'visible') {
+        fetchUnread();
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    }
+
+    startPolling();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [fetchUnread]);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const communityRef = useRef<HTMLDivElement>(null);
