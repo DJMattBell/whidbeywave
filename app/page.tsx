@@ -8,6 +8,8 @@ import TodayWidget from '@/components/TodayWidget';
 import AddToCalendar from '@/components/AddToCalendar';
 import FerryAlerts from '@/components/FerryAlerts';
 import HeroSection from '@/components/home/HeroSection';
+import LeadStoryCard from '@/components/home/LeadStoryCard';
+import { getLeadStory } from '@/lib/lead-story';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
@@ -23,6 +25,9 @@ export const revalidate = 300; // 5 minutes
 export default async function HomePage() {
   const supabase = createServerClient();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+
+  // Lead story — fetched early so downstream sections can exclude it
+  const leadStory = await getLeadStory();
 
   // Live data for action cards (cached — no additional network cost)
   const [ferryStatus, tideData] = await Promise.all([
@@ -576,6 +581,9 @@ export default async function HomePage() {
     <>
       <JsonLd data={jsonLd} />
       <HeroSection />
+      <Suspense fallback={null}>
+        <LeadStoryCard />
+      </Suspense>
       {todayBlock}
       {actionCards}
       {eventsSection}
