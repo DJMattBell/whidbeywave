@@ -13,12 +13,10 @@ import { getLeadStory } from '@/lib/lead-story';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
-  Calendar, Gift, Newspaper, ShoppingBag, BookOpen,
-  MessageCircle, Ship, Waves, Tag, Star, MapPinned, MapPin,
+  Calendar, Gift, Newspaper, ShoppingBag,
+  MessageCircle, Tag, Star, MapPinned, MapPin,
 } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
-import { fetchFerryBarStatus } from '@/lib/ferry';
-import { fetchNextTide } from '@/lib/tide';
 
 export const revalidate = 300; // 5 minutes
 
@@ -28,12 +26,6 @@ export default async function HomePage() {
 
   // Lead story — fetched early so downstream sections can exclude it
   const leadStory = await getLeadStory();
-
-  // Live data for action cards (cached — no additional network cost)
-  const [ferryStatus, tideData] = await Promise.all([
-    fetchFerryBarStatus(),
-    fetchNextTide(),
-  ]);
 
   const { data: eventsData } = await supabase
     .from('event_submissions')
@@ -207,62 +199,24 @@ export default async function HomePage() {
     </section>
   );
 
-  // Tier 2 — browse/navigate action cards (parchment-100)
-  // Build live micro-data for Ferry and Tides cards
-  const ferryMicro = ferryStatus.mukilteoClinton
-    ? `Clinton: ${ferryStatus.mukilteoClinton.status === 'on-schedule' ? 'On Sched.' : ferryStatus.mukilteoClinton.status === 'delays' ? 'Delays' : 'Cancelled'}`
-    : ferryStatus.ptCoupeville
-    ? `PT/Coup: ${ferryStatus.ptCoupeville.status === 'on-schedule' ? 'On Sched.' : ferryStatus.ptCoupeville.status === 'delays' ? 'Delays' : 'Cancelled'}`
-    : null;
-  const tideMicro = tideData
-    ? `${tideData.type === 'H' ? '↑ High' : '↓ Low'} ${tideData.time}`
-    : null;
-
+  // Tier 2 — section navigation (4 cards, no live data)
   const actionCards = (
     <section key="actions" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-      {/* Mobile: 3-column grid, all 6 cards visible */}
-      <div className="md:hidden grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {([
-          { Icon: Calendar,    label: "What's On",  subtitle: "What\u2019s on the calendar", href: '/events',      micro: null },
-          { Icon: Newspaper,   label: 'News',        subtitle: 'Stories from the island',     href: '/news',        micro: null },
-          { Icon: BookOpen,    label: 'Guides',      subtitle: 'Moving here, ferries, more',  href: '/guides',      micro: null },
-          { Icon: ShoppingBag, label: 'Buy & Sell', subtitle: 'From your neighbors',         href: '/marketplace', micro: null },
-          { Icon: Ship,        label: 'Ferry',       subtitle: null,                           href: '/ferry',       micro: ferryMicro },
-          { Icon: Waves,       label: 'Tides',       subtitle: null,                           href: '/tides',       micro: tideMicro },
-        ] as const).map(({ Icon, label, subtitle, href, micro }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex flex-col items-center gap-1 py-3 px-2 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-parchment-200 transition-colors text-center min-h-[88px] justify-center"
-          >
-            <Icon size={22} className="text-forest-600 shrink-0" aria-hidden="true" />
-            <span className="text-xs font-semibold text-stone-700 leading-tight">{label}</span>
-            {micro ? (
-              <span className="text-[10px] text-forest-600 font-medium leading-tight line-clamp-1">{micro}</span>
-            ) : subtitle ? (
-              <span className="text-[10px] text-stone-400 leading-tight line-clamp-2">{subtitle}</span>
-            ) : null}
-          </Link>
-        ))}
-      </div>
-
-      {/* Desktop: 5-column grid with subtitles */}
-      <div className="hidden md:grid grid-cols-5 gap-4">
-        {([
-          { Icon: Calendar,      label: "What's Going On", subtitle: 'Concerts, markets, and what\u2019s on the calendar', href: '/events' },
-          { Icon: Newspaper,     label: 'Island News',      subtitle: 'Stories from across the island',                     href: '/news' },
-          { Icon: BookOpen,      label: 'Guides',           subtitle: 'Moving here, ferries, dining, and more',             href: '/guides' },
-          { Icon: ShoppingBag,   label: 'Buy & Sell',      subtitle: 'Listings from your neighbors',                       href: '/marketplace' },
-          { Icon: MessageCircle, label: 'Ask the Island',  subtitle: 'Questions, advice, recommendations',                 href: '/forum' },
+          { Icon: Calendar,      label: "What's On",      subtitle: 'Events and what\u2019s on the calendar',    href: '/events' },
+          { Icon: Newspaper,     label: 'Island News',    subtitle: 'Stories from across the island',            href: '/news' },
+          { Icon: MessageCircle, label: 'Ask the Island', subtitle: 'Questions, advice, recommendations',        href: '/forum' },
+          { Icon: ShoppingBag,   label: 'Buy & Sell',     subtitle: 'Listings from your neighbors',              href: '/marketplace' },
         ] as const).map(({ Icon, label, subtitle, href }) => (
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2 py-5 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center"
+            className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center min-h-[88px] justify-center"
           >
-            <Icon size={28} className="text-forest-600" aria-hidden="true" />
-            <span className="font-semibold">{label}</span>
-            <span className="text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
+            <Icon size={24} className="text-forest-600" aria-hidden="true" />
+            <span className="font-semibold text-xs md:text-sm">{label}</span>
+            <span className="text-[10px] md:text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
           </Link>
         ))}
       </div>
