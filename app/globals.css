@@ -126,7 +126,7 @@ html.text-large h3 { font-size: 1.4rem; }
 
   /* ── Section headings ── */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-stone-900 mb-2;
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2;
     font-family: theme('fontFamily.heading');
   }
   .section-subtitle {

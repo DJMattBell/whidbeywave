@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import {
   Waves, Newspaper, BookOpen, MessageCircle, Star,
-  ArrowLeftRight, Mail, Map, Zap, Search, MessageSquare, Info,
+  ArrowLeftRight, Mail, Map, Zap, Search, MessageSquare, Info, Type,
 } from 'lucide-react';
 
 // Bottom tab bar: Home | Events | Ferry | Marketplace | More
@@ -23,8 +23,15 @@ export default function BottomTabBar() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [textLarge, setTextLarge] = useState(false);
   const lastScrollY = useRef(0);
   const moreRef = useRef<HTMLDivElement>(null);
+
+  // Text-size toggle state
+  useEffect(() => {
+    const saved = localStorage.getItem('whidbey-text-size');
+    if (saved === 'large') setTextLarge(true);
+  }, []);
 
   // Hide-on-scroll
   useEffect(() => {
@@ -53,6 +60,18 @@ export default function BottomTabBar() {
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
   }, [moreOpen]);
+
+  function toggleTextSize() {
+    const next = !textLarge;
+    setTextLarge(next);
+    if (next) {
+      document.documentElement.classList.add('text-large');
+      localStorage.setItem('whidbey-text-size', 'large');
+    } else {
+      document.documentElement.classList.remove('text-large');
+      localStorage.setItem('whidbey-text-size', 'normal');
+    }
+  }
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/';
@@ -90,7 +109,7 @@ export default function BottomTabBar() {
               <div className="px-4 pt-4 pb-2">
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">More</p>
               </div>
-              <div className="grid grid-cols-3 gap-1 px-3 pb-3">
+              <div className="grid grid-cols-3 gap-1 px-3 pb-2">
                 {moreLinks.map(({ href, Icon, label }) => (
                   <Link
                     key={href}
@@ -106,6 +125,21 @@ export default function BottomTabBar() {
                     <span className="text-[11px] font-medium leading-tight">{label}</span>
                   </Link>
                 ))}
+              </div>
+              {/* Text size toggle */}
+              <div className="border-t border-parchment-200 mx-3 mb-3 pt-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-stone-600">
+                  <Type size={18} />
+                  <span className="text-sm font-medium">Text size</span>
+                </div>
+                <button
+                  onClick={toggleTextSize}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors min-h-[32px] ${
+                    textLarge ? 'bg-amber-500 text-white' : 'bg-parchment-100 text-stone-600'
+                  }`}
+                >
+                  {textLarge ? 'Large ✓' : 'Default'}
+                </button>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import { googleCalendarUrl, generateIcs } from '@/lib/calendar';
 import type { CalendarEventInput } from '@/lib/calendar';
+import { CalendarPlus, Download } from 'lucide-react';
 
 export default function AddToCalendar({ event }: { event: CalendarEventInput }) {
   function downloadIcs() {
@@ -25,7 +26,7 @@ export default function AddToCalendar({ event }: { event: CalendarEventInput }) 
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 text-forest-600 hover:text-forest-800 transition-colors"
       >
-        📅 Add to calendar
+        <CalendarPlus size={14} className="shrink-0 -mt-0.5" aria-hidden="true" /> Add to calendar
       </a>
       <span className="text-parchment-300 select-none" aria-hidden="true">·</span>
       <button
@@ -33,7 +34,7 @@ export default function AddToCalendar({ event }: { event: CalendarEventInput }) 
         className="inline-flex items-center gap-1 text-stone-600 hover:text-stone-800 transition-colors"
         title="Download .ics for Apple Calendar, Outlook, etc."
       >
-        ↓&nbsp;.ics
+        <Download size={12} className="shrink-0 -mt-0.5" aria-hidden="true" />&nbsp;.ics
       </button>
     </div>
   );

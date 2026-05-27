@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import TextSizeFooterToggle from '@/components/TextSizeFooterToggle';
 
 export default function Footer() {
   return (
@@ -29,7 +30,7 @@ export default function Footer() {
           </div>
 
           {/* Explore */}
-          <div>
+          <div className="pt-6 border-t border-forest-800 sm:pt-0 sm:border-t-0">
             <h3 className="font-semibold mb-3 text-parchment-200">
               Around the Island
             </h3>
@@ -42,7 +43,7 @@ export default function Footer() {
           </div>
 
           {/* Community */}
-          <div>
+          <div className="pt-6 border-t border-forest-800 sm:pt-0 sm:border-t-0">
             <h3 className="font-semibold mb-3 text-parchment-200">
               Community
             </h3>
@@ -56,7 +57,7 @@ export default function Footer() {
           </div>
 
           {/* Towns */}
-          <div>
+          <div className="pt-6 border-t border-forest-800 sm:pt-0 sm:border-t-0">
             <h3 className="font-semibold mb-3 text-parchment-200">
               Island Towns
             </h3>
@@ -90,6 +91,8 @@ export default function Footer() {
             <Link href="/terms" className="hover:text-parchment-300 transition-colors">Terms</Link>
             <span className="text-forest-700">·</span>
             <Link href="/contact" className="hover:text-parchment-300 transition-colors">Contact</Link>
+            <span className="text-forest-700">·</span>
+            <TextSizeFooterToggle />
           </div>
         </div>
       </div>

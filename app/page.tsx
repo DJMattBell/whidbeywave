@@ -12,15 +12,23 @@ import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
   Calendar, Gift, Newspaper, ShoppingBag, BookOpen,
-  MessageCircle, Ship, Waves, Tag, Star, MapPinned,
+  MessageCircle, Ship, Waves, Tag, Star, MapPinned, MapPin,
 } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
+import { fetchFerryBarStatus } from '@/lib/ferry';
+import { fetchNextTide } from '@/lib/tide';
 
 export const revalidate = 300; // 5 minutes
 
 export default async function HomePage() {
   const supabase = createServerClient();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+
+  // Live data for action cards (cached — no additional network cost)
+  const [ferryStatus, tideData] = await Promise.all([
+    fetchFerryBarStatus(),
+    fetchNextTide(),
+  ]);
 
   const { data: eventsData } = await supabase
     .from('event_submissions')
@@ -134,10 +142,14 @@ export default async function HomePage() {
       newsHeading = "What the Island's Talking About";
       newsSubtitle = 'Active conversations from Ask the Island';
       newsLink = '/forum';
-    } else if (!newsTypes.has('forum')) {
+    } else if (newsTypes.size === 1 && newsTypes.has('listing')) {
       newsHeading = 'On the Island Marketplace';
       newsSubtitle = 'Recently listed by neighbors';
       newsLink = '/marketplace';
+    } else if (newsTypes.size === 1 && newsTypes.has('pick')) {
+      newsHeading = 'What People Are Recommending';
+      newsSubtitle = "From your neighbors' Local Picks";
+      newsLink = '/recommendations';
     }
   }
 
@@ -191,30 +203,45 @@ export default async function HomePage() {
   );
 
   // Tier 2 — browse/navigate action cards (parchment-100)
+  // Build live micro-data for Ferry and Tides cards
+  const ferryMicro = ferryStatus.mukilteoClinton
+    ? `Clinton: ${ferryStatus.mukilteoClinton.status === 'on-schedule' ? 'On Sched.' : ferryStatus.mukilteoClinton.status === 'delays' ? 'Delays' : 'Cancelled'}`
+    : ferryStatus.ptCoupeville
+    ? `PT/Coup: ${ferryStatus.ptCoupeville.status === 'on-schedule' ? 'On Sched.' : ferryStatus.ptCoupeville.status === 'delays' ? 'Delays' : 'Cancelled'}`
+    : null;
+  const tideMicro = tideData
+    ? `${tideData.type === 'H' ? '↑ High' : '↓ Low'} ${tideData.time}`
+    : null;
+
   const actionCards = (
     <section key="actions" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-      {/* Mobile: horizontal scroll */}
-      <div className="md:hidden flex overflow-x-auto gap-3 scrollbar-none">
+      {/* Mobile: 3-column grid, all 6 cards visible */}
+      <div className="md:hidden grid grid-cols-3 gap-3">
         {([
-          { Icon: Calendar,      label: "What's On",   href: '/events' },
-          { Icon: Newspaper,     label: 'News',         href: '/news' },
-          { Icon: BookOpen,      label: 'Guides',       href: '/guides' },
-          { Icon: ShoppingBag,   label: 'Buy & Sell',  href: '/marketplace' },
-          { Icon: Ship,          label: 'Ferry',        href: '/ferry' },
-          { Icon: Waves,         label: 'Tides',        href: '/tides' },
-        ] as const).map(({ Icon, label, href }) => (
+          { Icon: Calendar,    label: "What's On",  subtitle: "What\u2019s on the calendar", href: '/events',      micro: null },
+          { Icon: Newspaper,   label: 'News',        subtitle: 'Stories from the island',     href: '/news',        micro: null },
+          { Icon: BookOpen,    label: 'Guides',      subtitle: 'Moving here, ferries, more',  href: '/guides',      micro: null },
+          { Icon: ShoppingBag, label: 'Buy & Sell', subtitle: 'From your neighbors',         href: '/marketplace', micro: null },
+          { Icon: Ship,        label: 'Ferry',       subtitle: null,                           href: '/ferry',       micro: ferryMicro },
+          { Icon: Waves,       label: 'Tides',       subtitle: null,                           href: '/tides',       micro: tideMicro },
+        ] as const).map(({ Icon, label, subtitle, href, micro }) => (
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-1.5 shrink-0 px-4 py-3 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-parchment-200 transition-colors min-w-[80px] text-center"
+            className="flex flex-col items-center gap-1 py-3 px-2 rounded-xl bg-parchment-100 border border-parchment-200 hover:bg-parchment-200 transition-colors text-center min-h-[88px] justify-center"
           >
-            <Icon size={24} className="text-forest-600" aria-hidden="true" />
-            <span className="text-xs font-semibold text-stone-700 whitespace-nowrap">{label}</span>
+            <Icon size={22} className="text-forest-600 shrink-0" aria-hidden="true" />
+            <span className="text-xs font-semibold text-stone-700 leading-tight">{label}</span>
+            {micro ? (
+              <span className="text-[10px] text-forest-600 font-medium leading-tight line-clamp-1">{micro}</span>
+            ) : subtitle ? (
+              <span className="text-[10px] text-stone-400 leading-tight line-clamp-2">{subtitle}</span>
+            ) : null}
           </Link>
         ))}
       </div>
 
-      {/* Desktop: grid with subtitles */}
+      {/* Desktop: 5-column grid with subtitles */}
       <div className="hidden md:grid grid-cols-5 gap-4">
         {([
           { Icon: Calendar,      label: "What's Going On", subtitle: 'Concerts, markets, and what\u2019s on the calendar', href: '/events' },
@@ -274,7 +301,7 @@ export default async function HomePage() {
                   <Calendar size={14} className="inline -mt-0.5 mr-1" aria-hidden="true" />
                   <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}
                 </p>
-                <p className="text-sm text-stone-600 mb-4">📍 {event.town}</p>
+                <p className="text-sm text-stone-600 mb-4"><MapPin size={14} className="inline -mt-0.5 mr-0.5 text-stone-400" aria-hidden="true" />{event.town}</p>
                 <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description}</p>
                 <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-parchment-200">
                   <AddToCalendar
@@ -511,7 +538,7 @@ export default async function HomePage() {
   const closingCta = (
     <section key="closing" className="bg-gradient-to-br from-forest-700 via-forest-600 to-sound-600 text-parchment-50 py-12 md:py-16">
       <div className="max-w-3xl mx-auto px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
           This is your site as much as ours
         </h2>
         <p className="text-parchment-200 text-lg mb-8 leading-relaxed">

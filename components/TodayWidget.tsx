@@ -7,11 +7,12 @@ import { fetchFerryBarStatus } from '@/lib/ferry';
 import { createServerClient, isConfigured } from '@/lib/supabase';
 import { WMO_ICONS, WMO_LABELS } from '@/lib/wmo-codes';
 import { Calendar, Ship, AlertTriangle } from 'lucide-react';
+import { fetchNextTide } from '@/lib/tide';
+import type { TideData } from '@/lib/tide';
 
 // ── Data fetch helpers ───────────────────────────────────────────────────────
 
 type WeatherData = { temp: number; code: number; wind: number; sunset: string | null };
-type TideData    = { type: 'H' | 'L'; time: string; height: string };
 type NextEvent   = { title: string; time: string; town: string };
 
 async function fetchWeather(): Promise<WeatherData | null> {
@@ -41,37 +42,6 @@ async function fetchWeather(): Promise<WeatherData | null> {
       code: data.current.weathercode as number,
       wind: Math.round(data.current.windspeed_10m as number),
       sunset,
-    };
-  } catch { return null; }
-}
-
-async function fetchNextTide(): Promise<TideData | null> {
-  try {
-    const res = await fetch(
-      'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter' +
-      '?date=today&station=9444900&product=predictions&datum=MLLW' +
-      '&time_zone=lst_ldt&interval=hilo&units=english' +
-      '&application=WhidbeyWave&format=json',
-      { next: { revalidate: 1800 } }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.predictions) return null;
-
-    const now = new Date();
-    const next = (data.predictions as { t: string; v: string; type: 'H' | 'L' }[])
-      .find(p => {
-        const [d, t] = p.t.split(' ');
-        return new Date(`${d}T${t}`) > now;
-      });
-    if (!next) return null;
-
-    const [, timePart] = next.t.split(' ');
-    const [h, m] = timePart.split(':').map(Number);
-    return {
-      type:   next.type,
-      time:   `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`,
-      height: parseFloat(next.v).toFixed(1),
     };
   } catch { return null; }
 }

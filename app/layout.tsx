@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/components/AuthProvider';
 import InstallPrompt from '@/components/InstallPrompt';
-import TextSizeToggle from '@/components/TextSizeToggle';
+
 import FeedbackButton from '@/components/FeedbackButton';
 import BottomTabBar from '@/components/BottomTabBar';
 import FloatingActionButton from '@/components/FloatingActionButton';
@@ -104,7 +104,6 @@ export default function RootLayout({
 
         </AuthProvider>
         <ServiceWorkerRegistration />
-        <TextSizeToggle />
         <FeedbackButton />
         <Analytics />
         <SpeedInsights />
