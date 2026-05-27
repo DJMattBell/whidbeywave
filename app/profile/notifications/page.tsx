@@ -21,12 +21,20 @@ const EVENT_TYPES = [
     category: 'Marketplace',
     types: [
       { key: 'listing_contact', label: 'Someone contacts me about my listing' },
+      { key: 'new_listing_in_my_area', label: 'New listings matching my interests' },
+      { key: 'flash_give_in_my_area', label: 'Free items from neighbors' },
     ],
   },
   {
     category: 'Events',
     types: [
       { key: 'event_approved', label: 'My submitted event is approved' },
+    ],
+  },
+  {
+    category: 'Recommendations',
+    types: [
+      { key: 'business_you_recommended_hit_milestone', label: 'A place I recommended hits a milestone' },
     ],
   },
 ];
@@ -49,6 +57,13 @@ export default function NotificationPreferencesPage() {
     async function fetchPrefs() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+
+      // Mark all unread notifications as read
+      fetch('/api/notifications/mark-read', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      }).catch(() => {});
+
       const res = await fetch('/api/notifications/preferences', {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });

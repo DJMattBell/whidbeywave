@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
+import { supabase as supabaseBrowser } from '@/lib/supabase';
 import {
   Calendar, Newspaper, BookOpen, Ship, Map, Utensils, Carrot,
   Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
@@ -53,6 +54,24 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen]   = useState(false);
   const [authOpen, setAuthOpen]         = useState(false);
   const { user, signOut } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnread = useCallback(async () => {
+    if (!user) { setUnreadCount(0); return; }
+    try {
+      const { data: { session } } = await supabaseBrowser.auth.getSession();
+      if (!session) return;
+      const res = await fetch('/api/notifications/unread-count', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setUnreadCount(json.count ?? 0);
+      }
+    } catch { /* silent */ }
+  }, [user]);
+
+  useEffect(() => { fetchUnread(); }, [fetchUnread]);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const communityRef = useRef<HTMLDivElement>(null);
@@ -299,6 +318,26 @@ export default function Navbar() {
                   <Search size={20} aria-hidden="true" />
                 </Link>
 
+                {/* Bell icon (logged in only) */}
+                {user && (
+                  <Link
+                    href="/profile/notifications"
+                    aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : 'Notifications'}
+                    className={`relative p-2 rounded-lg transition-colors ${
+                      pathname === '/profile/notifications'
+                        ? 'bg-forest-600 text-parchment-50'
+                        : 'text-stone-500 hover:text-forest-600 hover:bg-forest-50'
+                    }`}
+                  >
+                    <Bell size={20} aria-hidden="true" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-terra-600 text-white text-[10px] font-bold px-1 leading-none">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
                 {/* Profile dropdown (logged in) or Sign in (logged out) */}
                 {user ? (
                   <div ref={profileRef} className="relative">
@@ -523,6 +562,11 @@ export default function Navbar() {
                     >
                       <Bell size={16} className="shrink-0" aria-hidden="true" />
                       Notifications
+                      {unreadCount > 0 && (
+                        <span className="ml-auto min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-terra-600 text-white text-[10px] font-bold px-1">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
                     </Link>
                     <button
                       onClick={() => { setMenuOpen(false); signOut(); }}
