@@ -13,6 +13,21 @@
  *   heading text   = #1c3d2c
  *   button bg      = #255c42
  *   muted text     = #a8a29e
+ *
+ * ── User-supplied interpolations (XSS-escaped via escapeHtml) ──────────
+ *
+ * emailLayout():        title, headerTitle, headerSubtitle
+ * emailButton():        href, label
+ * emailConfirmation():  firstName, confirmUrl
+ * emailWelcome():       firstName, unsubscribeUrl
+ * emailApproval():      title, viewUrl
+ * emailForumReply():    postTitle, replierName, replyBody, threadUrl
+ * emailNewListing():    title, priceText, category, location, description,
+ *                       photoUrl, emoji, unsubscribeUrl
+ *
+ * The `body` and `footerHtml` params on emailLayout() accept raw HTML by
+ * design — they are composed by the template functions above, not user input.
+ * Escaping happens at each interpolation site, not at the layout boundary.
  */
 
 import { escapeHtml } from './escapeHtml';
@@ -180,5 +195,46 @@ export function emailForumReply(opts: {
       `)}
       ${emailButton(opts.threadUrl, 'View Thread')}
     `,
+  });
+}
+
+/** New marketplace listing alert for subscribers. */
+export function emailNewListing(opts: {
+  title: string;
+  priceText: string;
+  category: string;
+  location: string;
+  description: string | null;
+  photoUrl: string | null;
+  emoji: string;
+  listingUrl: string;
+  unsubscribeUrl: string;
+}): string {
+  const photoHtml = opts.photoUrl
+    ? `<div style="margin:16px 0;text-align:center;">
+         <img src="${escapeHtml(opts.photoUrl)}" alt="${escapeHtml(opts.title)}"
+           style="max-width:100%;max-height:240px;object-fit:cover;border-radius:10px;border:1px solid #e8dfc8;" />
+       </div>`
+    : `<div style="margin:16px 0;text-align:center;font-size:48px;">${escapeHtml(opts.emoji || '🏷️')}</div>`;
+
+  return emailLayout({
+    title: `New listing: ${escapeHtml(opts.title)}`,
+    headerSubtitle: 'New listing · Island Marketplace',
+    body: `
+      ${emailCard(`
+        <p style="margin:0 0 4px;font-size:18px;font-weight:bold;color:#1c3d2c;">${escapeHtml(opts.title)}</p>
+        <p style="margin:0 0 4px;font-size:17px;font-weight:bold;color:#b45309;">${escapeHtml(opts.priceText)}</p>
+        <p style="margin:0;font-size:13px;color:#78716c;">${escapeHtml(opts.category)} · ${escapeHtml(opts.location)}</p>
+        ${photoHtml}
+        ${opts.description ? `<p style="margin:12px 0 0;font-size:14px;color:#57534e;line-height:1.6;border-left:3px solid #e8dfc8;padding-left:12px;">${escapeHtml(opts.description)}</p>` : ''}
+      `)}
+      ${emailButton(opts.listingUrl, 'View on Marketplace')}
+    `,
+    footerHtml: `<p style="margin:0;font-size:12px;color:#a8a29e;line-height:1.7;text-align:center;">
+      You're getting this because you signed up for marketplace alerts on WhidbeyWave.<br/>
+      <a href="${escapeHtml(opts.unsubscribeUrl)}" style="color:#a8a29e;text-decoration:underline;">Unsubscribe</a>
+      &nbsp;&middot;&nbsp;
+      <a href="${SITE_URL}" style="color:#255c42;text-decoration:none;">WhidbeyWave.com</a>
+    </p>`,
   });
 }
