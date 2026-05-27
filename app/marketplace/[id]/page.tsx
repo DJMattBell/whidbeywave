@@ -11,15 +11,15 @@ import ImageGallery from '@/components/ImageGallery';
 
 export const revalidate = 60;
 
-async function getListing(id: string): Promise<MarketplaceListing | null> {
+async function getListing(id: string): Promise<(MarketplaceListing & { status?: string }) | null> {
   const supabase = createServerClient();
   const { data } = await supabase
     .from('listings')
-    .select('id, title, price, is_free, category, location, description, seller_name, emoji, images, sold, expires_at, created_at, user_id, contact_method')
+    .select('id, title, price, is_free, category, location, description, seller_name, emoji, images, sold, expires_at, created_at, user_id, contact_method, status')
     .eq('id', id)
-    .eq('status', 'approved')
+    .in('status', ['approved', 'expired'])
     .single();
-  return (data as MarketplaceListing) ?? null;
+  return (data as (MarketplaceListing & { status?: string })) ?? null;
 }
 
 export async function generateMetadata({
@@ -80,8 +80,15 @@ export default async function ListingDetailPage({
           </div>
         )}
 
+        {/* EXPIRED banner (flash-give duration elapsed) */}
+        {!listing.sold && listing.status === 'expired' && (
+          <div className="bg-stone-800 text-white text-sm font-bold text-center py-3 rounded-lg tracking-[0.2em] uppercase mb-6">
+            EXPIRED — This free listing has ended
+          </div>
+        )}
+
         {/* Photo gallery */}
-        <div className={`rounded-xl overflow-hidden mb-6 ${listing.sold ? 'grayscale opacity-60' : ''}`}>
+        <div className={`rounded-xl overflow-hidden mb-6 ${listing.sold || listing.status === 'expired' ? 'grayscale opacity-60' : ''}`}>
           {photos.length > 0 ? (
             <ImageGallery photos={photos} alt={listing.title} />
           ) : (
@@ -138,7 +145,7 @@ export default async function ListingDetailPage({
               <p className="text-lg text-stone-900 font-semibold">{listing.seller_name}</p>
             </div>
           </div>
-          {!listing.sold && (
+          {!listing.sold && listing.status !== 'expired' && (
             <div className="mt-4 pt-4 border-t border-parchment-200">
               {listing.contact_method && (
                 <p className="text-xs text-stone-500 font-medium mb-1.5">
