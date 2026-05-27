@@ -11,6 +11,7 @@ import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
 import { logScrapeRun } from '@/lib/scrapeLog';
+import { sanitizeTime, normalizeLocation } from '@/lib/scrapers/types';
 import type { ScrapedEvent } from '@/lib/scrapers/types';
 
 const resend = getResend();
@@ -125,20 +126,20 @@ export async function GET(request: NextRequest) {
   const supabase = createServiceClient();
 
   // Dedup: fetch existing submissions from the last 90 days
-  // Uses normalized title + date + source to catch duplicates even with
-  // minor whitespace/casing differences between scrape runs
+  // Uses normalized title + date + location (source-agnostic) so the same
+  // event scraped from two different calendars is correctly recognized as a dupe
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
   const cutoff = ninetyDaysAgo.toISOString().slice(0, 10); // YYYY-MM-DD
 
   const { data: existing } = await supabase
     .from('event_submissions')
-    .select('title, date, source')
+    .select('title, date, location')
     .gte('date', cutoff);
 
   const existingKeys = new Set(
-    (existing ?? []).map((e: { title: string; date: string; source?: string }) =>
-      `${normalizeTitle(e.title)}|${e.date}|${(e.source ?? '').toLowerCase()}`
+    (existing ?? []).map((e: { title: string; date: string; location?: string }) =>
+      `${normalizeTitle(e.title)}|${e.date}|${normalizeLocation(e.location)}`
     )
   );
 
@@ -147,7 +148,7 @@ export async function GET(request: NextRequest) {
 
   const newEvents = candidates.filter(
     e =>
-      !existingKeys.has(`${normalizeTitle(e.title)}|${e.date}|${e.source.toLowerCase()}`) &&
+      !existingKeys.has(`${normalizeTitle(e.title)}|${e.date}|${normalizeLocation(e.location)}`) &&
       !blockedLocations.some(bl => (e.location ?? '').toLowerCase().includes(bl))
   );
 
@@ -155,7 +156,7 @@ export async function GET(request: NextRequest) {
     const rows = newEvents.map(e => ({
       title:           e.title,
       date:            e.date,
-      time:            e.time ?? '',
+      time:            sanitizeTime(e.time ?? ''),
       location:        e.location ?? '',
       town:            e.town,
       category:        e.category,
