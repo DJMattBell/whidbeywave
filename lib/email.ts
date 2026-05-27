@@ -24,6 +24,8 @@
  * emailForumReply():    postTitle, replierName, replyBody, threadUrl
  * emailNewListing():    title, priceText, category, location, description,
  *                       photoUrl, emoji, unsubscribeUrl
+ * emailMilestone():     businessName, milestone, reviewerName, rating,
+ *                       reviewSnippet, recommendationUrl
  *
  * The `body` and `footerHtml` params on emailLayout() accept raw HTML by
  * design — they are composed by the template functions above, not user input.
@@ -236,5 +238,36 @@ export function emailNewListing(opts: {
       &nbsp;&middot;&nbsp;
       <a href="${SITE_URL}" style="color:#255c42;text-decoration:none;">WhidbeyWave.com</a>
     </p>`,
+  });
+}
+
+/** Recommendation milestone notification — sent when a business hits N reviews. */
+export function emailMilestone(opts: {
+  businessName: string;
+  milestone: number;
+  reviewerName: string;
+  rating: number;
+  reviewSnippet: string;
+  recommendationUrl: string;
+}): string {
+  const stars = '★'.repeat(opts.rating) + '☆'.repeat(5 - opts.rating);
+  return emailLayout({
+    title: `${opts.businessName} hit ${opts.milestone} reviews — WhidbeyWave`,
+    headerSubtitle: 'Recommendation Milestone',
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        Great news — <strong style="color:#1c3d2c;">${escapeHtml(opts.businessName)}</strong>
+        just reached <strong>${opts.milestone} reviews</strong> on WhidbeyWave!
+      </p>
+      <p style="margin:0 0 20px;font-size:14px;color:#57534e;line-height:1.7;">
+        You recommended this place, and neighbors are loving it too.
+      </p>
+      ${emailCard(`
+        <p style="margin:0 0 4px;font-size:14px;color:#b45309;letter-spacing:2px;">${stars}</p>
+        <p style="margin:0 0 4px;font-size:14px;color:#57534e;line-height:1.6;font-style:italic;">"${escapeHtml(opts.reviewSnippet)}"</p>
+        <p style="margin:0;font-size:12px;color:#a8a29e;">— ${escapeHtml(opts.reviewerName)}</p>
+      `)}
+      ${emailButton(opts.recommendationUrl, 'See All Reviews')}
+    `,
   });
 }

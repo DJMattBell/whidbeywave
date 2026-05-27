@@ -14,7 +14,7 @@
 
 import { createServiceClient } from '@/lib/supabase';
 import { getResend } from './resend';
-import { emailForumReply, emailNewListing } from './email';
+import { emailForumReply, emailNewListing, emailMilestone } from './email';
 
 type NotifyPayload = Record<string, string>;
 
@@ -129,6 +129,17 @@ async function sendEmail(userId: string, eventType: string, payload: NotifyPaylo
           unsubscribeUrl: `${SITE_URL}/profile/notifications`,
         });
         break;
+      case 'business_you_recommended_hit_milestone':
+        subject = `${payload.businessName ?? 'A place you recommended'} hit ${payload.milestone ?? ''} reviews`;
+        html = emailMilestone({
+          businessName: payload.businessName ?? '',
+          milestone: parseInt(payload.milestone ?? '0', 10),
+          reviewerName: payload.reviewerName ?? '',
+          rating: parseInt(payload.rating ?? '0', 10),
+          reviewSnippet: payload.reviewSnippet ?? '',
+          recommendationUrl: payload.recommendationUrl ?? `${SITE_URL}/recommendations`,
+        });
+        break;
       default:
         await logNotification(userId, eventType, 'email', 'skipped', `No email template for ${eventType}`);
         return;
@@ -212,6 +223,9 @@ export async function notify(
   } else if (eventType === 'flash_give_in_my_area') {
     payload.pushTitle = 'Free on Whidbey!';
     payload.pushBody = payload.title ?? 'A neighbor is giving something away';
+  } else if (eventType === 'business_you_recommended_hit_milestone') {
+    payload.pushTitle = `${payload.businessName ?? 'A place you recommended'} hit ${payload.milestone ?? ''} reviews`;
+    payload.pushBody = 'Neighbors are loving your recommendation!';
   }
 
   const promises: Promise<void>[] = [];

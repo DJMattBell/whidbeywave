@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isWhidbeyLocal } from '@/lib/whidbey-zips';
 import { verifyUserRequest } from '@/lib/userAuth';
+import { createServiceClient } from '@/lib/supabase';
+import { notify } from '@/lib/notifications';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
+const MILESTONES = [5, 10, 25, 50, 100];
 
 export async function POST(request: NextRequest) {
   let recommendationId: string, rating: number, body: string, zip: string;
@@ -60,5 +65,57 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to post review' }, { status: 500 });
   }
 
+  // Check for milestone notifications (non-blocking)
+  checkMilestone(recommendationId, displayName, rating, body.trim()).catch(() => {});
+
   return NextResponse.json({ ok: true, review });
+}
+
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+async function checkMilestone(
+  recommendationId: string,
+  reviewerName: string,
+  rating: number,
+  reviewBody: string
+): Promise<void> {
+  const supabase = createServiceClient();
+
+  // Get the recommendation with current review_count
+  const { data: rec } = await supabase
+    .from('recommendations')
+    .select('name, review_count, submitted_by')
+    .eq('id', recommendationId)
+    .single();
+
+  if (!rec || !rec.submitted_by) return;
+
+  const count = rec.review_count;
+  const milestone = MILESTONES.find(m => m === count);
+  if (!milestone) return;
+
+  const normalized = normalizeName(rec.name);
+
+  // Insert milestone record — UNIQUE constraint prevents duplicates
+  const { error: milestoneError } = await supabase
+    .from('recommendation_milestones')
+    .insert({ normalized_name: normalized, milestone });
+
+  // If the insert fails (duplicate), another request already triggered this milestone
+  if (milestoneError) return;
+
+  const snippet = reviewBody.length > 120
+    ? reviewBody.slice(0, 120) + '…'
+    : reviewBody;
+
+  await notify(rec.submitted_by, 'business_you_recommended_hit_milestone', {
+    businessName: rec.name,
+    milestone: String(milestone),
+    reviewerName,
+    rating: String(rating),
+    reviewSnippet: snippet,
+    recommendationUrl: `${SITE_URL}/recommendations`,
+  });
 }
