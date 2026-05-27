@@ -181,22 +181,19 @@ export default async function HomePage() {
 
   // ── Section builders ──────────────────────────────────────────────────────
 
-  // Tier 1 — live/dynamic data (sound-50 accent)
+  // Utility shelf — compact strip at altitude 4
   const todayBlock = (
-    <section key="today" id="today-panel" className="bg-sound-50 border-b border-sound-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+    <section key="today" id="today-panel" className="bg-sound-50 border-y border-sound-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
         <Suspense fallback={
-          <div className="animate-pulse space-y-3">
-            <div className="h-4 bg-sound-100 rounded w-40" />
-            <div className="h-20 bg-sound-100 rounded-xl" />
-          </div>
+          <div className="animate-pulse h-5 bg-sound-100 rounded w-60" />
         }>
           <TodayWidget />
         </Suspense>
-        <Suspense fallback={null}>
-          <FerryAlerts />
-        </Suspense>
       </div>
+      <Suspense fallback={null}>
+        <FerryAlerts />
+      </Suspense>
     </section>
   );
 
@@ -539,12 +536,12 @@ export default async function HomePage() {
       <Suspense fallback={null}>
         <LeadStoryCard />
       </Suspense>
-      {todayBlock}
       {actionCards}
       {eventsSection}
       <Suspense fallback={null}>
         <CommunityVoiceCard excludeThreadId={leadStory?.leadForumThreadId} />
       </Suspense>
+      {todayBlock}
       {flashGivesSection}
       {newsSection}
       {listingsSection}
