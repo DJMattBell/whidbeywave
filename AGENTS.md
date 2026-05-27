@@ -110,6 +110,12 @@ Supabase Auth with magic link and Google OAuth. `AuthProvider` (React context in
 - **`LocalBadge.tsx`** — "Local" badge shown when user's zip is a Whidbey zip
 - **`forum/NewPostForm.tsx`** / **`forum/ReplyForm.tsx`** — Forum interaction forms
 
+### Notification Routing
+
+All per-user event notifications route through `notify()` from `lib/notifications.ts`. **Never call `resend.emails.send()` directly for per-user event notifications.**
+
+The `listing_alerts` table is deprecated. New listing alert subscriptions go through `notification_preferences` with `event_type = 'new_listing_in_my_area'`. The old `listing_alerts` table will be dropped 60 days after the transition email is sent (see Phase 19c).
+
 ### Scheduled Jobs
 
 A Vercel cron (`vercel.json`) hits `GET /api/newsletter/send-digest` every Monday at 9am PT. It is protected by either the `x-vercel-cron` header or a `Bearer` token matching `CRON_SECRET`.
