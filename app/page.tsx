@@ -17,7 +17,6 @@ import {
   Calendar, Newspaper, ShoppingBag,
   MessageCircle, Tag, Star, MapPinned, MapPin,
 } from 'lucide-react';
-import EmptyState from '@/components/EmptyState';
 
 export const revalidate = 300; // 5 minutes
 
@@ -28,15 +27,43 @@ export default async function HomePage() {
   // Lead story — fetched early so downstream sections can exclude it
   const leadStory = await getLeadStory();
 
-  const { data: eventsData } = await supabase
-    .from('event_submissions')
-    .select('id, title, date, time, town, category, description, tags')
-    .eq('status', 'approved')
-    .gte('date', today)
-    .order('date', { ascending: true })
-    .limit(3);
+  // "Coming Up on the Island" — excludes lead event (occurrence-only, not series),
+  // expands window 7 → 14 → 30 days if fewer than 3 events qualify.
+  let upcomingEvents: {
+    id: string; title: string; date: string; time: string;
+    town: string; category: string; description: string | null; tags: string[];
+  }[] = [];
 
-  const upcomingEvents = eventsData ?? [];
+  for (const days of [7, 14, 30]) {
+    const windowEnd = new Date();
+    windowEnd.setDate(windowEnd.getDate() + days);
+    const windowEndStr = windowEnd.toLocaleDateString('en-CA');
+
+    let query = supabase
+      .from('event_submissions')
+      .select('id, title, date, time, town, category, description, tags')
+      .eq('status', 'approved')
+      .gte('date', today)
+      .lte('date', windowEndStr)
+      .order('date', { ascending: true })
+      .order('time', { ascending: true })
+      .limit(leadStory?.leadEventId ? 4 : 3);
+
+    if (leadStory?.leadEventId) {
+      query = query.neq('id', leadStory.leadEventId);
+    }
+
+    const { data } = await query;
+    const results = (data ?? []).slice(0, 3);
+    if (results.length >= 3) {
+      upcomingEvents = results;
+      break;
+    }
+    // Keep best result so far in case we never reach 3
+    if (results.length > upcomingEvents.length) {
+      upcomingEvents = results;
+    }
+  }
 
   const { data: newsData } = await supabase
     .from('news_posts')
@@ -208,7 +235,8 @@ export default async function HomePage() {
     </section>
   );
 
-  const eventsSection = (
+  // Hidden entirely when no events qualify within 30 days — empty beats stale
+  const eventsSection = upcomingEvents.length === 0 ? null : (
     <section key="events" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="flex items-end justify-between mb-10">
         <div>
@@ -219,14 +247,7 @@ export default async function HomePage() {
           See all →
         </Link>
       </div>
-      {upcomingEvents.length === 0 ? (
-        <EmptyState
-          icon={Calendar}
-          headline="The calendar's looking quiet"
-          subtext="Check back soon or submit your own community event."
-          action={{ label: 'Submit an event', href: '/submit-event' }}
-        />
-      ) : (
+      {(
         <div className="grid md:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
             <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group flex flex-col">
@@ -254,7 +275,7 @@ export default async function HomePage() {
                       date:        event.date,
                       time:        event.time,
                       location:    event.town,
-                      description: event.description,
+                      description: event.description ?? undefined,
                     }}
                   />
                   <span className="text-sm text-forest-600 group-hover:text-forest-800 transition-colors shrink-0">
@@ -268,7 +289,7 @@ export default async function HomePage() {
       )}
       <div className="text-center mt-6 sm:hidden">
         <Link href="/events" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
-          See all events →
+          See all events  →
         </Link>
       </div>
     </section>
