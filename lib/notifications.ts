@@ -14,7 +14,7 @@
 
 import { createServiceClient } from '@/lib/supabase';
 import { getResend } from './resend';
-import { emailForumReply } from './email';
+import { emailForumReply, emailNewListing } from './email';
 
 type NotifyPayload = Record<string, string>;
 
@@ -115,6 +115,20 @@ async function sendEmail(userId: string, eventType: string, payload: NotifyPaylo
           threadUrl: payload.threadUrl ?? SITE_URL,
         });
         break;
+      case 'new_listing_in_my_area':
+        subject = `New listing: ${payload.title ?? 'on WhidbeyWave'}`;
+        html = emailNewListing({
+          title: payload.title ?? '',
+          priceText: payload.priceText ?? '',
+          category: payload.category ?? '',
+          location: payload.location ?? '',
+          description: payload.description ?? null,
+          photoUrl: payload.photoUrl ?? null,
+          emoji: payload.emoji ?? '🏷️',
+          listingUrl: payload.listingUrl ?? `${SITE_URL}/marketplace`,
+          unsubscribeUrl: `${SITE_URL}/profile/notifications`,
+        });
+        break;
       default:
         await logNotification(userId, eventType, 'email', 'skipped', `No email template for ${eventType}`);
         return;
@@ -192,6 +206,9 @@ export async function notify(
   if (eventType === 'forum_reply_to_my_post') {
     payload.pushTitle = `${payload.replierName ?? 'Someone'} replied to your question`;
     payload.pushBody = (payload.replyBody ?? '').slice(0, 100);
+  } else if (eventType === 'new_listing_in_my_area') {
+    payload.pushTitle = 'New on the marketplace';
+    payload.pushBody = payload.title ?? 'A neighbor listed something new';
   } else if (eventType === 'flash_give_in_my_area') {
     payload.pushTitle = 'Free on Whidbey!';
     payload.pushBody = payload.title ?? 'A neighbor is giving something away';

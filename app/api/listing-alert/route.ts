@@ -5,6 +5,7 @@ import { escapeHtml } from '@/lib/escapeHtml';
 import { emailNewListing } from '@/lib/email';
 import { formatPrice } from '@/lib/marketplace';
 import { verifyCronRequest } from '@/lib/cronAuth';
+import { notifyAll } from '@/lib/notifications';
 
 // Supabase webhook payload wraps the new row under `record`
 type WebhookPayload = {
@@ -97,22 +98,43 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Log to notification_log for observability
-    try {
-      await supabase.from('notification_log').insert(
-        uniqueSubscribers.map((sub: { email: string }) => ({
-          user_id: '00000000-0000-0000-0000-000000000000', // anonymous subscriber
-          event_type: 'new_listing_alert',
-          channel: 'email',
-          status: 'sent' as const,
-          error: null,
-        })).slice(0, sent)
-      );
-    } catch {
-      // Non-fatal — logging failure doesn't block alert delivery
+    // Log anonymous sends to notification_log for observability
+    if (sent > 0) {
+      try {
+        await supabase.from('notification_log').insert(
+          Array.from({ length: sent }, () => ({
+            user_id: '00000000-0000-0000-0000-000000000000',
+            event_type: 'new_listing_alert',
+            channel: 'email',
+            status: 'sent' as const,
+            error: null,
+          }))
+        );
+      } catch {
+        // Non-fatal — logging failure doesn't block alert delivery
+      }
     }
 
-    return NextResponse.json({ ok: true, sent });
+    // Also notify authenticated users subscribed via notification_preferences.
+    // This is the notify() path — logged and scope-filtered automatically.
+    let notifySent = 0;
+    try {
+      notifySent = await notifyAll('new_listing_in_my_area', {
+        title: listing.title,
+        priceText,
+        category: listing.category,
+        location: listing.location,
+        description: listing.description ?? '',
+        photoUrl: listing.images?.[0] ?? '',
+        emoji: listing.emoji,
+        listingUrl,
+        town: listing.location,
+      });
+    } catch {
+      // Non-fatal — anonymous path already delivered
+    }
+
+    return NextResponse.json({ ok: true, sent, notifySent });
   } catch (err) {
     console.error('listing-alert webhook error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
