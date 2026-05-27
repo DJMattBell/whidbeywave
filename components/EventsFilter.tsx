@@ -1,16 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { EVENT_TAGS, categoryColors } from '@/lib/data';
 import type { Event, EventTag } from '@/lib/data';
-import EventRsvpButton from '@/components/EventRsvpButton';
-import ShareButton from '@/components/ShareButton';
-import AddToCalendar from '@/components/AddToCalendar';
 import TimeWindowFilter, { getTimeWindowDates } from '@/components/TimeWindowFilter';
 import type { TimeWindow } from '@/components/TimeWindowFilter';
-import { SlidersHorizontal, ChevronRight, Calendar } from 'lucide-react';
+import { SlidersHorizontal, ChevronRight, Calendar, X } from 'lucide-react';
 
 const TAG_ICONS: Record<EventTag, string> = {
   'Kids Event':       '🧒',
@@ -88,6 +85,73 @@ function formatStripDate(dateStr: string): { day: string; num: number } {
   };
 }
 
+/** Represents either a one-off event or a collapsed recurring series */
+type DisplayItem = {
+  type: 'single';
+  event: Event;
+} | {
+  type: 'recurring';
+  recurringEventId: string;
+  representative: Event; // the next upcoming occurrence (used for display)
+  occurrenceCount: number;
+};
+
+/**
+ * Collapse recurring events into single display rows.
+ * Each recurring_event_id group becomes one row showing the earliest occurrence.
+ * One-off events pass through unchanged.
+ */
+function collapseRecurring(events: Event[]): DisplayItem[] {
+  const oneOffs: DisplayItem[] = [];
+  const recurringGroups = new Map<string, Event[]>();
+
+  for (const event of events) {
+    if (event.recurring_event_id) {
+      const group = recurringGroups.get(event.recurring_event_id) ?? [];
+      group.push(event);
+      recurringGroups.set(event.recurring_event_id, group);
+    } else {
+      oneOffs.push({ type: 'single', event });
+    }
+  }
+
+  const recurringItems: DisplayItem[] = [];
+  for (const [id, group] of recurringGroups) {
+    // Sort by date to get the earliest (next) occurrence
+    const sorted = group.sort((a, b) => a.date.localeCompare(b.date));
+    recurringItems.push({
+      type: 'recurring',
+      recurringEventId: id,
+      representative: sorted[0],
+      occurrenceCount: sorted.length,
+    });
+  }
+
+  // Merge and sort by date
+  const all = [...oneOffs, ...recurringItems];
+  all.sort((a, b) => {
+    const dateA = a.type === 'single' ? a.event.date : a.representative.date;
+    const dateB = b.type === 'single' ? b.event.date : b.representative.date;
+    if (dateA !== dateB) return dateA.localeCompare(dateB);
+    // Within same date, happening-now items first
+    const eventA = a.type === 'single' ? a.event : a.representative;
+    const eventB = b.type === 'single' ? b.event : b.representative;
+    return (isHappeningNow(eventA) ? 0 : 1) - (isHappeningNow(eventB) ? 0 : 1);
+  });
+
+  return all;
+}
+
+/** Get the display date for a DisplayItem */
+function getItemDate(item: DisplayItem): string {
+  return item.type === 'single' ? item.event.date : item.representative.date;
+}
+
+/** Get the display event for a DisplayItem */
+function getItemEvent(item: DisplayItem): Event {
+  return item.type === 'single' ? item.event : item.representative;
+}
+
 export default function EventsFilter({ events }: { events: Event[] }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -122,6 +186,14 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     const qs = params.toString();
     router.replace(pathname + (qs ? '?' + qs : ''), { scroll: false });
   }, [timeWindow, activeTown, activeTags, router, pathname]);
+
+  // Lock body scroll when bottom sheet is open on mobile
+  useEffect(() => {
+    if (showFilters) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [showFilters]);
 
   function toggleTag(tag: EventTag) {
     setActiveTags((prev) =>
@@ -158,35 +230,47 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     }).length;
   });
 
+  // Compute per-town counts (after time window, before town filter)
+  const townCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const town of TOWNS) {
+      if (town === 'All') {
+        counts[town] = timeFiltered.length;
+      } else {
+        counts[town] = timeFiltered.filter((e) => e.town === town).length;
+      }
+    }
+    return counts;
+  }, [timeFiltered]);
+
   const filtered = timeFiltered.filter((e) => {
     if (activeTown !== 'All' && e.town !== activeTown) return false;
     if (activeTags.length > 0 && !activeTags.some((t) => e.tags.includes(t))) return false;
     return true;
   });
 
-  // Sort happening-now events to top within each date group
-  const sorted = [...filtered].sort((a, b) => {
-    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-    const aNow = isHappeningNow(a) ? 0 : 1;
-    const bNow = isHappeningNow(b) ? 0 : 1;
-    return aNow - bNow;
-  });
+  // Collapse recurring events into single rows
+  const displayItems = useMemo(() => collapseRecurring(filtered), [filtered]);
 
   // Group by date
-  const dateGroups: [string, Event[]][] = [];
-  for (const event of sorted) {
-    const last = dateGroups[dateGroups.length - 1];
-    if (last && last[0] === event.date) {
-      last[1].push(event);
-    } else {
-      dateGroups.push([event.date, [event]]);
+  const dateGroups = useMemo(() => {
+    const groups: [string, DisplayItem[]][] = [];
+    for (const item of displayItems) {
+      const date = getItemDate(item);
+      const last = groups[groups.length - 1];
+      if (last && last[0] === date) {
+        last[1].push(item);
+      } else {
+        groups.push([date, [item]]);
+      }
     }
-  }
+    return groups;
+  }, [displayItems]);
 
-  // Date strip: unique dates with event counts
-  const eventDates = dateGroups.map(([date, evts]) => ({
+  // Date strip: unique dates with event counts (collapsed)
+  const eventDates = dateGroups.map(([date, items]) => ({
     date,
-    count: evts.length,
+    count: items.length,
     ...formatStripDate(date),
   }));
 
@@ -198,6 +282,92 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     }
   }, []);
 
+  // Filter panel content (shared between desktop inline and mobile bottom sheet)
+  const filterPanelContent = (
+    <div className="space-y-3">
+      {/* Town filter */}
+      <div>
+        <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
+        <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none sm:flex-wrap">
+          {TOWNS.map((town) => {
+            const active = town === activeTown;
+            const count = townCounts[town] ?? 0;
+            const isEmpty = town !== 'All' && count === 0;
+            return (
+              <button
+                key={town}
+                onClick={() => setActiveTown(town)}
+                disabled={isEmpty}
+                className={`inline-flex items-center gap-1.5 shrink-0 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
+                  active
+                    ? 'bg-sound-600 text-parchment-50 border-sound-600 shadow-warm scale-105'
+                    : isEmpty
+                      ? 'bg-parchment-50 text-stone-300 border-parchment-200 cursor-not-allowed'
+                      : 'bg-sound-50 text-sound-700 border-sound-200 hover:bg-sound-100 hover:border-sound-300'
+                }`}
+              >
+                <span>{town}</span>
+                {town !== 'All' && (
+                  <span className={`text-xs ${active ? 'text-parchment-200' : isEmpty ? 'text-stone-300' : 'text-sound-400'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tag filter */}
+      <div>
+        <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
+        <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none pb-1 sm:flex-wrap">
+          {EVENT_TAGS.map((tag) => {
+            const active = activeTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`inline-flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
+                  active
+                    ? 'bg-forest-600 text-parchment-50 border-forest-600 shadow-warm scale-105'
+                    : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
+                }`}
+              >
+                <span>{TAG_ICONS[tag]}</span>
+                <span>{tag}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Active filter summary + clear */}
+      {hasFilters && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-stone-500" aria-live="polite">
+            <strong className="text-stone-800">{displayItems.length}</strong>{' '}
+            event{displayItems.length !== 1 ? 's' : ''}
+            {activeTown !== 'All' && (
+              <span className="text-sound-600 font-medium"> · {activeTown}</span>
+            )}
+            {activeTags.length > 0 && (
+              <span className="text-forest-600 font-medium">
+                {' '}· {activeTags.join(' or ')}
+              </span>
+            )}
+          </p>
+          <button
+            onClick={clearAll}
+            className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1.5 hover:bg-stone-200 transition-colors min-h-[36px]"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div>
       {/* ── Sticky filter bar ──────────────────────── */}
@@ -206,99 +376,72 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none">
             <TimeWindowFilter active={timeWindow} onChange={setTimeWindow} counts={windowCounts} />
           </div>
-          {/* Mobile filter toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`md:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 rounded-full text-sm font-medium border transition-all min-h-[44px] ${
-              activeFilterCount > 0
-                ? 'bg-forest-600 text-parchment-50 border-forest-600'
-                : 'bg-parchment-50 text-stone-600 border-parchment-300'
-            }`}
-          >
-            <SlidersHorizontal size={16} />
-            <span>Filters</span>
+          {/* Mobile: inline clear + filter toggle */}
+          <div className="md:hidden flex items-center gap-1.5 shrink-0">
             {activeFilterCount > 0 && (
-              <span className="bg-parchment-50/20 text-parchment-50 text-xs font-bold rounded-full px-1.5 py-0.5">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Filter panel: always visible on desktop, toggled on mobile */}
-        <div className={`${showFilters ? 'block' : 'hidden'} md:block mt-3 space-y-3`}>
-          {/* Town filter */}
-          <div>
-            <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
-            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none sm:flex-wrap">
-              {TOWNS.map((town) => {
-                const active = town === activeTown;
-                return (
-                  <button
-                    key={town}
-                    onClick={() => setActiveTown(town)}
-                    className={`inline-flex items-center shrink-0 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
-                      active
-                        ? 'bg-sound-600 text-parchment-50 border-sound-600 shadow-warm scale-105'
-                        : 'bg-sound-50 text-sound-700 border-sound-200 hover:bg-sound-100 hover:border-sound-300'
-                    }`}
-                  >
-                    {town}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Tag filter */}
-          <div>
-            <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Type</p>
-            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-none pb-1 sm:flex-wrap">
-              {EVENT_TAGS.map((tag) => {
-                const active = activeTags.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`inline-flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
-                      active
-                        ? 'bg-forest-600 text-parchment-50 border-forest-600 shadow-warm scale-105'
-                        : 'bg-parchment-50 text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-600 hover:bg-forest-50'
-                    }`}
-                  >
-                    <span>{TAG_ICONS[tag]}</span>
-                    <span>{tag}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Active filter summary + clear */}
-          {hasFilters && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-stone-500" aria-live="polite">
-                <strong className="text-stone-800">{filtered.length}</strong> of{' '}
-                {events.length} events
-                {activeTown !== 'All' && (
-                  <span className="text-sound-600 font-medium"> · {activeTown}</span>
-                )}
-                {activeTags.length > 0 && (
-                  <span className="text-forest-600 font-medium">
-                    {' '}· {activeTags.join(' or ')}
-                  </span>
-                )}
-              </p>
               <button
                 onClick={clearAll}
-                className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1.5 hover:bg-stone-200 transition-colors min-h-[36px]"
+                className="text-xs font-medium text-stone-500 hover:text-stone-700 px-2 py-1 transition-colors min-h-[44px]"
               >
-                Clear all
+                Clear
               </button>
-            </div>
-          )}
+            )}
+            <button
+              onClick={() => setShowFilters(true)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2.5 rounded-full text-sm font-medium border transition-all min-h-[44px] ${
+                activeFilterCount > 0
+                  ? 'bg-forest-600 text-parchment-50 border-forest-600'
+                  : 'bg-parchment-50 text-stone-600 border-parchment-300'
+              }`}
+            >
+              <SlidersHorizontal size={16} />
+              <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="bg-parchment-50/20 text-parchment-50 text-xs font-bold rounded-full px-1.5 py-0.5">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop: filter panel always visible */}
+        <div className="hidden md:block mt-3">
+          {filterPanelContent}
         </div>
       </div>
+
+      {/* ── Mobile bottom sheet ────────────────────── */}
+      {showFilters && (
+        <div className="md:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/30"
+            onClick={() => setShowFilters(false)}
+          />
+          {/* Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 bg-parchment-50 rounded-t-2xl shadow-lg max-h-[70vh] overflow-y-auto">
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-stone-300 rounded-full" />
+            </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-parchment-200">
+              <h3 className="text-base font-semibold text-stone-800">Filters</h3>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium bg-forest-600 text-parchment-50 min-h-[44px]"
+              >
+                Done
+              </button>
+            </div>
+            {/* Content */}
+            <div className="px-4 py-4">
+              {filterPanelContent}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Date strip ─────────────────────────────── */}
       {eventDates.length > 1 && (
@@ -327,7 +470,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       )}
 
       {/* ── Event groups or empty state ────────────── */}
-      {sorted.length === 0 ? (
+      {displayItems.length === 0 ? (
         <div className="empty-state">
           <Calendar size={48} className="empty-state-icon" />
           <h3 className="empty-state-title">Nothing matches those filters</h3>
@@ -337,125 +480,81 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           </button>
         </div>
       ) : (
-        <div className="space-y-2 md:space-y-6">
-          {dateGroups.map(([date, dayEvents]) => (
+        <div className="space-y-2 md:space-y-4">
+          {dateGroups.map(([date, dayItems]) => (
             <div key={date} id={`date-${date}`}>
               {/* Date heading — sticky on mobile, static on desktop */}
-              <h3 className="sticky top-[120px] md:static z-[5] bg-parchment-50 py-2 mb-2 md:mb-4 md:py-0 md:mt-6 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider font-heading">
+              <h3 className="sticky top-[120px] md:static z-[5] bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider font-heading">
                 {formatGroupDate(date)}
                 <span className="text-stone-400 font-normal ml-2">
-                  — {dayEvents.length} event{dayEvents.length !== 1 ? 's' : ''}
+                  — {dayItems.length} event{dayItems.length !== 1 ? 's' : ''}
                 </span>
               </h3>
 
-              {/* Event cards */}
-              <div className="space-y-3 md:space-y-6">
-                {dayEvents.map((event) => {
+              {/* Event cards — unified compact layout */}
+              <div className="space-y-2">
+                {dayItems.map((item) => {
+                  const event = getItemEvent(item);
                   const happeningNow = isHappeningNow(event);
                   const free = isFreeEvent(event);
+                  const isRecurring = item.type === 'recurring';
+                  const d = new Date(event.date + 'T12:00:00');
 
                   return (
-                    <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group block">
-                      {/* ── Mobile compact card ── */}
-                      <div className="flex md:hidden items-center gap-3 p-4">
-                        <span className="text-2xl shrink-0">{event.emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                            {happeningNow && <span className="badge-now text-[10px] px-1.5 py-0.5">Now</span>}
-                            {free && !happeningNow && <span className="badge-free text-[10px] px-1.5 py-0.5">Free</span>}
-                            <span className={`badge text-[10px] px-1.5 py-0.5 ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
-                              {event.category}
-                            </span>
-                          </div>
-                          <h3 className="font-semibold text-stone-900 truncate group-hover:text-forest-600 transition-colors text-base">
-                            {event.title}
-                          </h3>
-                          <p className="text-sm text-stone-600 truncate">
-                            {event.time} · {event.town}
-                          </p>
-                        </div>
-                        <ChevronRight size={18} className="text-stone-400 shrink-0" />
-                      </div>
-
-                      {/* ── Desktop full card ── */}
-                      <div className="hidden md:flex">
+                    <Link
+                      key={item.type === 'single' ? event.id : item.recurringEventId}
+                      href={`/events/${event.id}`}
+                      className="card-pressable group block"
+                    >
+                      <div className="flex items-center gap-3 p-3 md:p-4">
                         {/* Date block */}
-                        <div className={`w-36 ${happeningNow ? 'bg-terra-600' : 'bg-forest-700'} text-parchment-50 flex flex-col items-center justify-center py-6 rounded-l-xl shrink-0`}>
-                          <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
-                            {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
+                        <div
+                          className={`shrink-0 w-12 md:w-14 h-14 md:h-16 rounded-lg flex flex-col items-center justify-center ${
+                            happeningNow
+                              ? 'bg-terra-600 text-parchment-50'
+                              : 'bg-forest-50 text-forest-800 border border-forest-100'
+                          }`}
+                        >
+                          <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wide opacity-80">
+                            {d.toLocaleDateString('en-US', { month: 'short' })}
                           </span>
-                          <span className="text-5xl font-extrabold leading-none">
-                            {new Date(event.date + 'T12:00:00').getDate()}
+                          <span className="text-xl md:text-2xl font-extrabold leading-none">
+                            {d.getDate()}
                           </span>
-                          <span className="text-xs opacity-70 mt-1">
-                            {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' })}
+                          <span className="text-[10px] opacity-60">
+                            {d.toLocaleDateString('en-US', { weekday: 'short' })}
                           </span>
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0 p-6">
-                          <div className="flex flex-wrap items-start gap-2 mb-3">
-                            {happeningNow && <span className="badge-now">Happening Now</span>}
-                            {free && <span className="badge-free">Free</span>}
-                            {event.recurring_event_id && (
-                              <span className="badge bg-amber-50 text-amber-700 border border-amber-200">Recurring</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            {happeningNow && <span className="badge-now text-[10px] px-1.5 py-0.5">Now</span>}
+                            {free && !happeningNow && <span className="badge-free text-[10px] px-1.5 py-0.5">Free</span>}
+                            {isRecurring && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                                Recurring
+                              </span>
                             )}
-                            <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
+                            <span className={`badge text-[10px] px-1.5 py-0.5 ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
                               {event.category}
                             </span>
-                            <span className="badge bg-parchment-200 text-stone-600">{event.town}</span>
                           </div>
-
-                          <h2 className="text-xl font-semibold text-stone-900 mb-2 group-hover:text-forest-600 transition-colors flex items-center gap-2">
-                            <span>{event.emoji}</span>
-                            <span>{event.title}</span>
-                          </h2>
-
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-stone-600 mb-3">
-                            <span>🕐 {event.time}</span>
-                            <span>📍 {event.location}</span>
-                          </div>
-
-                          <p className="text-stone-600 leading-relaxed mb-4">{event.description}</p>
-
-                          <AddToCalendar
-                            event={{
-                              title:       event.title,
-                              date:        event.date,
-                              time:        event.time,
-                              location:    event.location,
-                              description: event.description,
-                            }}
-                          />
-
-                          {/* Tags + actions */}
-                          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-parchment-200" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex flex-wrap gap-1.5">
-                              {event.tags.map((tag) => (
-                                <button
-                                  key={tag}
-                                  onClick={() => { if (!activeTags.includes(tag)) toggleTag(tag); }}
-                                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors min-h-[36px] ${
-                                    activeTags.includes(tag)
-                                      ? 'bg-forest-600 text-parchment-50'
-                                      : 'bg-forest-50 text-forest-700 hover:bg-forest-100 border border-forest-200'
-                                  }`}
-                                  title={`Filter by ${tag}`}
-                                >
-                                  <span>{TAG_ICONS[tag]}</span>
-                                  <span>{tag}</span>
-                                </button>
-                              ))}
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <ShareButton
-                                title={`${event.title} — WhidbeyWave`}
-                                text={`${event.emoji} ${event.title} · ${event.time} · ${event.location}`}
-                              />
-                              <EventRsvpButton eventId={event.id} />
-                            </div>
-                          </div>
+                          <h3 className="font-semibold text-stone-900 text-sm md:text-base group-hover:text-forest-600 transition-colors line-clamp-1 md:line-clamp-2">
+                            {event.title}
+                          </h3>
+                          <p className="text-xs md:text-sm text-stone-600 truncate">
+                            {event.time} · {event.town}
+                          </p>
+                          {isRecurring && event.recurrence_summary && (
+                            <p className="text-xs text-amber-600 mt-0.5">
+                              {event.recurrence_summary}
+                            </p>
+                          )}
                         </div>
+
+                        {/* Chevron */}
+                        <ChevronRight size={18} className="text-stone-400 shrink-0" />
                       </div>
                     </Link>
                   );

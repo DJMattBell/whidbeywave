@@ -26,6 +26,7 @@ export type Event = {
   emoji: string;
   tags: EventTag[];
   recurring_event_id?: string | null;
+  recurrence_summary?: string | null;
 };
 
 export type NewsPost = {

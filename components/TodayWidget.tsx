@@ -197,7 +197,12 @@ export default async function TodayWidget() {
           </div>
         )}
 
-        {/* ── 2. Ferry ───────────────────────────────────────────── */}
+        {/* ── 2. Ferry ───────────────────────────────────────────
+            When Phase 1c adds ferry ticket/reservation links here, the deep-link targets are:
+            - Mukilteo/Clinton tickets: https://wave2go.wsdot.com/webstore/shop/viewItems.aspx?cg=21&c=50
+            - PT/Coupeville reservations: https://secureapps.wsdot.wa.gov/Ferries/Reservations/Vehicle/default.aspx
+            These are deep-linked into WSF's Wave2Go ticketing system and the VRS reservation
+            system respectively. They may need updating if WSF restructures their site. */}
         {hasFerry && (
           <Link href="/ferry" className="border border-parchment-200 rounded-xl bg-white px-4 py-4 hover:bg-parchment-50 transition-colors">
             <CardLabel>Ferry</CardLabel>

@@ -50,6 +50,18 @@ function parseDate(raw: string): string | null {
 }
 
 
+/** Infer town from location and title text */
+function detectTown(location: string | null, title: string): string {
+  const text = `${location ?? ''} ${title}`.toLowerCase();
+  if (text.includes('oak harbor'))  return 'Oak Harbor';
+  if (text.includes('coupeville'))  return 'Coupeville';
+  if (text.includes('langley'))     return 'Langley';
+  if (text.includes('freeland'))    return 'Freeland';
+  if (text.includes('greenbank'))   return 'Greenbank';
+  if (text.includes('clinton'))     return 'Clinton';
+  return 'Other';
+}
+
 function guessCategory(title: string): string {
   const t = title.toLowerCase();
   if (/theatre|theater|play|performance|comedy|murder/.test(t)) return 'Arts & Culture';
@@ -158,7 +170,7 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
         date,
         time,
         location,
-        town: 'Other',
+        town: detectTown(location, title),
         category: guessCategory(title),
         description,
         source: 'Whidbey Telecom Events',

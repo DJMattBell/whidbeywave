@@ -80,7 +80,12 @@ export default async function HeroDataStrip() {
             </span>
           )}
 
-          {/* Ferry — Clinton/Mukilteo */}
+          {/* Ferry — Clinton/Mukilteo
+              When Phase 1c adds ferry ticket links here, the deep-link targets are:
+              - Mukilteo/Clinton tickets: https://wave2go.wsdot.com/webstore/shop/viewItems.aspx?cg=21&c=50
+              - PT/Coupeville reservations: https://secureapps.wsdot.wa.gov/Ferries/Reservations/Vehicle/default.aspx
+              These are deep-linked into WSF's Wave2Go ticketing system and the VRS reservation
+              system respectively. They may need updating if WSF restructures their site. */}
           {hasMuk && (
             <span className="flex items-center gap-1 shrink-0">
               <FerryDotCompact status={ferry.mukilteoClinton!.status} />

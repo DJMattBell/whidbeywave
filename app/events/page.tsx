@@ -5,8 +5,8 @@ import { createServerClient, isConfigured } from '@/lib/supabase';
 import { events as fallbackEvents } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import type { Event } from '@/lib/data';
+import { recurrenceSummary } from '@/lib/recurring';
 import EventsFilter from '@/components/EventsFilter';
-import ShareButton from '@/components/ShareButton';
 import { Calendar } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
 
@@ -18,25 +18,29 @@ async function getApprovedEvents(): Promise<Event[]> {
   const supabase = createServerClient();
   const { data } = await supabase
     .from('event_submissions')
-    .select('*')
+    .select('*, recurring_events(recurrence_type, day_of_week, day_of_month, custom_interval_days)')
     .eq('status', 'approved')
     .order('date', { ascending: true });
 
   if (!data || data.length === 0) return fallbackEvents;
 
-  return data.map((row): Event => ({
-    id:          row.id,
-    title:       row.title,
-    date:        row.date,
-    time:        row.time,
-    location:    row.location,
-    town:        row.town,
-    category:    row.category,
-    description: row.description ?? '',
-    emoji:       CATEGORY_EMOJI[row.category] ?? '📅',
-    tags:        (row.tags ?? []) as Event['tags'],
-    recurring_event_id: row.recurring_event_id ?? null,
-  }));
+  return data.map((row): Event => {
+    const rec = row.recurring_events;
+    return {
+      id:          row.id,
+      title:       row.title,
+      date:        row.date,
+      time:        row.time,
+      location:    row.location,
+      town:        row.town,
+      category:    row.category,
+      description: row.description ?? '',
+      emoji:       CATEGORY_EMOJI[row.category] ?? '📅',
+      tags:        (row.tags ?? []) as Event['tags'],
+      recurring_event_id: row.recurring_event_id ?? null,
+      recurrence_summary: rec ? recurrenceSummary(rec) : null,
+    };
+  });
 }
 
 // Cache deduplicates between generateMetadata and the page component
@@ -77,28 +81,29 @@ export default async function EventsPage() {
 
   return (
     <>
-      {/* Page header */}
-      <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
+      {/* Page header — slim, warm, functional */}
+      <div className="bg-parchment-100 border-b border-parchment-200 py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-forest-600 font-medium mb-2 tracking-wide uppercase text-sm">📅 What&apos;s On</p>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2 text-stone-900 font-heading">
             What&apos;s Happening on Whidbey
           </h1>
-          <p className="text-stone-600 text-lg max-w-xl mx-auto leading-relaxed">
-            Community-submitted events, reviewed and approved by neighbors.
+          <p className="text-stone-500 text-sm md:text-base">
+            Events submitted by neighbors{' '}
+            <span className="hidden sm:inline">
+              ·{' '}
+              <Link
+                href="/events/print"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-forest-600 hover:text-forest-800 transition-colors"
+              >
+                Print this week&apos;s calendar →
+              </Link>
+            </span>
           </p>
-          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+          <div className="mt-4">
             <Link href="/submit-event" className="btn-primary">
               + Submit Your Event
-            </Link>
-            <ShareButton title="What's On Whidbey Island — WhidbeyWave" />
-            <Link
-              href="/events/print"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-parchment-200 hover:bg-parchment-300 text-stone-600 hover:text-stone-800 border border-parchment-300 transition-colors text-sm font-medium min-h-[44px]"
-            >
-              🖨️ Print This Week
             </Link>
           </div>
         </div>
@@ -117,7 +122,7 @@ export default async function EventsPage() {
         </Link>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
 
         {/* Upcoming events */}
         <div className="flex items-center justify-between mb-6">
@@ -144,34 +149,33 @@ export default async function EventsPage() {
           </Suspense>
         )}
 
-        {/* Past events (collapsible) */}
+        {/* Past events (collapsible) — flagged for post-launch review:
+            as event data grows, consider /events/past as a paginated route
+            or limit this disclosure to the last 30 days */}
         {past.length > 0 && (
           <details className="mt-12 md:mt-16 group">
             <summary className="cursor-pointer list-none flex items-center gap-2 text-stone-600 hover:text-stone-800 text-base font-medium transition-colors select-none mb-4 min-h-[44px]">
               <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden="true">▶</span>
               Past events ({past.length})
             </summary>
-            <div className="space-y-4 mt-2 opacity-60">
+            <div className="space-y-3 mt-2 opacity-60">
               {past.map(event => (
-                <article key={event.id} className="flex gap-4 bg-parchment-50 rounded-xl border border-parchment-200 p-4">
-                  <div className="shrink-0 w-14 h-14 bg-stone-200 rounded-xl flex flex-col items-center justify-center text-stone-500" aria-hidden="true">
-                    <span className="text-xs font-semibold uppercase">
+                <Link key={event.id} href={`/events/${event.id}`} className="flex gap-3 bg-parchment-50 rounded-xl border border-parchment-200 p-3 hover:border-parchment-300 transition-colors">
+                  <div className="shrink-0 w-12 h-12 bg-stone-200 rounded-lg flex flex-col items-center justify-center text-stone-500" aria-hidden="true">
+                    <span className="text-[10px] font-semibold uppercase">
                       {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
                     </span>
-                    <span className="text-xl font-extrabold leading-none">
+                    <span className="text-lg font-extrabold leading-none">
                       {new Date(event.date + 'T12:00:00').getDate()}
                     </span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-stone-700 text-base">{event.emoji} {event.title}</p>
-                    <p className="text-sm text-stone-600">
-                      <time dateTime={event.date}>
-                        {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                      </time>
-                      {' '}· {event.time} · {event.town}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-stone-700 text-sm truncate">{event.title}</p>
+                    <p className="text-xs text-stone-500 truncate">
+                      {event.time} · {event.town}
                     </p>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </details>
