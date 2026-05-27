@@ -368,9 +368,23 @@ export default function RecommendationsPage() {
                 </div>
                 {addStatus === 'error' && <p className="sm:col-span-2 text-terra-600 text-xs">Something went wrong — please try again.</p>}
                 <div className="sm:col-span-2">
-                  <button type="submit" disabled={addStatus === 'loading'} className="btn-primary disabled:opacity-60">
-                    {addStatus === 'loading' ? 'Submitting…' : 'Submit Suggestion'}
-                  </button>
+                  {user && !user.user_metadata?.full_name ? (
+                    <div className="bg-parchment-100 border border-parchment-200 rounded-xl p-4 text-center">
+                      <p className="text-sm text-stone-700 mb-2">Set your display name before recommending a place.</p>
+                      <a href="/profile" className="btn-primary text-sm">Set display name</a>
+                    </div>
+                  ) : (
+                    <>
+                      {user && (
+                        <p className="text-xs text-stone-500 mb-2">
+                          This recommendation will be posted as <strong className="text-stone-700">{user.user_metadata.full_name}</strong>.
+                        </p>
+                      )}
+                      <button type="submit" disabled={addStatus === 'loading'} className="btn-primary disabled:opacity-60">
+                        {addStatus === 'loading' ? 'Submitting…' : 'Submit Suggestion'}
+                      </button>
+                    </>
+                  )}
                 </div>
               </form>
             )}
