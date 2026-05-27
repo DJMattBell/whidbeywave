@@ -13,6 +13,16 @@
  */
 
 import { createServiceClient } from '@/lib/supabase';
+
+/** All event types the notification engine knows how to handle. */
+export const KNOWN_EVENT_TYPES = [
+  'forum_reply_to_my_post',
+  'new_listing_in_my_area',
+  'flash_give_in_my_area',
+  'business_you_recommended_hit_milestone',
+  'event_approved',
+  'listing_contact',
+] as const;
 import { getResend } from './resend';
 import { emailForumReply, emailNewListing, emailMilestone } from './email';
 

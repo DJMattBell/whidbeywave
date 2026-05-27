@@ -122,6 +122,33 @@ a `scrape()` function. Priority order:
 
 Never copy selectors between scrapers — always inspect the actual site.
 
+### Debugging Push Notifications
+
+Use the admin test endpoint to trigger a notification through the full pipeline:
+
+```bash
+curl -X POST https://whidbeywave.com/api/notifications/test \
+  -H "Authorization: Bearer <admin-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "<target-user-uuid>",
+    "eventType": "forum_reply_to_my_post",
+    "payload": {
+      "postTitle": "Test thread",
+      "replierName": "Admin",
+      "replyBody": "Test reply",
+      "threadUrl": "https://whidbeywave.com/forum/test"
+    }
+  }'
+```
+
+Valid event types: `forum_reply_to_my_post`, `new_listing_in_my_area`,
+`flash_give_in_my_area`, `business_you_recommended_hit_milestone`,
+`event_approved`, `listing_contact`.
+
+Requires admin auth (Bearer token for `ADMIN_EMAIL` user). Check
+`notification_log` in Supabase to see delivery status.
+
 ## Commands
 
 ```bash

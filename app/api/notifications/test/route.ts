@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/adminAuth';
-import { notify } from '@/lib/notifications';
+import { notify, KNOWN_EVENT_TYPES } from '@/lib/notifications';
 
 /**
  * POST /api/notifications/test
@@ -34,6 +34,12 @@ export async function POST(request: NextRequest) {
   }
   if (!eventType || typeof eventType !== 'string') {
     return NextResponse.json({ error: 'Missing eventType' }, { status: 400 });
+  }
+  if (!(KNOWN_EVENT_TYPES as readonly string[]).includes(eventType)) {
+    return NextResponse.json(
+      { error: `Unknown eventType "${eventType}"`, validTypes: KNOWN_EVENT_TYPES },
+      { status: 400 }
+    );
   }
 
   try {
