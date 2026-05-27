@@ -1,18 +1,18 @@
-// Server component — "Today at a Glance" snapshot card.
-// Fetches weather, ferry status, next tide, events today, and new listings.
-// Every section fails silently — a failed fetch hides that cell, never errors.
+// Server component — "Today at a Glance" three-card panel.
+// Cards: Weather (with tide/sunset detail), Ferry (alert count), Events (next event teaser).
+// Every section fails silently — a failed fetch hides that card, never errors.
 
 import Link from 'next/link';
 import { fetchFerryBarStatus } from '@/lib/ferry';
 import { createServerClient, isConfigured } from '@/lib/supabase';
 import { WMO_ICONS, WMO_LABELS } from '@/lib/wmo-codes';
-import type { RouteStatus } from '@/lib/ferry';
-import { ShoppingBag } from 'lucide-react';
+import { Calendar, Ship, AlertTriangle } from 'lucide-react';
 
 // ── Data fetch helpers ───────────────────────────────────────────────────────
 
-type WeatherData = { temp: number; code: number; wind: number };
+type WeatherData = { temp: number; code: number; wind: number; sunset: string | null };
 type TideData    = { type: 'H' | 'L'; time: string; height: string };
+type NextEvent   = { title: string; time: string; town: string };
 
 async function fetchWeather(): Promise<WeatherData | null> {
   try {
@@ -20,15 +20,27 @@ async function fetchWeather(): Promise<WeatherData | null> {
       'https://api.open-meteo.com/v1/forecast' +
       '?latitude=48.2193&longitude=-122.6879' +
       '&current=temperature_2m,weathercode,windspeed_10m' +
+      '&daily=sunset' +
       '&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=America%2FLos_Angeles',
       { next: { revalidate: 1800 } }
     );
     if (!res.ok) return null;
     const data = await res.json();
+    // Parse sunset — comes as "2026-05-26T20:14" in local time
+    let sunset: string | null = null;
+    if (data.daily?.sunset?.[0]) {
+      const sunsetStr = data.daily.sunset[0] as string;
+      const [, timePart] = sunsetStr.split('T');
+      if (timePart) {
+        const [h, m] = timePart.split(':').map(Number);
+        sunset = `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+      }
+    }
     return {
       temp: Math.round(data.current.temperature_2m as number),
-      code: data.current.weathercode  as number,
+      code: data.current.weathercode as number,
       wind: Math.round(data.current.windspeed_10m as number),
+      sunset,
     };
   } catch { return null; }
 }
@@ -46,7 +58,7 @@ async function fetchNextTide(): Promise<TideData | null> {
     const data = await res.json();
     if (!data.predictions) return null;
 
-    const now  = new Date();
+    const now = new Date();
     const next = (data.predictions as { t: string; v: string; type: 'H' | 'L' }[])
       .find(p => {
         const [d, t] = p.t.split(' ');
@@ -58,67 +70,75 @@ async function fetchNextTide(): Promise<TideData | null> {
     const [h, m] = timePart.split(':').map(Number);
     return {
       type:   next.type,
-      time:   `${h % 12 || 12}:${m.toString().padStart(2, '0')}${h >= 12 ? 'pm' : 'am'}`,
+      time:   `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`,
       height: parseFloat(next.v).toFixed(1),
     };
   } catch { return null; }
 }
 
-async function fetchEventsToday(): Promise<number | null> {
+async function fetchEventsToday(): Promise<{ count: number; next: NextEvent | null } | null> {
   if (!isConfigured) return null;
   try {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-    const { count, error } = await createServerClient()
-      .from('event_submissions')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'approved')
-      .eq('date', today);
-    if (error) return null;
-    return count ?? 0;
+    const supabase = createServerClient();
+
+    const [countResult, firstResult] = await Promise.all([
+      supabase
+        .from('event_submissions')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'approved')
+        .eq('date', today),
+      supabase
+        .from('event_submissions')
+        .select('title, time, town')
+        .eq('status', 'approved')
+        .eq('date', today)
+        .order('time', { ascending: true })
+        .limit(1),
+    ]);
+
+    if (countResult.error) return null;
+    const count = countResult.count ?? 0;
+    const first = firstResult.data?.[0] ?? null;
+
+    return {
+      count,
+      next: first ? { title: first.title, time: first.time, town: first.town } : null,
+    };
   } catch { return null; }
 }
 
-async function fetchNewListings(): Promise<number | null> {
-  if (!isConfigured) return null;
+async function fetchFerryAlertCount(): Promise<number> {
+  const key = process.env.WSDOT_API_KEY;
+  if (!key) return 0;
   try {
-    const since = new Date(Date.now() - 86_400_000).toISOString();
-    const { count, error } = await createServerClient()
-      .from('listings')
-      .select('id', { count: 'exact', head: true })
-      .gte('created_at', since);
-    if (error) return null;
-    return count ?? 0;
-  } catch { return null; }
+    const res = await fetch(
+      `https://www.wsdot.wa.gov/ferries/api/schedule/rest/alerts?apiaccesscode=${key}`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return 0;
+    const all = await res.json() as { AllRoutesFlag: boolean; AffectedRouteIDs: number[]; PublishDate: string }[];
+    const WHIDBEY_ROUTES = new Set([7, 8]);
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    return all.filter(a => {
+      const isWhidbey = a.AllRoutesFlag || a.AffectedRouteIDs.some(id => WHIDBEY_ROUTES.has(id));
+      if (!isWhidbey) return false;
+      const m = a.PublishDate.match(/\/Date\((\d+)/);
+      if (m && now - parseInt(m[1]) > THIRTY_DAYS_MS) return false;
+      return true;
+    }).length;
+  } catch { return 0; }
 }
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function CardLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2.5">
+    <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
       {children}
     </p>
   );
-}
-
-function FerryDot({ status }: { status: RouteStatus }) {
-  const cls =
-    status === 'cancelled' ? 'bg-terra-500'    :
-    status === 'delays'    ? 'bg-amber-500'  :
-                             'bg-forest-500' ;
-  return (
-    <span className={`inline-block w-2 h-2 rounded-full shrink-0 mt-0.5 ${cls}`} aria-hidden="true" />
-  );
-}
-
-function ferryLabel(s: RouteStatus) {
-  return s === 'cancelled' ? 'Cancelled' : s === 'delays' ? 'Delays' : 'On Schedule';
-}
-
-function ferryTextCls(s: RouteStatus) {
-  return s === 'cancelled' ? 'text-terra-600 font-semibold'   :
-         s === 'delays'    ? 'text-amber-600 font-semibold' :
-                             'text-forest-600';
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
@@ -133,21 +153,47 @@ export default async function TodayWidget() {
     timeZone: 'America/Los_Angeles',
   });
 
-  const [weather, ferry, tide, eventsCount, listingsCount] = await Promise.all([
+  const [weather, ferry, tide, eventsData, alertCount] = await Promise.all([
     fetchWeather(),
     fetchFerryBarStatus(),
     fetchNextTide(),
     fetchEventsToday(),
-    fetchNewListings(),
+    fetchFerryAlertCount(),
   ]);
 
-  const hasMuk      = ferry.mukilteoClinton != null;
-  const hasPT       = ferry.ptCoupeville  != null;
-  const hasFerry    = hasMuk || hasPT;
-  const showListings = listingsCount !== null && listingsCount > 0;
+  const hasMuk   = ferry.mukilteoClinton != null;
+  const hasPT    = ferry.ptCoupeville != null;
+  const hasFerry = hasMuk || hasPT;
 
   // Hide the whole widget if there is truly nothing to show
-  if (!weather && !hasFerry && !tide && eventsCount === null && !showListings) return null;
+  if (!weather && !hasFerry && eventsData === null) return null;
+
+  // Build weather contextual detail line (priority: tide > sunset > wind)
+  let weatherDetail: string | null = null;
+  if (tide) {
+    weatherDetail = `Next ${tide.type === 'H' ? 'high' : 'low'} at ${tide.time} · ${tide.height} ft`;
+  } else if (weather?.sunset) {
+    weatherDetail = `Sunset at ${weather.sunset}`;
+  } else if (weather && weather.wind > 0) {
+    weatherDetail = `Wind ${weather.wind} mph`;
+  }
+
+  // Ferry summary
+  const hasMukDelays = hasMuk && ferry.mukilteoClinton!.status !== 'on-schedule';
+  const hasPTDelays  = hasPT && ferry.ptCoupeville!.status !== 'on-schedule';
+  const hasDisruption = hasMukDelays || hasPTDelays;
+
+  let ferrySummary: string;
+  if (alertCount > 0) {
+    ferrySummary = `${alertCount} active alert${alertCount !== 1 ? 's' : ''}`;
+  } else if (hasDisruption) {
+    const routes: string[] = [];
+    if (hasMukDelays) routes.push('Clinton');
+    if (hasPTDelays) routes.push('PT/Coup');
+    ferrySummary = `${routes.join(' & ')}: ${ferry.mukilteoClinton?.status === 'cancelled' || ferry.ptCoupeville?.status === 'cancelled' ? 'Cancellations' : 'Delays'}`;
+  } else {
+    ferrySummary = 'All routes on schedule';
+  }
 
   return (
     <>
@@ -159,13 +205,13 @@ export default async function TodayWidget() {
         <span className="text-xs text-stone-600 hidden sm:block">{todayLabel}</span>
       </div>
 
-      {/* Card — 2×2 grid on mobile, flex row on desktop */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-row border border-parchment-200 rounded-xl overflow-hidden bg-white [&>*]:min-h-[80px] sm:[&>*]:min-h-0 [&>*:nth-child(odd)]:border-r sm:[&>*:nth-child(odd)]:border-r-0 [&>*:nth-last-child(n+3)]:border-b sm:[&>*]:border-b-0 sm:[&>*:not(:last-child)]:border-r [&>*]:border-parchment-200 [&>*:nth-child(even)]:bg-parchment-50/50 sm:[&>*:nth-child(even)]:bg-transparent">
+      {/* Three-card layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 
         {/* ── 1. Weather ─────────────────────────────────────────── */}
         {weather && (
-          <div className="sm:flex-1 px-4 py-4 min-w-0">
-            <SectionLabel>Weather</SectionLabel>
+          <div className="border border-parchment-200 rounded-xl bg-white px-4 py-4">
+            <CardLabel>Weather</CardLabel>
             <div className="flex items-center gap-2.5">
               <span className="text-2xl leading-none" aria-hidden="true">
                 {WMO_ICONS[weather.code] ?? '🌤️'}
@@ -175,97 +221,60 @@ export default async function TodayWidget() {
                 <p className="text-xs text-stone-600 mt-0.5">{WMO_LABELS[weather.code] ?? ''}</p>
               </div>
             </div>
-            {weather.wind > 0 && (
-              <p className="text-xs text-stone-600 mt-1.5">💨 {weather.wind} mph</p>
+            {weatherDetail && (
+              <p className="text-xs text-stone-500 mt-2 leading-snug">{weatherDetail}</p>
             )}
           </div>
         )}
 
         {/* ── 2. Ferry ───────────────────────────────────────────── */}
         {hasFerry && (
-          <Link href="/ferry" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-            <SectionLabel>Ferry</SectionLabel>
-            <div className="space-y-2">
-              {hasMuk && (
-                <div className="flex items-start gap-1.5">
-                  <FerryDot status={ferry.mukilteoClinton!.status} />
-                  <div className="min-w-0">
-                    <p className="text-xs text-stone-600 leading-tight">Mukilteo / Clinton</p>
-                    <p className={`text-sm leading-tight ${ferryTextCls(ferry.mukilteoClinton!.status)}`}>
-                      {ferryLabel(ferry.mukilteoClinton!.status)}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {hasPT && (
-                <div className="flex items-start gap-1.5">
-                  <FerryDot status={ferry.ptCoupeville!.status} />
-                  <div className="min-w-0">
-                    <p className="text-xs text-stone-600 leading-tight">PT / Coupeville</p>
-                    <p className={`text-sm leading-tight ${ferryTextCls(ferry.ptCoupeville!.status)}`}>
-                      {ferryLabel(ferry.ptCoupeville!.status)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Link>
-        )}
-
-        {/* ── 3. Next Tide ───────────────────────────────────────── */}
-        {tide && (
-          <div className="sm:flex-1 px-4 py-4 min-w-0">
-            <SectionLabel>Next Tide</SectionLabel>
+          <Link href="/ferry" className="border border-parchment-200 rounded-xl bg-white px-4 py-4 hover:bg-parchment-50 transition-colors">
+            <CardLabel>Ferry</CardLabel>
             <div className="flex items-center gap-2.5">
-              <span className="text-2xl leading-none" aria-hidden="true">🌊</span>
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-wide leading-none ${
-                  tide.type === 'H' ? 'text-forest-600' : 'text-stone-600'
+              {alertCount > 0 || hasDisruption ? (
+                <AlertTriangle size={24} className="text-amber-500 shrink-0" aria-hidden="true" />
+              ) : (
+                <Ship size={24} className="text-forest-600 shrink-0" aria-hidden="true" />
+              )}
+              <div className="min-w-0">
+                <p className={`text-sm font-semibold leading-snug ${
+                  alertCount > 0 || hasDisruption ? 'text-amber-700' : 'text-forest-700'
                 }`}>
-                  {tide.type === 'H' ? 'High' : 'Low'}
+                  {ferrySummary}
                 </p>
-                <p className="text-xl font-bold text-stone-800 leading-tight mt-0.5">{tide.time}</p>
-                <p className="text-xs text-stone-600">{tide.height} ft</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── 4. Events Today ────────────────────────────────────── */}
-        {eventsCount !== null && (
-          <Link href="/events" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-            <SectionLabel>Events Today</SectionLabel>
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl leading-none" aria-hidden="true">
-                {eventsCount > 0 ? '📅' : '🌿'}
-              </span>
-              <div>
-                {eventsCount > 0 ? (
-                  <>
-                    <p className="text-xl font-bold text-stone-800 leading-none">{eventsCount}</p>
-                    <p className="text-xs text-stone-600 mt-0.5">
-                      event{eventsCount !== 1 ? 's' : ''} today
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-sm text-stone-600 leading-snug">
-                    Quiet day<br />on the island
-                  </p>
+                {alertCount === 0 && !hasDisruption && (
+                  <p className="text-xs text-stone-500 mt-0.5">No active alerts</p>
                 )}
               </div>
             </div>
           </Link>
         )}
 
-        {/* ── 5. New Listings ────────────────────────────────────── */}
-        {showListings && (
-          <Link href="/marketplace" className="sm:flex-1 px-4 py-4 min-w-0 hover:bg-parchment-50 transition-colors">
-            <SectionLabel>New Listings</SectionLabel>
+        {/* ── 3. Events Today ────────────────────────────────────── */}
+        {eventsData !== null && (
+          <Link href="/events" className="border border-parchment-200 rounded-xl bg-white px-4 py-4 hover:bg-parchment-50 transition-colors">
+            <CardLabel>Events Today</CardLabel>
             <div className="flex items-center gap-2.5">
-              <ShoppingBag size={24} className="text-forest-600 shrink-0" aria-hidden="true" />
-              <div>
-                <p className="text-xl font-bold text-stone-800 leading-none">{listingsCount}</p>
-                <p className="text-xs text-stone-600 mt-0.5">new today</p>
+              <Calendar size={24} className="text-forest-600 shrink-0" aria-hidden="true" />
+              <div className="min-w-0">
+                {eventsData.count > 0 ? (
+                  <>
+                    <p className="text-sm font-semibold text-stone-800 leading-snug">
+                      {eventsData.count} event{eventsData.count !== 1 ? 's' : ''} today
+                    </p>
+                    {eventsData.next && (
+                      <p className="text-xs text-stone-500 mt-0.5 truncate">
+                        Next: {eventsData.next.title}, {eventsData.next.time}
+                        {eventsData.next.town ? ` in ${eventsData.next.town}` : ''}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-sm text-stone-600 leading-snug">
+                    Quiet day on the island
+                  </p>
+                )}
               </div>
             </div>
           </Link>

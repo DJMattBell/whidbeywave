@@ -1,4 +1,6 @@
 // Server component — fetches live WSF alerts, filtered to Whidbey routes only
+import { AlertTriangle } from 'lucide-react';
+
 const MUKILTEO_CLINTON    = 7;
 const PT_COUPEVILLE       = 8;
 const WHIDBEY_ROUTE_IDS   = new Set([MUKILTEO_CLINTON, PT_COUPEVILLE]);
@@ -71,7 +73,7 @@ export default async function FerryAlerts() {
     <div className="border-t border-parchment-200 pt-3 mt-3">
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg" aria-hidden="true">⛴️</span>
+        <AlertTriangle size={18} className="text-amber-600 shrink-0" aria-hidden="true" />
         <h3 className="text-sm font-bold text-sound-900">Ferry Alerts</h3>
       </div>
 
@@ -85,7 +87,7 @@ export default async function FerryAlerts() {
               key={alert.BulletinID}
               className="flex items-start gap-2 text-sm"
             >
-              <span className="shrink-0 mt-0.5" aria-hidden="true">⚠️</span>
+              <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="min-w-0">
                 <span className="text-xs font-semibold text-sound-700">
                   {routes.join(' · ')}

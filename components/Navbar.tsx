@@ -56,6 +56,8 @@ export default function Navbar() {
 
   const profileRef = useRef<HTMLDivElement>(null);
   const communityRef = useRef<HTMLDivElement>(null);
+  const visitRef = useRef<HTMLDivElement>(null);
+  const submitRef = useRef<HTMLDivElement>(null);
 
   const visitActive = pathname.startsWith('/visit');
   const communityActive = communityLinks.some(
@@ -65,15 +67,35 @@ export default function Navbar() {
   // Close dropdowns on outside click
   useEffect(() => {
     function onClick(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
+      if (visitRef.current && !visitRef.current.contains(e.target as Node)) {
+        setVisitOpen(false);
       }
       if (communityRef.current && !communityRef.current.contains(e.target as Node)) {
         setCommunityOpen(false);
       }
+      if (submitRef.current && !submitRef.current.contains(e.target as Node)) {
+        setSubmitOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
     }
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  // Close dropdowns on Escape
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setVisitOpen(false);
+        setCommunityOpen(false);
+        setSubmitOpen(false);
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
   // Close drawer on route change
@@ -129,6 +151,7 @@ export default function Navbar() {
 
                 {/* Visit Whidbey dropdown */}
                 <div
+                  ref={visitRef}
                   className="relative"
                   onMouseEnter={() => setVisitOpen(true)}
                   onMouseLeave={() => setVisitOpen(false)}
@@ -147,7 +170,7 @@ export default function Navbar() {
                   </button>
 
                   {visitOpen && (
-                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[210px] z-50">
+                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[240px] z-50">
                       <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                         {visitLinks.map(({ href, label, Icon }) => {
                           const active = href === '/visit'
@@ -160,8 +183,8 @@ export default function Navbar() {
                               onClick={() => setVisitOpen(false)}
                               className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${
                                 active
-                                  ? 'bg-forest-50 text-forest-700'
-                                  : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
+                                  ? 'bg-sound-50 text-forest-700'
+                                  : 'text-stone-600 hover:bg-sound-50 hover:text-forest-700'
                               }`}
                             >
                               <Icon size={16} className="shrink-0" aria-hidden="true" />
@@ -195,7 +218,7 @@ export default function Navbar() {
                   </button>
 
                   {communityOpen && (
-                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[200px] z-50">
+                    <div className="absolute top-full left-0 pt-1 bg-transparent min-w-[240px] z-50">
                       <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                         {communityLinks.map(({ href, label, Icon }) => {
                           const active = pathname === href || pathname.startsWith(href + '/');
@@ -206,8 +229,8 @@ export default function Navbar() {
                               onClick={() => setCommunityOpen(false)}
                               className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${
                                 active
-                                  ? 'bg-forest-50 text-forest-700'
-                                  : 'text-stone-600 hover:bg-forest-50 hover:text-forest-700'
+                                  ? 'bg-sound-50 text-forest-700'
+                                  : 'text-stone-600 hover:bg-sound-50 hover:text-forest-700'
                               }`}
                             >
                               <Icon size={16} className="shrink-0" aria-hidden="true" />
@@ -225,6 +248,7 @@ export default function Navbar() {
               <div className="hidden md:flex items-center gap-1 ml-auto pl-2">
                 {/* Submit dropdown — pill style */}
                 <div
+                  ref={submitRef}
                   className="relative"
                   onMouseEnter={() => setSubmitOpen(true)}
                   onMouseLeave={() => setSubmitOpen(false)}
@@ -241,19 +265,19 @@ export default function Navbar() {
                   </button>
 
                   {submitOpen && (
-                    <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[190px] z-50">
+                    <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[240px] z-50">
                       <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                         <Link
                           href="/submit-event"
                           onClick={() => setSubmitOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-sound-50 hover:text-forest-700 transition-colors"
                         >
                           <Calendar size={16} aria-hidden="true" /> Submit an Event
                         </Link>
                         <Link
                           href="/submit-listing"
                           onClick={() => setSubmitOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-stone-600 hover:bg-sound-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
                         >
                           <ShoppingBag size={16} aria-hidden="true" /> Post a Listing
                         </Link>
@@ -293,25 +317,25 @@ export default function Navbar() {
                     </button>
 
                     {profileOpen && (
-                      <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[180px] z-50">
+                      <div className="absolute top-full right-0 pt-1 bg-transparent min-w-[240px] z-50">
                         <div className="bg-white border border-parchment-200 rounded-lg shadow-warm-md overflow-hidden">
                           <Link
                             href="/profile"
                             onClick={() => setProfileOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-sound-50 hover:text-forest-700 transition-colors"
                           >
                             <User size={16} aria-hidden="true" /> My Profile
                           </Link>
                           <Link
                             href="/profile/notifications"
                             onClick={() => setProfileOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors"
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-sound-50 hover:text-forest-700 transition-colors"
                           >
                             <Bell size={16} aria-hidden="true" /> Notifications
                           </Link>
                           <button
                             onClick={() => { setProfileOpen(false); signOut(); }}
-                            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-forest-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm font-medium text-stone-600 hover:bg-sound-50 hover:text-forest-700 transition-colors border-t border-parchment-100"
                           >
                             <LogOut size={16} aria-hidden="true" /> Sign out
                           </button>

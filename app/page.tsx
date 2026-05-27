@@ -12,7 +12,7 @@ import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
   Calendar, Gift, Newspaper, ShoppingBag, BookOpen,
-  MessageCircle, Ship, Waves,
+  MessageCircle, Ship, Waves, Tag, Star, MapPinned,
 } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
 
@@ -77,6 +77,69 @@ export default async function HomePage() {
   const freeListings = (freeListingsData ?? []) as {
     id: string; title: string; location: string; images: string[]; emoji: string; created_at: string;
   }[];
+
+  // Forum threads for news section fallback (Issue 1)
+  const { data: forumThreadsData } = await supabase
+    .from('forum_posts')
+    .select('id, title, body, reply_count, created_at, author_name')
+    .eq('is_pinned', false)
+    .order('created_at', { ascending: false })
+    .limit(3);
+  const forumThreads = (forumThreadsData ?? []) as {
+    id: string; title: string; body: string | null; reply_count: number;
+    created_at: string; author_name: string;
+  }[];
+
+  // Recommendations for news section fallback (Issue 1)
+  const { data: recommendationsData } = await supabase
+    .from('recommendations')
+    .select('id, name, category, town, review_count')
+    .order('review_count', { ascending: false })
+    .limit(3);
+  const recommendations = (recommendationsData ?? []) as {
+    id: string; name: string; category: string; town: string | null; review_count: number;
+  }[];
+
+  // ── News section fallback pool ──────────────────────────────────────────
+  // When news has fewer than 3 stories, fill with forum → listings → picks
+  type FallbackItem =
+    | { type: 'news'; data: typeof latestNews[number] }
+    | { type: 'forum'; data: typeof forumThreads[number] }
+    | { type: 'listing'; data: typeof featuredListings[number] }
+    | { type: 'pick'; data: typeof recommendations[number] };
+
+  let newsSectionItems: FallbackItem[] = latestNews.map(n => ({ type: 'news' as const, data: n }));
+
+  if (newsSectionItems.length < 3) {
+    const remaining = 3 - newsSectionItems.length;
+    newsSectionItems = [...newsSectionItems, ...forumThreads.slice(0, remaining).map(t => ({ type: 'forum' as const, data: t }))];
+  }
+  if (newsSectionItems.length < 3) {
+    const remaining = 3 - newsSectionItems.length;
+    newsSectionItems = [...newsSectionItems, ...featuredListings.slice(0, remaining).map(l => ({ type: 'listing' as const, data: l }))];
+  }
+  if (newsSectionItems.length < 3) {
+    const remaining = 3 - newsSectionItems.length;
+    newsSectionItems = [...newsSectionItems, ...recommendations.slice(0, remaining).map(r => ({ type: 'pick' as const, data: r }))];
+  }
+
+  // Determine heading based on content mix
+  const newsTypes = new Set(newsSectionItems.map(i => i.type));
+  let newsHeading = 'From Around the Island';
+  let newsSubtitle = 'What your neighbors are talking about';
+  let newsLink = '/news';
+
+  if (newsSectionItems.length > 0 && !newsTypes.has('news')) {
+    if (newsTypes.size === 1 && newsTypes.has('forum')) {
+      newsHeading = "What the Island's Talking About";
+      newsSubtitle = 'Active conversations from Ask the Island';
+      newsLink = '/forum';
+    } else if (!newsTypes.has('forum')) {
+      newsHeading = 'On the Island Marketplace';
+      newsSubtitle = 'Recently listed by neighbors';
+      newsLink = '/marketplace';
+    }
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -151,22 +214,23 @@ export default async function HomePage() {
         ))}
       </div>
 
-      {/* Desktop: grid */}
+      {/* Desktop: grid with subtitles */}
       <div className="hidden md:grid grid-cols-5 gap-4">
         {([
-          { Icon: Calendar,      label: "What's Going On", href: '/events' },
-          { Icon: Newspaper,     label: 'Island News',      href: '/news' },
-          { Icon: BookOpen,      label: 'Guides',           href: '/guides' },
-          { Icon: ShoppingBag,   label: 'Buy & Sell',      href: '/marketplace' },
-          { Icon: MessageCircle, label: 'Ask the Island',  href: '/forum' },
-        ] as const).map(({ Icon, label, href }) => (
+          { Icon: Calendar,      label: "What's Going On", subtitle: 'Concerts, markets, and what\u2019s on the calendar', href: '/events' },
+          { Icon: Newspaper,     label: 'Island News',      subtitle: 'Stories from across the island',                     href: '/news' },
+          { Icon: BookOpen,      label: 'Guides',           subtitle: 'Moving here, ferries, dining, and more',             href: '/guides' },
+          { Icon: ShoppingBag,   label: 'Buy & Sell',      subtitle: 'Listings from your neighbors',                       href: '/marketplace' },
+          { Icon: MessageCircle, label: 'Ask the Island',  subtitle: 'Questions, advice, recommendations',                 href: '/forum' },
+        ] as const).map(({ Icon, label, subtitle, href }) => (
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2 py-5 rounded-xl font-semibold text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200"
+            className="flex flex-col items-center gap-2 py-5 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center"
           >
             <Icon size={28} className="text-forest-600" aria-hidden="true" />
-            <span>{label}</span>
+            <span className="font-semibold">{label}</span>
+            <span className="text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
           </Link>
         ))}
       </div>
@@ -239,47 +303,102 @@ export default async function HomePage() {
     </section>
   );
 
-  const newsSection = (
+  const newsSection = newsSectionItems.length === 0 ? null : (
     <section key="news" className="bg-parchment-100 py-12 md:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <h2 className="section-title">From Around the Island</h2>
-            <p className="section-subtitle mb-0">What your neighbors are talking about</p>
+            <h2 className="section-title">{newsHeading}</h2>
+            <p className="section-subtitle mb-0">{newsSubtitle}</p>
           </div>
-          <Link href="/news" className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
+          <Link href={newsLink} className="text-forest-600 hover:text-forest-800 font-medium text-sm hidden sm:block">
             Read more →
           </Link>
         </div>
-        {latestNews.length === 0 ? (
-          <EmptyState
-            icon={Newspaper}
-            headline="The newsroom is between stories"
-            subtext="Stories from the island will appear here."
-          />
-        ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            {latestNews.map((post) => (
-              <Link key={post.id} href={`/news#${post.slug}`} className="card-pressable p-6 group">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {newsSectionItems.map((item) => {
+            if (item.type === 'news') {
+              const post = item.data;
+              return (
+                <Link key={`news-${post.id}`} href={`/news#${post.slug}`} className="card-pressable p-6 group">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl shrink-0">{post.emoji}</div>
+                    <div>
+                      <span className={`badge ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
+                        {post.category}
+                      </span>
+                      <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-stone-600 mb-2">
+                        {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
+                      </p>
+                      <p className="text-base text-stone-600 line-clamp-2">{post.excerpt}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            }
+            if (item.type === 'forum') {
+              const thread = item.data;
+              return (
+                <Link key={`forum-${thread.id}`} href={`/forum/${thread.id}`} className="card-pressable p-6 group">
+                  <div className="flex items-start gap-4">
+                    <MessageCircle size={32} className="text-forest-600 shrink-0 mt-1" aria-hidden="true" />
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
+                        {thread.title}
+                      </h3>
+                      {thread.body && (
+                        <p className="text-sm text-stone-600 mb-2 line-clamp-2">{thread.body}</p>
+                      )}
+                      <p className="text-xs text-stone-500">
+                        {thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'} · {formatShortDate(thread.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            }
+            if (item.type === 'listing') {
+              const listing = item.data;
+              return (
+                <Link key={`listing-${listing.id}`} href={`/marketplace/${listing.id}`} className="card-pressable p-6 group">
+                  <div className="flex items-start gap-4">
+                    <span className="text-4xl shrink-0">{listing.emoji}</span>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
+                        {listing.title}
+                      </h3>
+                      <p className="text-forest-600 font-bold mb-1">{formatPrice(listing.price, listing.is_free)}</p>
+                      <p className="text-xs text-stone-500">{listing.location}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            }
+            // type === 'pick'
+            const pick = item.data;
+            return (
+              <Link key={`pick-${pick.id}`} href={`/recommendations/${pick.id}`} className="card-pressable p-6 group">
                 <div className="flex items-start gap-4">
-                  <div className="text-4xl shrink-0">{post.emoji}</div>
-                  <div>
-                    <span className={`badge ${categoryColors[post.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
-                      {post.category}
-                    </span>
+                  <Star size={32} className="text-amber-500 shrink-0 mt-1" aria-hidden="true" />
+                  <div className="min-w-0">
                     <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
-                      {post.title}
+                      {pick.name}
                     </h3>
-                    <p className="text-sm text-stone-600 mb-2">
-                      {formatShortDate(post.publishedAt)} · {post.readMinutes} min read
+                    <span className={`badge ${categoryColors[pick.category] ?? 'bg-parchment-200 text-stone-700'} mb-2`}>
+                      {pick.category}
+                    </span>
+                    <p className="text-xs text-stone-500">
+                      {pick.review_count} {pick.review_count === 1 ? 'review' : 'reviews'}{pick.town ? ` · ${pick.town}` : ''}
                     </p>
-                    <p className="text-base text-stone-600">{post.excerpt}</p>
                   </div>
                 </div>
               </Link>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -372,17 +491,17 @@ export default async function HomePage() {
     <section key="visitor-cta" className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16">
       <div className="card p-6 sm:p-8 bg-sound-50 border-sound-200">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <span className="text-4xl">🗺️</span>
+          <MapPinned size={32} className="text-sound-600 shrink-0" aria-hidden="true" />
           <div className="flex-1">
             <h2 className="text-xl font-semibold text-stone-800 mb-1">
-              Planning your visit?
+              Got friends visiting Whidbey?
             </h2>
             <p className="text-stone-600 text-sm">
-              Ferry tips, restaurants, farmers markets, and everything you need for a great trip.
+              Send them the visitor guide — ferry tips, restaurants, farmers markets, everything they need.
             </p>
           </div>
           <Link href="/visit" className="btn-primary shrink-0">
-            Visitor Guide →
+            Open Visitor Guide →
           </Link>
         </div>
       </div>
@@ -390,7 +509,7 @@ export default async function HomePage() {
   );
 
   const closingCta = (
-    <section key="closing" className="bg-forest-700 text-parchment-50 py-12 md:py-16">
+    <section key="closing" className="bg-gradient-to-br from-forest-700 via-forest-600 to-sound-600 text-parchment-50 py-12 md:py-16">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
           This is your site as much as ours
@@ -401,23 +520,23 @@ export default async function HomePage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
           <Link
             href="/submit-event"
-            className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 min-h-[48px]"
+            className="btn-primary bg-parchment-50 text-forest-800 hover:bg-parchment-100 min-h-[48px] inline-flex items-center gap-2"
           >
-            📅 Submit an Event
+            <Calendar size={18} aria-hidden="true" /> Submit an Event
           </Link>
           <Link
             href="/submit-listing"
-            className="btn-primary bg-transparent border border-parchment-300 text-parchment-100 hover:bg-parchment-50/10 min-h-[48px]"
+            className="btn-primary bg-transparent border border-parchment-300 text-parchment-100 hover:bg-parchment-50/10 min-h-[48px] inline-flex items-center gap-2"
           >
-            🏷️ Post a Listing
+            <Tag size={18} aria-hidden="true" /> Post a Listing
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 justify-center">
-          <Link href="/contact" className="text-parchment-300 hover:text-parchment-100 text-sm transition-colors">
+          <Link href="/contact" className="text-parchment-200 hover:text-parchment-100 text-sm transition-colors">
             Or just say hello →
           </Link>
           <span className="text-parchment-400 hidden sm:inline">·</span>
-          <Link href="/newsletter" className="text-parchment-300 hover:text-parchment-100 text-sm transition-colors">
+          <Link href="/newsletter" className="text-parchment-200 hover:text-parchment-100 text-sm transition-colors">
             Sign up for the weekly newsletter →
           </Link>
         </div>
@@ -436,8 +555,8 @@ export default async function HomePage() {
       {flashGivesSection}
       {newsSection}
       {listingsSection}
-      {visitorCta}
       {closingCta}
+      {visitorCta}
     </>
   );
 }
