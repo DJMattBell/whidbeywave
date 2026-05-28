@@ -12,6 +12,7 @@ import LeadStoryCard from '@/components/home/LeadStoryCard';
 import CommunityVoiceCard from '@/components/home/CommunityVoiceCard';
 import { getLeadStory } from '@/lib/lead-story';
 import FlashGiveCTA from '@/components/home/FlashGiveCTA';
+import FerryWaitAlert from '@/components/FerryWaitAlert';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
@@ -206,6 +207,7 @@ export default async function HomePage() {
           <TodayWidget />
         </Suspense>
       </div>
+      <FerryWaitAlert />
       <Suspense fallback={null}>
         <FerryAlerts />
       </Suspense>

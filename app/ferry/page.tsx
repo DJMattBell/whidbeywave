@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
+import Link from 'next/link';
 import { fetchFerryPageData } from '@/lib/ferry';
 import type { RouteStatus } from '@/lib/ferry';
 import ShareButton from '@/components/ShareButton';
 import FerryLiveBoard from '@/components/FerryLiveBoard';
+import FerryWaitReports from '@/components/FerryWaitReports';
 import DataStatus from '@/components/DataStatus';
 
 export const revalidate = 60;
@@ -96,6 +98,26 @@ export default async function FerryPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-16">
+
+        {/* ── Community Wait Reports (Phase 20) ──────────────────────── */}
+        <section>
+          <div className="flex items-end justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-stone-800">
+              Community Wait Reports
+            </h2>
+            <Link href="/ferry/report" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
+              Report a Wait →
+            </Link>
+          </div>
+          <Suspense fallback={
+            <div className="animate-pulse space-y-3">
+              <div className="h-20 bg-parchment-200 rounded-xl" />
+              <div className="h-20 bg-parchment-200 rounded-xl" />
+            </div>
+          }>
+            <FerryWaitReports />
+          </Suspense>
+        </section>
 
         {/* ── Section A: Live Status (client component) ───────────────── */}
         <section>
