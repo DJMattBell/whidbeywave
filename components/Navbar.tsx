@@ -103,6 +103,10 @@ export default function Navbar() {
   const communityRef = useRef<HTMLDivElement>(null);
   const visitRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
+  const wasDrawerOpenRef = useRef(false);
 
   const visitActive = pathname.startsWith('/visit');
   const communityActive = communityLinks.some(
@@ -137,6 +141,7 @@ export default function Navbar() {
         setCommunityOpen(false);
         setSubmitOpen(false);
         setProfileOpen(false);
+        setMenuOpen(false);
       }
     }
     document.addEventListener('keydown', onKeyDown);
@@ -148,6 +153,77 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync UI with route change
     setMenuOpen(false);
   }, [pathname]);
+
+  // Lock body scroll while the mobile drawer is open.
+  // Uses the position:fixed technique so it also holds on iOS Safari,
+  // and restores the exact scroll position on close.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const scrollY = window.scrollY;
+    const { body } = document;
+    const prev = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+
+    return () => {
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.left = prev.left;
+      body.style.right = prev.right;
+      body.style.width = prev.width;
+      body.style.overflow = prev.overflow;
+      window.scrollTo(0, scrollY);
+    };
+  }, [menuOpen]);
+
+  // Focus management for mobile drawer
+  useEffect(() => {
+    if (menuOpen) {
+      drawerCloseRef.current?.focus();
+      wasDrawerOpenRef.current = true;
+    } else if (wasDrawerOpenRef.current) {
+      hamburgerRef.current?.focus();
+      wasDrawerOpenRef.current = false;
+    }
+  }, [menuOpen]);
+
+  // Trap focus inside mobile drawer
+  useEffect(() => {
+    if (!menuOpen) return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      const focusable = drawer!.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [menuOpen]);
 
   const chevron = (open: boolean) => (
     <svg
@@ -430,6 +506,7 @@ export default function Navbar() {
                   </button>
                 )}
                 <button
+                  ref={hamburgerRef}
                   onClick={() => setMenuOpen(!menuOpen)}
                   className="p-2 rounded-lg text-stone-600 hover:bg-parchment-200 transition-colors w-11 h-11 flex flex-col items-center justify-center gap-[5px]"
                   aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -442,190 +519,193 @@ export default function Navbar() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Mobile drawer overlay */}
-            {menuOpen && (
-              <div
-                className="fixed inset-0 z-[60] bg-black/50 md:hidden"
-                aria-hidden="true"
-                onClick={() => setMenuOpen(false)}
-              />
-            )}
+        {/* Mobile drawer overlay — rendered outside the backdrop-blur bar so
+            position:fixed resolves against the viewport, not the header. */}
+        {menuOpen && (
+          <div
+            className="fixed inset-0 z-[60] bg-black/50 md:hidden"
+            aria-hidden="true"
+            onClick={() => setMenuOpen(false)}
+          />
+        )}
 
-            {/* Mobile slide-in drawer */}
-            <nav
-              id="mobile-menu"
-              className={`fixed top-0 right-0 h-full w-[280px] bg-white z-[70] shadow-2xl md:hidden
-                         flex flex-col transition-transform duration-300 ease-in-out
-                         ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
-              aria-label="Mobile navigation"
+        {/* Mobile slide-in drawer */}
+        <nav
+          ref={drawerRef}
+          id="mobile-menu"
+          className={`fixed top-0 right-0 h-full w-[280px] bg-white z-[70] shadow-2xl md:hidden
+                     flex flex-col transition-transform duration-300 ease-in-out
+                     ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          aria-label="Mobile navigation"
+        >
+          {/* Drawer header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-parchment-200">
+            <span className="text-lg font-bold text-forest-600">Menu</span>
+            <button
+              ref={drawerCloseRef}
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="p-2 rounded-lg text-stone-500 hover:bg-parchment-100 transition-colors"
             >
-              {/* Drawer header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-parchment-200">
-                <span className="text-lg font-bold text-forest-600">Menu</span>
-                <button
-                  onClick={() => setMenuOpen(false)}
-                  aria-label="Close menu"
-                  className="p-2 rounded-lg text-stone-500 hover:bg-parchment-100 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-              {/* Drawer body */}
-              <div className="flex-1 overflow-y-auto py-3">
-                {/* Main links */}
-                {mobileMainLinks.map(({ href, label }) => {
-                  const active = href === '/' ? pathname === '/' : (pathname === href || pathname.startsWith(href + '/'));
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
-                      aria-current={active ? 'page' : undefined}
-                      className={`block px-5 py-3 text-base font-medium transition-colors ${
-                        active
-                          ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
-                          : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
-                      }`}
-                    >
-                      {label}
-                    </Link>
-                  );
-                })}
+          {/* Drawer body */}
+          <div className="flex-1 overflow-y-auto py-3">
+            {/* Main links */}
+            {mobileMainLinks.map(({ href, label }) => {
+              const active = href === '/' ? pathname === '/' : (pathname === href || pathname.startsWith(href + '/'));
+              return (
                 <Link
-                  href="/search"
+                  key={href}
+                  href={href}
                   onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors ${
-                    pathname === '/search'
+                  aria-current={active ? 'page' : undefined}
+                  className={`block px-5 py-3 text-base font-medium transition-colors ${
+                    active
                       ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
                       : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
                   }`}
                 >
-                  <Search size={16} aria-hidden="true" />
-                  Search
+                  {label}
                 </Link>
+              );
+            })}
+            <Link
+              href="/search"
+              onClick={() => setMenuOpen(false)}
+              className={`flex items-center gap-2 px-5 py-3 text-base font-medium transition-colors ${
+                pathname === '/search'
+                  ? 'bg-forest-50 text-forest-700 border-r-2 border-forest-600'
+                  : 'text-stone-700 hover:bg-parchment-100 hover:text-forest-600'
+              }`}
+            >
+              <Search size={16} aria-hidden="true" />
+              Search
+            </Link>
 
-                {/* Visit Whidbey */}
-                <div className="mt-2 border-t border-parchment-200 pt-2">
-                  <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
-                    Visit Whidbey
-                  </p>
-                  {visitLinks.map(({ href, label, Icon }) => {
-                    const active = href === '/visit'
-                      ? pathname === '/visit'
-                      : pathname.startsWith(href);
-                    return (
-                      <Link
-                        key={href}
-                        href={href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`flex items-center gap-2.5 pl-7 pr-5 py-2.5 text-sm font-medium transition-colors ${
-                          active
-                            ? 'bg-forest-50 text-forest-700'
-                            : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
-                        }`}
-                      >
-                        <Icon size={16} className="shrink-0" aria-hidden="true" />
-                        {label}
-                      </Link>
-                    );
-                  })}
-                </div>
+            {/* Visit Whidbey */}
+            <div className="mt-2 border-t border-parchment-200 pt-2">
+              <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                Visit Whidbey
+              </p>
+              {visitLinks.map(({ href, label, Icon }) => {
+                const active = href === '/visit'
+                  ? pathname === '/visit'
+                  : pathname.startsWith(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`flex items-center gap-2.5 pl-7 pr-5 py-2.5 text-sm font-medium transition-colors ${
+                      active
+                        ? 'bg-forest-50 text-forest-700'
+                        : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                    }`}
+                  >
+                    <Icon size={16} className="shrink-0" aria-hidden="true" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
 
-                {/* Community */}
-                <div className="mt-2 border-t border-parchment-200 pt-2">
-                  <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
-                    Community
-                  </p>
-                  {communityLinks.map(({ href, label, Icon }) => {
-                    const active = pathname === href || pathname.startsWith(href + '/');
-                    return (
-                      <Link
-                        key={href}
-                        href={href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
-                          active
-                            ? 'bg-forest-50 text-forest-700'
-                            : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
-                        }`}
-                      >
-                        <Icon size={16} className="shrink-0" aria-hidden="true" />
-                        {label}
-                      </Link>
-                    );
-                  })}
-                </div>
+            {/* Community */}
+            <div className="mt-2 border-t border-parchment-200 pt-2">
+              <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                Community
+              </p>
+              {communityLinks.map(({ href, label, Icon }) => {
+                const active = pathname === href || pathname.startsWith(href + '/');
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
+                      active
+                        ? 'bg-forest-50 text-forest-700'
+                        : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                    }`}
+                  >
+                    <Icon size={16} className="shrink-0" aria-hidden="true" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
 
-                {/* Profile section (logged in) */}
-                {user && (
-                  <div className="mt-2 border-t border-parchment-200 pt-2">
-                    <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
-                      Account
-                    </p>
-                    <Link
-                      href="/profile"
-                      onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
-                        pathname === '/profile'
-                          ? 'bg-forest-50 text-forest-700'
-                          : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
-                      }`}
-                    >
-                      <User size={16} className="shrink-0" aria-hidden="true" />
-                      My Profile
-                    </Link>
-                    <Link
-                      href="/profile/notifications"
-                      onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
-                        pathname === '/profile/notifications'
-                          ? 'bg-forest-50 text-forest-700'
-                          : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
-                      }`}
-                    >
-                      <Bell size={16} className="shrink-0" aria-hidden="true" />
-                      Notifications
-                      {unreadCount > 0 && (
-                        <span className="ml-auto min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-terra-600 text-white text-[10px] font-bold px-1">
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
-                      )}
-                    </Link>
-                    <button
-                      onClick={() => { setMenuOpen(false); signOut(); }}
-                      className="flex items-center gap-2.5 w-full px-5 py-2.5 text-sm font-medium text-stone-600 hover:bg-parchment-100 hover:text-forest-600 transition-colors"
-                    >
-                      <LogOut size={16} className="shrink-0" aria-hidden="true" />
-                      Sign out
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Drawer footer — submit */}
-              <div className="border-t border-parchment-200 px-5 py-4 space-y-2">
+            {/* Profile section (logged in) */}
+            {user && (
+              <div className="mt-2 border-t border-parchment-200 pt-2">
+                <p className="px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">
+                  Account
+                </p>
                 <Link
-                  href="/submit-event"
+                  href="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-forest-600 text-parchment-50 hover:bg-forest-700 transition-colors"
+                  className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
+                    pathname === '/profile'
+                      ? 'bg-forest-50 text-forest-700'
+                      : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                  }`}
                 >
-                  <Calendar size={16} aria-hidden="true" /> Submit an Event
+                  <User size={16} className="shrink-0" aria-hidden="true" />
+                  My Profile
                 </Link>
                 <Link
-                  href="/submit-listing"
+                  href="/profile/notifications"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-50 transition-colors"
+                  className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium transition-colors ${
+                    pathname === '/profile/notifications'
+                      ? 'bg-forest-50 text-forest-700'
+                      : 'text-stone-600 hover:bg-parchment-100 hover:text-forest-600'
+                  }`}
                 >
-                  <ShoppingBag size={16} aria-hidden="true" /> Post a Listing
+                  <Bell size={16} className="shrink-0" aria-hidden="true" />
+                  Notifications
+                  {unreadCount > 0 && (
+                    <span className="ml-auto min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-terra-600 text-white text-[10px] font-bold px-1">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
+                <button
+                  onClick={() => { setMenuOpen(false); signOut(); }}
+                  className="flex items-center gap-2.5 w-full px-5 py-2.5 text-sm font-medium text-stone-600 hover:bg-parchment-100 hover:text-forest-600 transition-colors"
+                >
+                  <LogOut size={16} className="shrink-0" aria-hidden="true" />
+                  Sign out
+                </button>
               </div>
-            </nav>
+            )}
           </div>
-        </div>
+
+          {/* Drawer footer — submit */}
+          <div className="border-t border-parchment-200 px-5 py-4 space-y-2">
+            <Link
+              href="/submit-event"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-forest-600 text-parchment-50 hover:bg-forest-700 transition-colors"
+            >
+              <Calendar size={16} aria-hidden="true" /> Submit an Event
+            </Link>
+            <Link
+              href="/submit-listing"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold border border-forest-600 text-forest-600 hover:bg-forest-50 transition-colors"
+            >
+              <ShoppingBag size={16} aria-hidden="true" /> Post a Listing
+            </Link>
+          </div>
+        </nav>
       </header>
     </>
   );
