@@ -58,8 +58,8 @@ export default function FeedbackButton() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ message: message.trim(), email: email.trim(), page: currentPage }),
       });
-    } catch {
-      // Non-fatal
+    } catch (err) {
+      console.error('Feedback submission failed:', err);
     }
     setStatus('done');
   }

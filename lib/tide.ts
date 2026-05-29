@@ -31,5 +31,8 @@ export async function fetchNextTide(): Promise<TideData | null> {
       time:   `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`,
       height: parseFloat(next.v).toFixed(1),
     };
-  } catch { return null; }
+  } catch (err) {
+    console.error('Tide fetch failed:', err);
+    return null;
+  }
 }

@@ -48,7 +48,8 @@ export default function ImageGallery({ photos, alt }: Props) {
     touchStartX.current = null;
   }
 
-  const activeSrc = photos[activeIndex];
+  const clampedIndex = Math.min(activeIndex, photos.length - 1);
+  const activeSrc = photos[clampedIndex];
 
   return (
     <>

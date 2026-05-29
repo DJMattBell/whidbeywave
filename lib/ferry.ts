@@ -96,7 +96,8 @@ async function fetchScheduleData(routeId: number, fresh = false): Promise<any | 
     );
     if (!res.ok) return null;
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error('Ferry schedule fetch failed (route', routeId, '):', err);
     return null;
   }
 }

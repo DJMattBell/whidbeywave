@@ -116,12 +116,6 @@ export default async function ForumPage({
           </div>
         </nav>
 
-        {/* Demo mode notice */}
-        {!isConfigured && (
-          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
-            <strong>Demo mode:</strong> Add your Supabase keys to <code>.env.local</code> to see and post real questions.
-          </div>
-        )}
 
         {/* Post list */}
         {posts.length === 0 ? (

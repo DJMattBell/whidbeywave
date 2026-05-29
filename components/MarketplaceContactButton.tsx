@@ -55,6 +55,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ listingId, buyerName: name, buyerEmail: email, buyerPhone: phone, message }),
       });
+      if (!res.ok) { setStatus('error'); return; }
       const data = await res.json();
       if (data.ok) {
         setStatus('sent');
