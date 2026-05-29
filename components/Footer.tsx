@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import TextSizeFooterToggle from '@/components/TextSizeFooterToggle';
+import LandAcknowledgment from '@/components/LandAcknowledgment';
 
 export default function Footer() {
   return (
@@ -82,6 +83,8 @@ export default function Footer() {
             </ul>
           </div>
         </div>
+
+        <LandAcknowledgment />
 
         <div className="border-t border-forest-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-forest-300">
           <p>&copy; {new Date().getFullYear()} WhidbeyWave.com &nbsp;·&nbsp; Whidbey Island, WA</p>
