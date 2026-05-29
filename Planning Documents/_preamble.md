@@ -3,7 +3,7 @@
 Paste this at the start of every Claude Code session for this project, immediately before the phase's kickoff prompt.
 
 ```
-Project: WhidbeyWave at /Users/papa/Documents/For Claude/News Hub Project.
+Project: WhidbeyWave at /Users/papa/code/whidbeywave.
 
 All planning docs live in Planning Documents/ at the project root.
 

@@ -23,6 +23,9 @@
 The planning gate is non-negotiable when a phase file is in the prompt. It exists because skipping it produces audit-item-altitude work instead of strategic phase work.
 
 ## Project
+Repo location: /Users/papa/code/whidbeywave (moved out of iCloud 2026-05-28;
+never put back in iCloud).
+
 WhidbeyWave.com — a local news, events, and
 community hub for Whidbey Island, Washington.
 Warm, small-town Pacific Northwest aesthetic.
@@ -80,3 +83,41 @@ When adding a new event source, choose the best approach in this priority order:
 Never copy-paste selectors from one scraper to another — always inspect the actual site. Wix sites render client-side and cannot be scraped without a headless browser; skip them.
 
 After Phase 14: every scraper writes a row to `scrape_log` on every run (success or failure) so `/admin/scrapers` reflects health.
+
+## Deployment Discipline (added May 2026 after broken-deploy recovery)
+
+After a two-month period of failed deploys went undetected, the following practices became mandatory:
+
+### Before every commit
+- Run `npm run build` locally. Phase 18 introduced a build break that ran undetected for 2 months because builds were never run locally before pushing.
+- One logical change per commit. Phase 20 was shipped in 6 commits, not 1. Each was independently revertable.
+
+### Infrastructure facts
+- **Vercel tier**: Pro ($20/month). Cron limit: 40. Currently using 5.
+- **Supabase tier**: Free (no auto-backups, no point-in-time recovery). Manual `pg_dump` backups weekly minimum.
+- **Repo location**: `~/code/whidbeywave/`. NEVER place in iCloud, Dropbox, or any sync folder — git index files conflict with sync daemons and corrupt the repo. iCloud caused 173 duplicate files and multiple `.git/index` corruption events before this was caught.
+- **Deploy webhook**: GitHub App → Vercel. The GitHub App must have "Repository access" granted to `whidbeywave` specifically (not just "all repositories" at org level).
+
+### If pushes stop deploying
+Check in this order:
+1. GitHub App "Repository access" includes whidbeywave
+2. Most recent commit's check status on the GitHub branches page
+3. `vercel.json` cron count vs plan limit
+4. Vercel project's git connection (Settings → Git)
+
+### Production database operations
+- Migrations may be applied via Supabase MCP, but only after the user has reviewed the SQL.
+- For ANY migration touching existing tables (ALTER, DROP, DELETE FROM), explicitly pause and require user approval before applying.
+- Take a `pg_dump` backup before applying any migration that isn't a pure additive CREATE TABLE.
+- Never apply a migration in the same commit chunk as the code that depends on it. Migration commit → manual review → apply → then code commit. This ordering prevents "code deployed against a table that doesn't exist yet" errors.
+
+### Chunked commit pattern for new features
+When shipping a phase that touches database + API + components + pages + docs:
+1. Migration SQL only (commit, push, deploy, apply manually)
+2. API routes
+3. Frontend components + hooks (unwired)
+4. Frontend page(s)
+5. Integration into existing pages (the user-visible commit)
+6. Documentation
+
+Each chunk: `npm run build` → commit → push → wait for Vercel READY → verify on live site → only then proceed.
