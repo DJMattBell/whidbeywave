@@ -96,7 +96,7 @@ export default function FeedbackButton() {
         className={`fixed top-0 right-0 h-full z-50 w-full sm:w-[320px]
                     bg-white shadow-2xl flex flex-col
                     transition-transform duration-300 ease-in-out
-                    ${open ? 'translate-x-0' : 'translate-x-full'}`}
+                    ${open ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}`}
       >
         {/* Header */}
         <div className="bg-forest-800 px-5 py-4 flex items-center justify-between shrink-0">
@@ -109,7 +109,8 @@ export default function FeedbackButton() {
           <button
             onClick={() => setOpen(false)}
             aria-label="Close feedback panel"
-            className="text-forest-300 hover:text-parchment-50 transition-colors ml-3 shrink-0 text-xl leading-none"
+            className="text-forest-300 hover:text-parchment-50 transition-colors ml-3 shrink-0
+                       min-w-[44px] min-h-[44px] flex items-center justify-center text-xl leading-none"
           >
             ✕
           </button>
