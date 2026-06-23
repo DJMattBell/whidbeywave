@@ -63,11 +63,16 @@ export default function AdminEventsPage() {
   // Always load all submissions — filter client-side so counts stay accurate on all tabs
   const loadSubmissions = useCallback(async () => {
     setFetching(true);
-    const { data } = await supabase
-      .from('event_submissions')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setAllSubmissions((data ?? []) as Submission[]);
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/events/submissions', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const json = await res.json();
+      setAllSubmissions((json.submissions ?? []) as Submission[]);
+    } catch {
+      setAllSubmissions([]);
+    }
     setFetching(false);
   }, []);
 
