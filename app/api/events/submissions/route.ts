@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const auth = await verifyAdminRequest(request);
   if ('error' in auth) return auth.error;

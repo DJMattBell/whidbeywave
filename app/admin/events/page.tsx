@@ -50,6 +50,8 @@ export default function AdminEventsPage() {
   const [filter, setFilter]       = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
   const [fetching, setFetching]   = useState(false);
 
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   // Per-row state
   const [notes, setNotes]       = useState<Record<string, string>>({});
   const [acting, setActing]     = useState<Record<string, boolean>>({});
@@ -63,14 +65,22 @@ export default function AdminEventsPage() {
   // Always load all submissions — filter client-side so counts stay accurate on all tabs
   const loadSubmissions = useCallback(async () => {
     setFetching(true);
+    setFetchError(null);
     try {
       const token = await getToken();
       const res = await fetch('/api/events/submissions', {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      const json = await res.json();
-      setAllSubmissions((json.submissions ?? []) as Submission[]);
-    } catch {
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setFetchError(`Failed to load submissions (${res.status}: ${err.error || 'unknown'})`);
+        setAllSubmissions([]);
+      } else {
+        const json = await res.json();
+        setAllSubmissions((json.submissions ?? []) as Submission[]);
+      }
+    } catch (e) {
+      setFetchError(`Network error: ${e instanceof Error ? e.message : 'unknown'}`);
       setAllSubmissions([]);
     }
     setFetching(false);
@@ -255,6 +265,13 @@ export default function AdminEventsPage() {
           )}
         </div>
       </div>
+
+      {/* Error banner */}
+      {fetchError && (
+        <div className="mb-6 p-4 rounded-xl bg-terra-50 border border-terra-200 text-terra-700 text-sm">
+          {fetchError}
+        </div>
+      )}
 
       {/* Submissions list */}
       {displayed.length === 0 ? (
