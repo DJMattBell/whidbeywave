@@ -42,9 +42,39 @@ export default function SubmitEventPage() {
   const [showExtra, setShowExtra] = useState(false);
   const [status, setStatus]     = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [touched, setTouched]   = useState<Record<string, boolean>>({});
 
   function set(field: keyof typeof form, value: string) {
     setForm(p => ({ ...p, [field]: value }));
+  }
+
+  function blur(field: string) {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  }
+
+  function fieldError(field: keyof typeof form): string | null {
+    if (!touched[field]) return null;
+    switch (field) {
+      case 'title': return form.title.trim().length < 3 ? 'Event name must be at least 3 characters.' : null;
+      case 'date': {
+        if (!form.date) return 'Please pick a date.';
+        const today = new Date().toLocaleDateString('en-CA');
+        return form.date < today ? 'Date must be today or in the future.' : null;
+      }
+      case 'time': return !form.time.trim() ? 'Please enter a time.' : null;
+      case 'location': return !form.location.trim() ? 'Please enter a location.' : null;
+      case 'submitter_email': {
+        if (!form.submitter_email.trim()) return 'Email is required so we can notify you.';
+        return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submitter_email) ? 'Please enter a valid email.' : null;
+      }
+      default: return null;
+    }
+  }
+
+  const requiredFields: (keyof typeof form)[] = ['title', 'date', 'time', 'location', 'submitter_email'];
+
+  function hasErrors(): boolean {
+    return requiredFields.some(f => fieldError(f) !== null);
   }
 
   function toggleTag(tag: EventTag) {
@@ -53,6 +83,18 @@ export default function SubmitEventPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Mark all required fields as touched to surface any remaining errors
+    setTouched(Object.fromEntries(requiredFields.map(f => [f, true])));
+    if (requiredFields.some(f => {
+      switch (f) {
+        case 'title': return form.title.trim().length < 3;
+        case 'date': return !form.date || form.date < new Date().toLocaleDateString('en-CA');
+        case 'time': return !form.time.trim();
+        case 'location': return !form.location.trim();
+        case 'submitter_email': return !form.submitter_email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submitter_email);
+        default: return false;
+      }
+    })) return;
     setStatus('loading');
     setErrorMsg('');
 
@@ -147,9 +189,11 @@ export default function SubmitEventPage() {
               required
               value={form.title}
               onChange={e => set('title', e.target.value)}
+              onBlur={() => blur('title')}
               placeholder="Langley Whale Watch Weekend"
-              className={inputCls}
+              className={`${inputCls} ${fieldError('title') ? 'border-terra-400' : ''}`}
             />
+            {fieldError('title') && <p className="text-terra-600 text-sm mt-1">{fieldError('title')}</p>}
           </div>
 
           {/* Date */}
@@ -163,8 +207,11 @@ export default function SubmitEventPage() {
               required
               value={form.date}
               onChange={e => set('date', e.target.value)}
-              className={inputCls}
+              onBlur={() => blur('date')}
+              min={new Date().toLocaleDateString('en-CA')}
+              className={`${inputCls} ${fieldError('date') ? 'border-terra-400' : ''}`}
             />
+            {fieldError('date') && <p className="text-terra-600 text-sm mt-1">{fieldError('date')}</p>}
           </div>
 
           {/* Time */}
@@ -178,9 +225,11 @@ export default function SubmitEventPage() {
               required
               value={form.time}
               onChange={e => set('time', e.target.value)}
+              onBlur={() => blur('time')}
               placeholder="10:00 AM – 2:00 PM or just '2:00 PM' if you're not sure when it ends"
-              className={inputCls}
+              className={`${inputCls} ${fieldError('time') ? 'border-terra-400' : ''}`}
             />
+            {fieldError('time') && <p className="text-terra-600 text-sm mt-1">{fieldError('time')}</p>}
           </div>
 
           {/* Where is it */}
@@ -194,9 +243,11 @@ export default function SubmitEventPage() {
               required
               value={form.location}
               onChange={e => set('location', e.target.value)}
+              onBlur={() => blur('location')}
               placeholder="Coupeville Wharf"
-              className={inputCls}
+              className={`${inputCls} ${fieldError('location') ? 'border-terra-400' : ''}`}
             />
+            {fieldError('location') && <p className="text-terra-600 text-sm mt-1">{fieldError('location')}</p>}
           </div>
 
           {/* Town */}
@@ -241,10 +292,12 @@ export default function SubmitEventPage() {
               required
               value={form.submitter_email}
               onChange={e => set('submitter_email', e.target.value)}
+              onBlur={() => blur('submitter_email')}
               placeholder="jane@example.com"
-              className={inputCls}
+              className={`${inputCls} ${fieldError('submitter_email') ? 'border-terra-400' : ''}`}
               autoComplete="email"
             />
+            {fieldError('submitter_email') && <p className="text-terra-600 text-sm mt-1">{fieldError('submitter_email')}</p>}
           </div>
 
           {/* Optional details toggle */}

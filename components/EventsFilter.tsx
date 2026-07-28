@@ -172,6 +172,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     }
   );
   const [showFilters, setShowFilters] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Sync filter state to URL
   const isFirstRender = useRef(true);
@@ -206,10 +207,11 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     setActiveTags([]);
     setActiveTown('All');
     setTimeWindow('all');
+    setSearchQuery('');
     setShowFilters(false);
   }
 
-  const hasFilters = activeTags.length > 0 || activeTown !== 'All' || timeWindow !== 'all';
+  const hasFilters = activeTags.length > 0 || activeTown !== 'All' || timeWindow !== 'all' || searchQuery.trim() !== '';
   const activeFilterCount = (activeTown !== 'All' ? 1 : 0) + activeTags.length;
 
   // Apply time window filter
@@ -247,6 +249,11 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   const filtered = timeFiltered.filter((e) => {
     if (activeTown !== 'All' && e.town !== activeTown) return false;
     if (activeTags.length > 0 && !activeTags.some((t) => e.tags.includes(t))) return false;
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      const haystack = `${e.title} ${e.description ?? ''} ${e.location ?? ''}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
     return true;
   });
 
@@ -286,6 +293,24 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   // Filter panel content (shared between desktop inline and mobile bottom sheet)
   const filterPanelContent = (
     <div className="space-y-3">
+      {/* Search — mobile only (desktop has it in the bar) */}
+      <div className="sm:hidden">
+        <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Search</p>
+        <div className="relative">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search events…"
+            className="w-full pl-8 pr-3 py-2.5 rounded-lg border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-forest-400"
+            aria-label="Search events by title or description"
+          />
+          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
       {/* Town filter */}
       <div>
         <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Town</p>
@@ -374,8 +399,30 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       {/* ── Sticky filter bar ──────────────────────── */}
       <div className="sticky top-[64px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 shadow-sm border-b border-parchment-200">
         <div className="flex items-center gap-2">
-          <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none">
+          <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none flex items-center gap-2">
             <TimeWindowFilter active={timeWindow} onChange={setTimeWindow} counts={windowCounts} />
+            <div className="relative shrink-0 hidden sm:block">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events…"
+                className="w-40 md:w-52 pl-8 pr-3 py-2 rounded-full border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-forest-400"
+                aria-label="Search events by title or description"
+              />
+              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                  aria-label="Clear search"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
           {/* Mobile: inline clear + filter toggle */}
           <div className="md:hidden flex items-center gap-1.5 shrink-0">

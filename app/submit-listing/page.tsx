@@ -68,10 +68,32 @@ export default function SubmitListingPage() {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   function set<K extends keyof typeof form>(field: K, value: typeof form[K]) {
     setForm(p => ({ ...p, [field]: value }));
   }
+
+  function blur(field: string) {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  }
+
+  function fieldError(field: string): string | null {
+    if (!touched[field]) return null;
+    switch (field) {
+      case 'title': return form.title.trim().length < 3 ? 'Title must be at least 3 characters.' : null;
+      case 'category': return !form.category ? 'Please pick a category.' : null;
+      case 'description': return form.description.trim().length < 10 ? 'Please add a longer description (at least 10 characters).' : null;
+      case 'contact_email': {
+        const email = form.contact_email || user?.email || '';
+        if (!email.trim()) return 'Email is required.';
+        return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Please enter a valid email.' : null;
+      }
+      default: return null;
+    }
+  }
+
+  const listingRequired = ['title', 'category', 'description', 'contact_email'] as const;
 
   function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -113,6 +135,17 @@ export default function SubmitListingPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
+
+    // Touch all required fields to surface errors
+    setTouched(Object.fromEntries(listingRequired.map(f => [f, true])));
+    const email = form.contact_email || user?.email || '';
+    if (
+      form.title.trim().length < 3 ||
+      !form.category ||
+      form.description.trim().length < 10 ||
+      !email.trim() ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) return;
 
     setStatus('uploading');
     setErrorMsg('');
@@ -349,9 +382,11 @@ export default function SubmitListingPage() {
                 required
                 value={form.title}
                 onChange={e => set('title', e.target.value)}
+                onBlur={() => blur('title')}
                 placeholder="2019 Hobie Kayak"
-                className={inputCls}
+                className={`${inputCls} ${fieldError('title') ? 'border-terra-400' : ''}`}
               />
+              {fieldError('title') && <p className="text-terra-600 text-sm mt-1">{fieldError('title')}</p>}
             </div>
 
             {/* Price + free toggle */}
@@ -437,11 +472,13 @@ export default function SubmitListingPage() {
                   required
                   value={form.category}
                   onChange={e => set('category', e.target.value)}
-                  className={inputCls}
+                  onBlur={() => blur('category')}
+                  className={`${inputCls} ${fieldError('category') ? 'border-terra-400' : ''}`}
                 >
                   <option value="">Pick a category…</option>
                   {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                 </select>
+                {fieldError('category') && <p className="text-terra-600 text-sm mt-1">{fieldError('category')}</p>}
               </div>
               <div>
                 <label htmlFor="ls-location" className={labelCls}>Your town</label>
@@ -523,9 +560,11 @@ export default function SubmitListingPage() {
                 rows={5}
                 value={form.description}
                 onChange={e => set('description', e.target.value)}
+                onBlur={() => blur('description')}
                 placeholder="Describe your item — condition, dimensions, what's included, pickup or delivery, any other details a buyer would want to know…"
-                className={inputCls + ' resize-none'}
+                className={`${inputCls} resize-none ${fieldError('description') ? 'border-terra-400' : ''}`}
               />
+              {fieldError('description') && <p className="text-terra-600 text-sm mt-1">{fieldError('description')}</p>}
             </div>
           </div>
 
@@ -559,10 +598,12 @@ export default function SubmitListingPage() {
                   required
                   value={effectiveEmail}
                   onChange={e => set('contact_email', e.target.value)}
+                  onBlur={() => blur('contact_email')}
                   placeholder="jane@example.com"
-                  className={inputCls}
+                  className={`${inputCls} ${fieldError('contact_email') ? 'border-terra-400' : ''}`}
                   autoComplete="email"
                 />
+                {fieldError('contact_email') && <p className="text-terra-600 text-sm mt-1">{fieldError('contact_email')}</p>}
               </div>
               <div>
                 <label htmlFor="ls-contact-phone" className={labelCls}>

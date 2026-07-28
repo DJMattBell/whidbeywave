@@ -46,6 +46,23 @@ function parseDate(raw: string): string | null {
     return toPacificDateString(d);
   }
 
+  // Date without year: "Apr 04" or "Aug 15" — assume current/next occurrence
+  const noYearMatch = trimmed.match(
+    /^([A-Za-z]+)\s+(\d{1,2})$/
+  );
+  if (noYearMatch) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const withYear = new Date(`${noYearMatch[1]} ${noYearMatch[2]}, ${currentYear}`);
+    if (!isNaN(withYear.getTime())) {
+      // If the date is more than 2 months in the past, assume next year
+      if (withYear.getTime() < now.getTime() - 60 * 86400000) {
+        withYear.setFullYear(currentYear + 1);
+      }
+      return toPacificDateString(withYear);
+    }
+  }
+
   return null;
 }
 
@@ -101,8 +118,8 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
       if (!rawDate) {
         $content.find('p strong').each((_, strong) => {
           const text = $(strong).text().trim();
-          // Check if the text looks like a date (starts with month name or has date pattern)
-          if (/^(January|February|March|April|May|June|July|August|September|October|November|December)/i.test(text)) {
+          // Check if the text looks like a date (starts with full or abbreviated month name)
+          if (/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i.test(text)) {
             rawDate = text;
             return false; // break
           }
@@ -113,7 +130,7 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
       if (!rawDate) {
         $content.find('p').each((_, p) => {
           const text = $(p).text().trim();
-          if (/^(January|February|March|April|May|June|July|August|September|October|November|December)/i.test(text)) {
+          if (/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i.test(text)) {
             rawDate = text.split('\n')[0].trim();
             return false; // break
           }

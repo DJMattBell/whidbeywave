@@ -6,13 +6,36 @@ const RSS_URL =
   'https://www.oakharbor.gov/RSSFeed.aspx?ModID=58&CID=All-0&ShowAll=True';
 
 /**
- * Parse an RSS pubDate (RFC-2822) into YYYY-MM-DD.
- * Example input: "Mon, 10 Mar 2026 13:00:00 GMT"
+ * Extract the event date from RSS item.
+ * The feed's pubDate is the *publication* date, NOT the event date.
+ * The actual event date lives in <calendarEvent:EventDates> or in the
+ * description text as "Event date: August 4, 2026".
  */
-function toDateString(raw: string): string | null {
-  const d = new Date(raw);
-  if (isNaN(d.getTime())) return null;
-  return toPacificDateString(d);
+function extractEventDate(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $item: cheerio.Cheerio<any>,
+  $: ReturnType<typeof cheerio.load>
+): string | null {
+  // Try <calendarEvent:EventDates> first (XML namespace element)
+  const eventDatesEl = $item.find('calendarEvent\\:EventDates, EventDates');
+  if (eventDatesEl.length) {
+    const raw = eventDatesEl.text().trim();
+    // May be "August 4, 2026" or a range "August 4 - August 6, 2026"
+    const d = new Date(raw.split(/[-–—]/)[0].trim());
+    if (!isNaN(d.getTime())) return toPacificDateString(d);
+  }
+
+  // Fallback: extract "Event date: Month Day, Year" from description text
+  const desc = $item.find('description').text().trim();
+  const dateMatch = desc.match(
+    /Event\s+date:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4})/i
+  );
+  if (dateMatch) {
+    const d = new Date(dateMatch[1]);
+    if (!isNaN(d.getTime())) return toPacificDateString(d);
+  }
+
+  return null;
 }
 
 /**
@@ -48,8 +71,7 @@ export async function scrapeOakHarbor(): Promise<ScrapedEvent[]> {
     const xml = await res.text();
     const $ = cheerio.load(xml, { xml: true });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = toPacificDateString(new Date());
 
     const events: ScrapedEvent[] = [];
 
@@ -59,20 +81,16 @@ export async function scrapeOakHarbor(): Promise<ScrapedEvent[]> {
       const title = $item.find('title').text().trim();
       if (!title) return;
 
-      const pubDateRaw = $item.find('pubDate').text().trim();
-      const date = toDateString(pubDateRaw);
+      const date = extractEventDate($item, $);
       if (!date) return;
 
-      // Only include future events (today or later)
-      if (new Date(date + 'T00:00:00') < today) return;
+      // Only include future events (today or later) using string comparison on YYYY-MM-DD
+      if (date < todayStr) return;
 
       const descriptionRaw = $item.find('description').text().trim();
       const descriptionText = descriptionRaw ? stripHtml(descriptionRaw) : null;
 
-      // Try to pull a time from the description first, then from pubDate
-      const time =
-        (descriptionText ? extractTime(descriptionText) : null) ??
-        extractTime(pubDateRaw);
+      const time = descriptionText ? extractTime(descriptionText) : null;
 
       const link = $item.find('link').text().trim() || null;
 

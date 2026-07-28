@@ -47,6 +47,14 @@ export async function POST(request: NextRequest) {
     // Save to Supabase (service role — RLS blocks anon inserts)
     const supabase = createServiceClient();
 
+    // Check if submitter is trusted (auto-approve their events)
+    const { data: trustedRow } = await supabase
+      .from('trusted_submitters')
+      .select('email')
+      .eq('email', submitter_email.toLowerCase().trim())
+      .maybeSingle();
+    const isTrusted = !!trustedRow;
+
     const { data: submission, error: dbError } = await supabase
       .from('event_submissions')
       .insert({
@@ -55,7 +63,8 @@ export async function POST(request: NextRequest) {
         tags: tags || [],
         submitter_name: submitter_name?.trim() || 'Anonymous',
         submitter_email,
-        status: 'pending',
+        status: isTrusted ? 'approved' : 'pending',
+        ...(isTrusted ? { reviewed_at: new Date().toISOString() } : {}),
       })
       .select()
       .single();
@@ -69,7 +78,8 @@ export async function POST(request: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL;
 
     // Email admin (non-fatal — submission is already saved)
-    if (adminEmail) {
+    // Skip admin notification for trusted submitters (auto-approved)
+    if (adminEmail && !isTrusted) {
       try {
       await resend.emails.send({
         from: 'WhidbeyWave <hello@whidbeywave.com>',
@@ -125,9 +135,10 @@ export async function POST(request: NextRequest) {
             <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
               <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">Got it — thanks${submitter_name?.trim() ? `, ${escapeHtml(submitter_name.trim())}` : ''}!</h2>
               <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 20px;">
-                We received your event submission and will review it shortly.
-                You'll get another email from us once it's approved and live on the calendar —
-                usually within 48 hours.
+                ${isTrusted
+                  ? 'Your event has been automatically approved and is already live on the calendar!'
+                  : "We received your event submission and will review it shortly. You'll get another email from us once it's approved and live on the calendar — usually within 48 hours."
+                }
               </p>
               <table style="width:100%;background:#fdfaf3;border-radius:10px;border:1px solid #e8dfc8;margin-bottom:24px;border-collapse:collapse;">
                 <tr><td style="padding:20px 24px;">

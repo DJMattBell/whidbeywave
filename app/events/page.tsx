@@ -149,36 +149,17 @@ export default async function EventsPage() {
           </Suspense>
         )}
 
-        {/* Past events (collapsible) — flagged for post-launch review:
-            as event data grows, consider /events/past as a paginated route
-            or limit this disclosure to the last 30 days */}
+        {/* Past events — link to archive page */}
         {past.length > 0 && (
-          <details className="mt-12 md:mt-16 group">
-            <summary className="cursor-pointer list-none flex items-center gap-2 text-stone-600 hover:text-stone-800 text-base font-medium transition-colors select-none mb-4 min-h-[44px]">
-              <span className="group-open:rotate-90 transition-transform inline-block" aria-hidden="true">▶</span>
-              Past events ({past.length})
-            </summary>
-            <div className="space-y-3 mt-2 opacity-60">
-              {past.map(event => (
-                <Link key={event.id} href={`/events/${event.id}`} className="flex gap-3 bg-parchment-50 rounded-xl border border-parchment-200 p-3 hover:border-parchment-300 transition-colors">
-                  <div className="shrink-0 w-12 h-12 bg-stone-200 rounded-lg flex flex-col items-center justify-center text-stone-500" aria-hidden="true">
-                    <span className="text-[10px] font-semibold uppercase">
-                      {new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' })}
-                    </span>
-                    <span className="text-lg font-extrabold leading-none">
-                      {new Date(event.date + 'T12:00:00').getDate()}
-                    </span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-stone-700 text-sm truncate">{event.title}</p>
-                    <p className="text-xs text-stone-500 truncate">
-                      {event.time} · {event.town}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </details>
+          <div className="mt-12 md:mt-16 text-center">
+            <Link
+              href="/events/archive"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-parchment-100 text-stone-600 border border-parchment-200 hover:border-forest-300 hover:text-forest-700 transition-colors text-sm font-medium min-h-[44px]"
+            >
+              <span aria-hidden="true">📜</span>
+              Browse {past.length} past events →
+            </Link>
+          </div>
         )}
 
         {/* CTA */}

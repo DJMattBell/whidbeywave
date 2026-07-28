@@ -79,20 +79,42 @@ export default function BottomTabBar() {
     return pathname === href || pathname.startsWith(href + '/');
   }
 
-  const moreLinks = [
-    { href: '/tides',           Icon: Waves,            label: 'Tides' },
-    { href: '/forum',           Icon: MessageCircle,    label: 'Community' },
-    { href: '/news',            Icon: Newspaper,        label: 'Island News' },
-    { href: '/guides',          Icon: BookOpen,         label: 'Guides' },
-    { href: '/recommendations', Icon: Star,             label: 'Local Picks' },
-    { href: '/barter',          Icon: ArrowLeftRight,   label: 'Barter & Trade' },
-    { href: '/newsletter',      Icon: Mail,             label: 'Newsletter' },
-    { href: '/visit',           Icon: Map,              label: 'Visitor Guide' },
-    { href: '/dashboard',       Icon: Zap,              label: 'Quick View' },
-    { href: '/search',          Icon: Search,           label: 'Search' },
-    { href: '/contact',         Icon: MessageSquare,    label: 'Say Hello' },
-    { href: '/about',           Icon: Info,             label: 'About' },
+  const moreSections = [
+    {
+      label: 'Quick Access',
+      links: [
+        { href: '/search',          Icon: Search,         label: 'Search' },
+        { href: '/tides',           Icon: Waves,          label: 'Tides' },
+        { href: '/dashboard',       Icon: Zap,            label: 'Quick View' },
+      ],
+    },
+    {
+      label: 'Community',
+      links: [
+        { href: '/forum',           Icon: MessageCircle,  label: 'Forum' },
+        { href: '/recommendations', Icon: Star,           label: 'Local Picks' },
+        { href: '/news',            Icon: Newspaper,      label: 'Island News' },
+      ],
+    },
+    {
+      label: 'Explore',
+      links: [
+        { href: '/visit',           Icon: Map,            label: 'Visitor Guide' },
+        { href: '/guides',          Icon: BookOpen,       label: 'Guides' },
+        { href: '/barter',          Icon: ArrowLeftRight,  label: 'Barter' },
+      ],
+    },
+    {
+      label: 'Stay Connected',
+      links: [
+        { href: '/newsletter',      Icon: Mail,           label: 'Newsletter' },
+        { href: '/contact',         Icon: MessageSquare,  label: 'Say Hello' },
+        { href: '/about',           Icon: Info,           label: 'About' },
+      ],
+    },
   ];
+
+  const moreLinks = moreSections.flatMap(s => s.links);
 
   const moreActive = moreLinks.some(l => isActive(l.href));
 
@@ -107,24 +129,33 @@ export default function BottomTabBar() {
           />
           <div className="fixed bottom-[68px] left-0 right-0 z-[60] px-3 pb-2 animate-slideUp">
             <div className="bg-white rounded-xl shadow-2xl border border-parchment-200 overflow-hidden max-h-[60vh] overflow-y-auto">
-              <div className="px-4 pt-4 pb-2">
-                <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">More</p>
+              <div className="px-4 pt-3 pb-1">
+                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">More</p>
               </div>
-              <div className="grid grid-cols-3 gap-1 px-3 pb-2">
-                {moreLinks.map(({ href, Icon, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setMoreOpen(false)}
-                    className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg text-center transition-colors ${
-                      isActive(href)
-                        ? 'bg-forest-50 text-forest-700'
-                        : 'text-stone-600 hover:bg-parchment-100'
-                    }`}
-                  >
-                    <Icon size={20} />
-                    <span className="text-[11px] font-medium leading-tight">{label}</span>
-                  </Link>
+              <div className="px-3 pb-2 space-y-3">
+                {moreSections.map((section) => (
+                  <div key={section.label}>
+                    <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider px-2 mb-1">
+                      {section.label}
+                    </p>
+                    <div className="grid grid-cols-3 gap-1">
+                      {section.links.map(({ href, Icon, label }) => (
+                        <Link
+                          key={href}
+                          href={href}
+                          onClick={() => setMoreOpen(false)}
+                          className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg text-center transition-colors ${
+                            isActive(href)
+                              ? 'bg-forest-50 text-forest-700'
+                              : 'text-stone-600 hover:bg-parchment-100'
+                          }`}
+                        >
+                          <Icon size={20} />
+                          <span className="text-[11px] font-medium leading-tight">{label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
               {/* Text size toggle */}

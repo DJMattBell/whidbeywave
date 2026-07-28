@@ -10,6 +10,8 @@ import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
 import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
+import { scrapeBarringtons } from '@/lib/scrapers/barringtons';
+import { scrapeWickedTeuton } from '@/lib/scrapers/wicked-teuton';
 import { logScrapeRun } from '@/lib/scrapeLog';
 import { sanitizeTime, normalizeLocation } from '@/lib/scrapers/types';
 import type { ScrapedEvent } from '@/lib/scrapers/types';
@@ -77,6 +79,7 @@ export async function GET(request: NextRequest) {
     wicaEvents, oakHarborEvents,
     langleyLibEvents, coupevilleLibEvents,
     thirstyCrabEvents, whidbeyTelEvents, whaleCenterEvents,
+    barringtonsEvents, wickedTeutonEvents,
   ] = await Promise.all([
     runScraper('WICA', scrapeWica),
     runScraper('Oak Harbor', scrapeOakHarbor),
@@ -85,19 +88,23 @@ export async function GET(request: NextRequest) {
     runScraper('Thirsty Crab', scrapeThirstyCrab),
     runScraper('Whidbey Telecom', scrapeWhidbeyTelecomEvents),
     runWhaleCenter ? runScraper('Langley Whale Center', scrapeLangleyWhaleCenter) : Promise.resolve([]),
+    runScraper('Barringtons', scrapeBarringtons),
+    runScraper('Wicked Teuton', scrapeWickedTeuton),
   ]);
 
   const candidates = [
     ...wicaEvents, ...oakHarborEvents,
     ...langleyLibEvents, ...coupevilleLibEvents,
     ...thirstyCrabEvents, ...whidbeyTelEvents, ...whaleCenterEvents,
+    ...barringtonsEvents, ...wickedTeutonEvents,
   ];
   console.log(
     `[scrape] found ${candidates.length} candidate events — ` +
     `WICA:${wicaEvents.length} OakHarbor:${oakHarborEvents.length} ` +
     `LangleyLib:${langleyLibEvents.length} CoupevilleLib:${coupevilleLibEvents.length} ` +
     `ThirstyCrab:${thirstyCrabEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
-    `WhaleCenter:${whaleCenterEvents.length}`
+    `WhaleCenter:${whaleCenterEvents.length} Barringtons:${barringtonsEvents.length} ` +
+    `WickedTeuton:${wickedTeutonEvents.length}`
   );
 
   // If all scrapers returned empty, send a warning email

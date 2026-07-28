@@ -23,6 +23,25 @@ async function getEvent(id: string) {
   return data ?? null;
 }
 
+async function getRelatedEvents(eventId: string, category: string, town: string) {
+  if (!isConfigured) return [];
+
+  const supabase = createServerClient();
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data } = await supabase
+    .from('event_submissions')
+    .select('id, title, date, time, town, category')
+    .eq('status', 'approved')
+    .gte('date', today)
+    .neq('id', eventId)
+    .or(`category.eq.${category},town.eq.${town}`)
+    .order('date', { ascending: true })
+    .limit(4);
+
+  return data ?? [];
+}
+
 async function getSiblingEvents(recurringEventId: string, currentEventId: string) {
   if (!isConfigured) return [];
 
@@ -74,9 +93,17 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const emoji = CATEGORY_EMOJI[event.category] ?? '📅';
   const tags: string[] = Array.isArray(event.tags) ? event.tags : [];
 
-  const siblingEvents = event.recurring_event_id
-    ? await getSiblingEvents(event.recurring_event_id, event.id)
-    : [];
+  const [siblingEvents, relatedEvents] = await Promise.all([
+    event.recurring_event_id
+      ? getSiblingEvents(event.recurring_event_id, event.id)
+      : Promise.resolve([]),
+    getRelatedEvents(event.id, event.category, event.town),
+  ]);
+
+  const locationQuery = encodeURIComponent(
+    `${event.location || ''} ${event.town || 'Whidbey Island'}, WA`
+  );
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${locationQuery}`;
 
   return (
     <>
@@ -159,6 +186,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 {event.town && event.location && event.location !== event.town && (
                   <p className="text-stone-500">{event.town}</p>
                 )}
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-sound-600 hover:text-sound-800 mt-1 transition-colors"
+                >
+                  View on map →
+                </a>
               </div>
               {event.submitter_name && event.submitter_name !== 'Recurring Event' && (
                 <div>
@@ -188,6 +223,35 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             </Link>
           </aside>
         </div>
+
+        {/* Related events */}
+        {relatedEvents.length > 0 && (
+          <div className="mt-10 pt-6 border-t border-parchment-200">
+            <h2 className="text-lg font-semibold text-stone-800 mb-4">More events nearby</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {relatedEvents.map(re => (
+                <Link
+                  key={re.id}
+                  href={`/events/${re.id}`}
+                  className="flex gap-3 p-3 rounded-xl bg-parchment-50 border border-parchment-200 hover:border-forest-300 hover:bg-forest-50/30 transition-colors group"
+                >
+                  <span className="text-xl shrink-0" aria-hidden="true">
+                    {CATEGORY_EMOJI[re.category] ?? '📅'}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-medium text-stone-800 group-hover:text-forest-700 transition-colors text-sm truncate">
+                      {re.title}
+                    </p>
+                    <p className="text-xs text-stone-500 mt-0.5">
+                      {new Date(re.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {re.time ? ` · ${re.time}` : ''} · {re.town}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-10 pt-6 border-t border-parchment-200">
           <Link href="/events" className="text-sm text-forest-600 hover:text-forest-800 transition-colors">

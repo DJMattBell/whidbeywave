@@ -17,20 +17,16 @@ create policy "Service role can update submissions"
 -- continue to work. This policy blocks non-admin authenticated users
 -- from updating submissions via the Supabase client directly.
 
--- recurring_events: only run this section if you have created the
--- recurring_events table (from supabase/migrations/recurring_events.sql).
--- If you haven't, skip this block.
---
--- To run later:
---   drop policy if exists "Authenticated users can read recurring events" on recurring_events;
---   drop policy if exists "Authenticated users can insert recurring events" on recurring_events;
---   drop policy if exists "Authenticated users can update recurring events" on recurring_events;
---   drop policy if exists "Authenticated users can delete recurring events" on recurring_events;
---   create policy "Service role manages recurring events (select)"
---     on recurring_events for select using (false);
---   create policy "Service role manages recurring events (insert)"
---     on recurring_events for insert with check (false);
---   create policy "Service role manages recurring events (update)"
---     on recurring_events for update using (false) with check (false);
---   create policy "Service role manages recurring events (delete)"
---     on recurring_events for delete using (false);
+-- recurring_events: lock all CRUD to service-role only (applied)
+drop policy if exists "Authenticated users can read recurring events" on recurring_events;
+drop policy if exists "Authenticated users can insert recurring events" on recurring_events;
+drop policy if exists "Authenticated users can update recurring events" on recurring_events;
+drop policy if exists "Authenticated users can delete recurring events" on recurring_events;
+create policy "Service role manages recurring events (select)"
+  on recurring_events for select using (false);
+create policy "Service role manages recurring events (insert)"
+  on recurring_events for insert with check (false);
+create policy "Service role manages recurring events (update)"
+  on recurring_events for update using (false) with check (false);
+create policy "Service role manages recurring events (delete)"
+  on recurring_events for delete using (false);

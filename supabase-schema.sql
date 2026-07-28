@@ -35,24 +35,32 @@ create index if not exists event_submissions_date_idx   on event_submissions("da
 
 alter table event_submissions enable row level security;
 
--- Anyone can submit an event (public form)
-create policy "Anyone can submit events"
-  on event_submissions for insert
-  with check (true);
+-- Public can submit events as pending (public form, anon key)
+create policy "Public can submit events as pending"
+  on event_submissions for insert to public
+  with check (status = 'pending');
 
--- Anyone can read approved events (shown on calendar)
-create policy "Anyone can read approved events"
-  on event_submissions for select
+-- Authenticated users can submit events
+create policy "Authenticated can submit events"
+  on event_submissions for insert to authenticated
+  with check (auth.uid() is not null);
+
+-- Public can read approved events (shown on calendar)
+create policy "Public can read approved events"
+  on event_submissions for select to public
   using (status = 'approved');
 
--- Service-role key (used by API routes) bypasses RLS automatically.
--- The admin UI uses the anon key but the moderate API route uses
--- server-side credentials — to allow the admin API to update status,
--- add a policy that allows updates when the caller is authenticated:
-create policy "Authenticated admin can update submissions"
+-- Public can briefly read back their own pending submission (confirmation UX)
+create policy "Public can read own pending submission"
+  on event_submissions for select to public
+  using (status = 'pending' and created_at >= now() - interval '5 seconds');
+
+-- UPDATE blocked for all non-service-role callers.
+-- Service-role key (used by admin API routes) bypasses RLS entirely.
+create policy "Service role can update submissions"
   on event_submissions for update
-  using (true)
-  with check (true);
+  using (false)
+  with check (false);
 
 
 -- ──────────────────────────────────────────────
@@ -345,8 +353,8 @@ create index if not exists forum_posts_author_email_idx
   on forum_posts(id, author_email);
 
 -- 2. Let submitters read their own event submissions (for /profile page)
-create policy "Submitters can read own submissions"
-  on event_submissions for select
+create policy "Authenticated can read own submissions"
+  on event_submissions for select to authenticated
   using (auth.jwt() ->> 'email' = submitter_email);
 
 -- 3. Index to speed up confirmed-subscriber query used by weekly digest
@@ -814,22 +822,19 @@ create index if not exists recurring_events_active_idx
 
 alter table recurring_events enable row level security;
 
-create policy "Authenticated users can read recurring events"
-  on recurring_events for select
-  using (auth.uid() is not null);
+-- All CRUD blocked for non-service-role callers.
+-- Service-role key (used by admin/cron API routes) bypasses RLS entirely.
+create policy "Service role manages recurring events (select)"
+  on recurring_events for select using (false);
 
-create policy "Authenticated users can insert recurring events"
-  on recurring_events for insert
-  with check (auth.uid() is not null);
+create policy "Service role manages recurring events (insert)"
+  on recurring_events for insert with check (false);
 
-create policy "Authenticated users can update recurring events"
-  on recurring_events for update
-  using (auth.uid() is not null)
-  with check (auth.uid() is not null);
+create policy "Service role manages recurring events (update)"
+  on recurring_events for update using (false) with check (false);
 
-create policy "Authenticated users can delete recurring events"
-  on recurring_events for delete
-  using (auth.uid() is not null);
+create policy "Service role manages recurring events (delete)"
+  on recurring_events for delete using (false);
 
 -- FK on event_submissions to link generated events back to the template
 alter table event_submissions
