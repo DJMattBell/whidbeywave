@@ -175,7 +175,9 @@ export async function GET(request: NextRequest) {
       status:          'pending',
     }));
 
-    const { error } = await supabase.from('event_submissions').insert(rows);
+    const { error } = await supabase
+      .from('event_submissions')
+      .upsert(rows, { onConflict: 'title,date', ignoreDuplicates: true });
     if (error) {
       console.error('[scrape] insert error:', error);
       return NextResponse.json(

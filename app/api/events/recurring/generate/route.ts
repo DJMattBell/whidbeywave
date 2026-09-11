@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
 
     for (let i = 0; i < rows.length; i += 100) {
       const batch = rows.slice(i, i + 100);
-      const { error: insertError } = await supabase.from('event_submissions').insert(batch);
+      const { error: insertError } = await supabase
+        .from('event_submissions')
+        .upsert(batch, { onConflict: 'title,date', ignoreDuplicates: true });
       if (insertError) {
         console.error(`[recurring/generate] insert error for ${template.id}:`, insertError);
       } else {

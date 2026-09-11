@@ -12,7 +12,6 @@ const RSS_URL =
  * description text as "Event date: August 4, 2026".
  */
 function extractEventDate(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $item: cheerio.Cheerio<any>,
   $: ReturnType<typeof cheerio.load>
 ): string | null {
@@ -63,7 +62,7 @@ function stripHtml(raw: string): string {
 export async function scrapeOakHarbor(): Promise<ScrapedEvent[]> {
   try {
     const res = await fetch(RSS_URL, {
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(15000),
       headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
     });
     if (!res.ok) return [];
