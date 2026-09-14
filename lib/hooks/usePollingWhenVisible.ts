@@ -13,7 +13,9 @@ export function usePollingWhenVisible(
   intervalMs: number
 ) {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   const stableCallback = useCallback(() => callbackRef.current(), []);
 

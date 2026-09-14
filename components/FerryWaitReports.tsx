@@ -87,20 +87,17 @@ export default function FerryWaitReports() {
   const { user } = useAuth();
   const [reports, setReports] = useState<WaitReport[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const searchParams = useSearchParams();
+  const [showToast, setShowToast] = useState(() => searchParams.get('reported') === '1');
   const router = useRouter();
 
-  // Show success toast when redirected from /ferry/report
+  // Clean URL and auto-dismiss toast when redirected from /ferry/report
   useEffect(() => {
-    if (searchParams.get('reported') === '1') {
-      setShowToast(true);
-      // Clean URL without triggering navigation
-      window.history.replaceState(null, '', '/ferry');
-      const timer = setTimeout(() => setShowToast(false), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams]);
+    if (!showToast) return;
+    window.history.replaceState(null, '', '/ferry');
+    const timer = setTimeout(() => setShowToast(false), 4000);
+    return () => clearTimeout(timer);
+  }, [showToast]);
 
   const fetchReports = useCallback(async () => {
     try {

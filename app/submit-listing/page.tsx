@@ -400,7 +400,7 @@ export default function SubmitListingPage() {
                     onChange={e => set('is_free', e.target.checked)}
                     className="w-4 h-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
                   />
-                  <span className="text-sm font-medium text-green-700">This item is free</span>
+                  <span className="text-sm font-medium text-forest-700">This item is free</span>
                 </label>
               </div>
               {form.is_free && (

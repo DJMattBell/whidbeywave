@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import AuthModal from '@/components/AuthModal';
 import { supabase as supabaseBrowser } from '@/lib/supabase';
+import { usePollingWhenVisible } from '@/lib/hooks/usePollingWhenVisible';
 import {
   Calendar, Newspaper, BookOpen, Ship, Map, Utensils, Carrot,
   Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
@@ -72,32 +73,7 @@ export default function Navbar() {
   }, [user]);
 
   // Fetch on mount + poll every 60s; pause when tab is hidden
-  useEffect(() => {
-    fetchUnread();
-    let interval: ReturnType<typeof setInterval> | null = null;
-
-    function startPolling() {
-      if (!interval) interval = setInterval(fetchUnread, 60_000);
-    }
-    function stopPolling() {
-      if (interval) { clearInterval(interval); interval = null; }
-    }
-    function onVisibility() {
-      if (document.visibilityState === 'visible') {
-        fetchUnread();
-        startPolling();
-      } else {
-        stopPolling();
-      }
-    }
-
-    startPolling();
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      stopPolling();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [fetchUnread]);
+  usePollingWhenVisible(fetchUnread, 60_000);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const communityRef = useRef<HTMLDivElement>(null);
