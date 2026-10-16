@@ -16,11 +16,14 @@ async function getApprovedEvents(): Promise<Event[]> {
   if (!isConfigured) return fallbackEvents;
 
   const supabase = createServerClient();
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
   const { data } = await supabase
     .from('event_submissions')
     .select('*, recurring_events(recurrence_type, day_of_week, day_of_month, custom_interval_days)')
     .eq('status', 'approved')
-    .order('date', { ascending: true });
+    .gte('date', today)
+    .order('date', { ascending: true })
+    .limit(500);
 
   if (!data || data.length === 0) return fallbackEvents;
 
@@ -47,8 +50,7 @@ async function getApprovedEvents(): Promise<Event[]> {
 const getCachedEvents = cache(getApprovedEvents);
 
 export async function generateMetadata(): Promise<Metadata> {
-  const allEvents = await getCachedEvents();
-  const upcoming  = allEvents.filter(e => new Date(e.date + 'T23:59:59') >= new Date());
+  const upcoming = await getCachedEvents();
 
   let description =
     'Find events happening this week on Whidbey Island — Oak Harbor, Langley, Coupeville, Freeland & Greenbank. Concerts, markets, classes, and community gatherings.';
@@ -75,9 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EventsPage() {
-  const events   = await getCachedEvents();
-  const upcoming = events.filter(e => new Date(e.date + 'T23:59:59') >= new Date());
-  const past     = events.filter(e => new Date(e.date + 'T23:59:59') <  new Date());
+  const upcoming = await getCachedEvents();
 
   return (
     <>
@@ -150,17 +150,15 @@ export default async function EventsPage() {
         )}
 
         {/* Past events — link to archive page */}
-        {past.length > 0 && (
-          <div className="mt-12 md:mt-16 text-center">
-            <Link
-              href="/events/archive"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-parchment-100 text-stone-600 border border-parchment-200 hover:border-forest-300 hover:text-forest-700 transition-colors text-sm font-medium min-h-[44px]"
-            >
-              <span aria-hidden="true">📜</span>
-              Browse {past.length} past events →
-            </Link>
-          </div>
-        )}
+        <div className="mt-12 md:mt-16 text-center">
+          <Link
+            href="/events/archive"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-parchment-100 text-stone-600 border border-parchment-200 hover:border-forest-300 hover:text-forest-700 transition-colors text-sm font-medium min-h-[44px]"
+          >
+            <span aria-hidden="true">📜</span>
+            Browse past events →
+          </Link>
+        </div>
 
         {/* CTA */}
         <div className="mt-12 md:mt-16 bg-forest-50 rounded-xl p-8 text-center border border-forest-100">
