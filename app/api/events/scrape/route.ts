@@ -3,7 +3,9 @@ import { createServiceClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { verifyCronRequest } from '@/lib/cronAuth';
-import { scrapeWica } from '@/lib/scrapers/wica';
+// WICA: disabled — events moved to external ticketing platform (purchase.wicaonline.org),
+//       Squarespace collection is empty. Needs headless browser to scrape.
+// Wicked Teuton: disabled — site refuses all server-side connections (TLS reset).
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
 import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
 import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
@@ -11,7 +13,6 @@ import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
 import { scrapeBarringtons } from '@/lib/scrapers/barringtons';
-import { scrapeWickedTeuton } from '@/lib/scrapers/wicked-teuton';
 import { logScrapeRun } from '@/lib/scrapeLog';
 import { sanitizeTime, normalizeLocation } from '@/lib/scrapers/types';
 import type { ScrapedEvent } from '@/lib/scrapers/types';
@@ -74,14 +75,13 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Run all scrapers in parallel — each has its own 6s timeout; failures return []
+  // Run all scrapers in parallel — each has its own timeout; failures return []
   const [
-    wicaEvents, oakHarborEvents,
+    oakHarborEvents,
     langleyLibEvents, coupevilleLibEvents,
     thirstyCrabEvents, whidbeyTelEvents, whaleCenterEvents,
-    barringtonsEvents, wickedTeutonEvents,
+    barringtonsEvents,
   ] = await Promise.all([
-    runScraper('WICA', scrapeWica),
     runScraper('Oak Harbor', scrapeOakHarbor),
     runScraper('Langley Library', scrapeLangleyLibrary),
     runScraper('Coupeville Library', scrapeCoupevilleLibrary),
@@ -89,22 +89,20 @@ export async function GET(request: NextRequest) {
     runScraper('Whidbey Telecom', scrapeWhidbeyTelecomEvents),
     runWhaleCenter ? runScraper('Langley Whale Center', scrapeLangleyWhaleCenter) : Promise.resolve([]),
     runScraper('Barringtons', scrapeBarringtons),
-    runScraper('Wicked Teuton', scrapeWickedTeuton),
   ]);
 
   const candidates = [
-    ...wicaEvents, ...oakHarborEvents,
+    ...oakHarborEvents,
     ...langleyLibEvents, ...coupevilleLibEvents,
     ...thirstyCrabEvents, ...whidbeyTelEvents, ...whaleCenterEvents,
-    ...barringtonsEvents, ...wickedTeutonEvents,
+    ...barringtonsEvents,
   ];
   console.log(
     `[scrape] found ${candidates.length} candidate events — ` +
-    `WICA:${wicaEvents.length} OakHarbor:${oakHarborEvents.length} ` +
+    `OakHarbor:${oakHarborEvents.length} ` +
     `LangleyLib:${langleyLibEvents.length} CoupevilleLib:${coupevilleLibEvents.length} ` +
     `ThirstyCrab:${thirstyCrabEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
-    `WhaleCenter:${whaleCenterEvents.length} Barringtons:${barringtonsEvents.length} ` +
-    `WickedTeuton:${wickedTeutonEvents.length}`
+    `WhaleCenter:${whaleCenterEvents.length} Barringtons:${barringtonsEvents.length}`
   );
 
   // If all scrapers returned empty, send a warning email

@@ -17,6 +17,17 @@ function parseDate(raw: string): string | null {
   const iso = trimmed.match(/^(\d{4}-\d{2}-\d{2})/);
   if (iso) return iso[1];
 
+  // Date range: "April 04, 2026 - October 17, 2026"
+  const rangeWithYear = trimmed.match(
+    /^([A-Za-z]+\s+\d{1,2},?\s*\d{4})\s*[-–—]/
+  );
+  if (rangeWithYear) {
+    const d = new Date(rangeWithYear[1]);
+    if (!isNaN(d.getTime())) {
+      return toPacificDateString(d);
+    }
+  }
+
   // Date range: "March 8 - March 15, 2026" or "March 8 – March 15, 2026"
   const rangeMatch = trimmed.match(
     /^([A-Za-z]+\s+\d{1,2})\s*[-–—]\s*[A-Za-z]+\s+\d{1,2},?\s*(\d{4})/
@@ -24,17 +35,6 @@ function parseDate(raw: string): string | null {
   if (rangeMatch) {
     const startStr = `${rangeMatch[1]}, ${rangeMatch[2]}`;
     const d = new Date(startStr);
-    if (!isNaN(d.getTime())) {
-      return toPacificDateString(d);
-    }
-  }
-
-  // Date range where start has year: "March 8, 2026 - March 15, 2026"
-  const rangeWithYear = trimmed.match(
-    /^([A-Za-z]+\s+\d{1,2},?\s*\d{4})\s*[-–—]/
-  );
-  if (rangeWithYear) {
-    const d = new Date(rangeWithYear[1]);
     if (!isNaN(d.getTime())) {
       return toPacificDateString(d);
     }
@@ -87,7 +87,7 @@ function guessCategory(title: string): string {
   if (/parade|festival|fair|fest\b/.test(t))                    return 'Arts & Culture';
   if (/class|workshop|lesson|seminar/.test(t))                  return 'Classes & Workshops';
   if (/kids|children|youth|family/.test(t))                     return 'Community & Social';
-  if (/st\.?\s*patrick|holiday|halloween|christmas/.test(t))    return 'Community & Social';
+  if (/st\.?\s*patrick|holiday|halloween|christmas|trunk/.test(t)) return 'Community & Social';
   return 'Community & Social';
 }
 
@@ -107,40 +107,22 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
       const $el = $(el);
       const $content = $el.find('.event-box-content');
 
-      // Title from h2 > a inside .event-box-content
-      const title = $content.find('h2 a').first().text().trim();
+      // Title from h2 > a inside .event-title
+      const title = $content.find('.event-title h2 a').first().text().trim()
+        || $content.find('h2 a').first().text().trim();
       if (!title) return;
 
-      // Date extraction — try .events_meta_date first
-      let rawDate = $content.find('.events_meta_date').first().text().trim();
+      // Date extraction — .postmetadata-date is the primary selector,
+      // .events_meta_date exists on a few older entries as fallback
+      let rawDate = $content.find('.postmetadata-date').first().text().trim()
+        || $content.find('.events_meta_date').first().text().trim();
 
-      // Fallback: look for <p><strong> containing date-like text
-      if (!rawDate) {
-        $content.find('p strong').each((_, strong) => {
-          const text = $(strong).text().trim();
-          // Check if the text looks like a date (starts with full or abbreviated month name)
-          if (/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i.test(text)) {
-            rawDate = text;
-            return false; // break
-          }
-        });
-      }
-
-      // Fallback: look for <p> text that starts with a month name
-      if (!rawDate) {
-        $content.find('p').each((_, p) => {
-          const text = $(p).text().trim();
-          if (/^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i.test(text)) {
-            rawDate = text.split('\n')[0].trim();
-            return false; // break
-          }
-        });
-      }
+      if (!rawDate) return;
 
       const date = parseDate(rawDate);
       if (!date) return;
 
-      // Time extraction — look for time patterns in the content
+      // Time extraction — look for time patterns in the content text
       let time: string | null = null;
       const fullText = $content.text();
       const timeMatch = fullText.match(
@@ -148,38 +130,45 @@ export async function scrapeWhidbeyTelecomEvents(): Promise<ScrapedEvent[]> {
       );
       if (timeMatch) {
         time = timeMatch[1].trim();
+      } else {
+        // Try "Xpm to Ypm" or "X to Y pm" patterns
+        const informalTime = fullText.match(
+          /(\d{1,2}(?::\d{2})?\s*(?:am|pm)\s*(?:to|-|–)\s*\d{1,2}(?::\d{2})?\s*(?:am|pm))/i
+        );
+        if (informalTime) time = informalTime[1].trim();
       }
 
-      // Location extraction — look for "Location:" label in <p><strong>
+      // Location extraction — loose text "Location: City, WA" in .event-box-content
+      // The location text runs directly into description text, so we take just
+      // the first short segment (typically "City, WA" or a venue name).
       let location: string | null = null;
-      $content.find('p').each((_, p) => {
-        const $p = $(p);
-        const strongText = $p.find('strong').text().trim();
-        if (/location/i.test(strongText)) {
-          // Get text after the <strong> tag
-          const fullP = $p.text().trim();
-          const loc = fullP.replace(/.*location:?\s*/i, '').trim();
-          if (loc) location = loc;
-          return false; // break
+      const locationMatch = fullText.match(/Location:\s*([^\n]+)/);
+      if (locationMatch) {
+        let loc = locationMatch[1].trim();
+        // Cut at the first sentence boundary or after "WA" + space
+        const waEnd = loc.match(/,?\s*WA\b/);
+        if (waEnd && waEnd.index !== undefined) {
+          loc = loc.substring(0, waEnd.index + waEnd[0].length).trim();
+        } else {
+          // No "WA" found — take up to the first period-space or 60 chars
+          const cutoff = loc.search(/\.\s|,\s+[A-Z][a-z]/);
+          if (cutoff > 0) loc = loc.substring(0, cutoff).trim();
+          if (loc.length > 60) loc = loc.substring(0, 60).trim();
         }
-      });
+        loc = loc.replace(/\.$/, '').trim();
+        if (loc) location = loc;
+      }
 
-      // Description — collect remaining <p> text that isn't date or location
+      // Description — get text after event-title div, skip location line
       let description: string | null = null;
-      const descParts: string[] = [];
-      $content.find('p').each((_, p) => {
-        const $p = $(p);
-        const text = $p.text().trim();
-        if (!text) return;
-        // Skip date and location paragraphs
-        if (/^(January|February|March|April|May|June|July|August|September|October|November|December)/i.test(text)) return;
-        if (/location:?\s/i.test(text)) return;
-        // Skip if it's just a time
-        if (/^\d{1,2}:\d{2}\s*(AM|PM|am|pm)/.test(text)) return;
-        descParts.push(text);
-      });
-      if (descParts.length > 0) {
-        description = descParts.join(' ').substring(0, 500) || null;
+      const descText = fullText
+        .replace(title, '')
+        .replace(rawDate, '')
+        .replace(/Location:\s*[^\n]+/, '')
+        .replace(/Read More\s*>?/i, '')
+        .trim();
+      if (descText.length > 20) {
+        description = descText.substring(0, 500).trim() || null;
       }
 
       events.push({

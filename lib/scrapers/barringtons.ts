@@ -1,25 +1,81 @@
 import * as cheerio from 'cheerio';
 import type { ScrapedEvent } from './types';
+import { toPacificDateString } from './types';
 
 const BARRINGTONS_URL = 'https://barringtonsirishbar.com/events-2/';
 
-/** Parse "March 8, 2026" or ISO "2026-03-08" → "2026-03-08" */
-function parseDate(raw: string): string | null {
-  const iso = raw.match(/^(\d{4}-\d{2}-\d{2})/);
-  if (iso) return iso[1];
+const MONTH_NAMES = [
+  'january','february','march','april','may','june',
+  'july','august','september','october','november','december',
+];
 
-  const d = new Date(raw.trim());
+/**
+ * Parse informal date strings like "Saturday, October 17th, 8 to 9 pm"
+ * or "Monday, November 2nd, 6-8pm" or "October 2nd and 3rd".
+ * Returns the date portion as YYYY-MM-DD (start date for ranges).
+ */
+function parseEventDate(raw: string): { date: string; time: string | null } | null {
+  const s = raw.trim();
+
+  // Try to find "Month Day" pattern (with optional ordinal suffix)
+  const monthDayMatch = s.match(
+    /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?\b/i
+  );
+  if (!monthDayMatch) return null;
+
+  const monthStr = monthDayMatch[1];
+  const dayStr = monthDayMatch[2];
+
+  // Look for explicit year
+  const yearMatch = s.match(/\b(20\d{2})\b/);
+  let year: number;
+  if (yearMatch) {
+    year = parseInt(yearMatch[1]);
+  } else {
+    // Assume current or next occurrence
+    const now = new Date();
+    const monthIdx = MONTH_NAMES.indexOf(monthStr.toLowerCase());
+    const candidate = new Date(now.getFullYear(), monthIdx, parseInt(dayStr));
+    // If more than 2 months in the past, assume next year
+    if (candidate.getTime() < now.getTime() - 60 * 86400000) {
+      year = now.getFullYear() + 1;
+    } else {
+      year = now.getFullYear();
+    }
+  }
+
+  const d = new Date(`${monthStr} ${dayStr}, ${year}`);
   if (isNaN(d.getTime())) return null;
-  const yyyy = d.getFullYear();
-  const mm   = String(d.getMonth() + 1).padStart(2, '0');
-  const dd   = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  const date = toPacificDateString(d);
+
+  // Extract time — look for patterns like "8 to 9 pm", "6-8pm", "5:30 pm – 7:30 pm", "(6:00 PM)"
+  let time: string | null = null;
+  const timeMatch = s.match(
+    /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*(?:to|-|–|—)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i
+  );
+  if (timeMatch) {
+    time = `${timeMatch[1].trim()} - ${timeMatch[2].trim()}`;
+  } else {
+    // Single time: "(6:00 PM)" or standalone "7:30pm"
+    const singleTime = s.match(/(\d{1,2}:\d{2}\s*(?:am|pm))/i);
+    if (singleTime) time = singleTime[1].trim();
+  }
+
+  return { date, time };
+}
+
+/** Strip emoji and excess whitespace from a title */
+function cleanTitle(raw: string): string {
+  return raw
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export async function scrapeBarringtons(): Promise<ScrapedEvent[]> {
   try {
     const res = await fetch(BARRINGTONS_URL, {
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
       headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
     });
     if (!res.ok) return [];
@@ -27,61 +83,43 @@ export async function scrapeBarringtons(): Promise<ScrapedEvent[]> {
     const html = await res.text();
     const $    = cheerio.load(html);
     const events: ScrapedEvent[] = [];
+    const seen = new Set<string>();
 
-    // Strategy 1: JSON-LD structured data (Schema.org Event)
-    $('script[type="application/ld+json"]').each((_, el) => {
-      try {
-        const data = JSON.parse($(el).html() ?? '');
-        const items: any[] = Array.isArray(data) ? data : [data];
-        for (const item of items) {
-          if (item['@type'] !== 'Event') continue;
-          const title = item.name?.trim();
-          if (!title) continue;
-          const date = parseDate(item.startDate ?? '');
-          if (!date) continue;
-          const timeRaw: string = item.startDate ?? '';
-          const timePart = timeRaw.includes('T')
-            ? new Date(timeRaw).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-            : null;
-          events.push({
-            title,
-            date,
-            time: timePart,
-            location: "Barrington's Irish Bar & Grill",
-            town:     'Oak Harbor',
-            category: 'Music & Performance',
-            description: item.description?.slice(0, 1000) ?? null,
-            source: 'Barringtons Irish Bar',
-          });
-        }
-      } catch {
-        // malformed JSON-LD — skip
-      }
-    });
-
-    if (events.length > 0) return events;
-
-    // Strategy 2: WordPress Events Calendar fallback
-    $('article.type-tribe_events, .tribe-event, .tribe-events-calendar-list__event-row').each((_, el) => {
+    // Barringtons uses WordPress Gutenberg blocks — events are h2 headings
+    // with <br> separating the title from the date/time line.
+    // Example: "LIVE MUSIC! Shannon Patiño...<br>Saturday, October 17th, 8 to 9 pm"
+    $('.entry-content h2').each((_, el) => {
       const $el = $(el);
-      const title = $el.find(
-        '.tribe-event-url, .tribe-events-list-event-title a, ' +
-        '.tribe-events-calendar-list__event-title-link'
-      ).first().text().trim();
-      if (!title) return;
+      const rawHtml = $el.html() ?? '';
+      const fullText = $el.text().trim();
 
-      const rawDate = $el.find(
-        'abbr.tribe-events-abbr, .tribe-events-schedule abbr, .tribe-event-date-start'
-      ).first().attr('title') ??
-      $el.find('.tribe-events-schedule').first().text();
+      if (!rawHtml.includes('<br') && !fullText.includes('\n')) return;
 
-      const date = parseDate(rawDate ?? '');
-      if (!date) return;
+      // Split on <br> tags to separate title from date line
+      const parts = rawHtml.split(/<br\s*\/?>/i).map(p =>
+        cheerio.load(p).text().trim()
+      ).filter(Boolean);
+
+      if (parts.length < 2) return;
+
+      const titleRaw = parts[0];
+      const dateLine = parts.slice(1).join(' ');
+
+      const title = cleanTitle(titleRaw);
+      if (!title || title.length < 3) return;
+
+      const parsed = parseEventDate(dateLine);
+      if (!parsed) return;
+
+      // Dedup within this scrape (mobile/desktop duplicates)
+      const dedupKey = `${title.toLowerCase()}|${parsed.date}`;
+      if (seen.has(dedupKey)) return;
+      seen.add(dedupKey);
 
       events.push({
         title,
-        date,
-        time: $el.find('.tribe-events-schedule__time').first().text().trim() || null,
+        date: parsed.date,
+        time: parsed.time,
         location: "Barrington's Irish Bar & Grill",
         town:     'Oak Harbor',
         category: 'Music & Performance',
