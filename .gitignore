@@ -19,6 +19,9 @@ tsconfig.tsbuildinfo
 # Vercel CLI
 .vercel/
 
+# Supabase CLI local state
+supabase/.temp/
+
 # Test artifacts
 test-results/
 playwright-report/

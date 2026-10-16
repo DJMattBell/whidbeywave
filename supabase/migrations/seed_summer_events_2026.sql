@@ -615,10 +615,23 @@ VALUES
 
 -- ──────────────────────────────────────────────────────────────
 -- 41. LANGLEY WHALE CENTER - Open for Season
+--     Wed-Sun, 11 AM – 4 PM (corrected Sep 2026 per LWC manager)
 -- ──────────────────────────────────────────────────────────────
 
 INSERT INTO recurring_events (title, time, location, town, category, description, tags, recurrence_type, day_of_week, start_date, end_date, is_active)
 VALUES
-  ('Langley Whale Center: Open Hours', '11:00 AM – 5:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
-   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Thu-Sun.',
-   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 4, '2026-05-25', '2026-09-30', true);
+  ('Langley Whale Center: Open Hours', '11:00 AM – 4:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
+   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Wed-Sun.',
+   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 3, '2026-05-25', '2026-09-30', true),
+  ('Langley Whale Center: Open Hours', '11:00 AM – 4:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
+   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Wed-Sun.',
+   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 4, '2026-05-25', '2026-09-30', true),
+  ('Langley Whale Center: Open Hours', '11:00 AM – 4:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
+   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Wed-Sun.',
+   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 5, '2026-05-25', '2026-09-30', true),
+  ('Langley Whale Center: Open Hours', '11:00 AM – 4:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
+   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Wed-Sun.',
+   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 6, '2026-05-25', '2026-09-30', true),
+  ('Langley Whale Center: Open Hours', '11:00 AM – 4:00 PM', 'Langley Whale Center, 105 Anthes Ave, Langley', 'Langley', 'Nature & Wildlife',
+   'Orca Network''s Langley Whale Center celebrates and educates on the whales of the Salish Sea. Free educational exhibits on orcas, gray whales, humpbacks, and other marine life. Run by volunteer docents. Open Wed-Sun.',
+   ARRAY['Kids Event', 'Family Event', 'Visitor Friendly'], 'weekly', 0, '2026-05-25', '2026-09-30', true);
