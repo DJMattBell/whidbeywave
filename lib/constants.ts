@@ -5,6 +5,30 @@
  * color badges. Import from here instead of redefining per-file.
  */
 
+import {
+  Calendar, Ship, Map, Utensils, Carrot,
+  Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
+} from 'lucide-react';
+
+// ── Navigation link groups (shared by Navbar + MobileDrawer) ────────────────
+
+export const NAV_VISIT_LINKS = [
+  { href: '/visit',                 label: 'Visitor Guide',  Icon: Map },
+  { href: '/visit/this-weekend',    label: 'This Weekend',   Icon: Calendar },
+  { href: '/visit/restaurants',     label: 'Restaurants',     Icon: Utensils },
+  { href: '/visit/farmers-markets', label: 'Farmers Markets', Icon: Carrot },
+  { href: '/visit/ferry-guide',     label: 'Getting Here',   Icon: Ship },
+] as const;
+
+export const NAV_COMMUNITY_LINKS = [
+  { href: '/tides',           label: 'Tides',           Icon: Waves },
+  { href: '/forum',           label: 'Ask the Island',  Icon: MessageCircle },
+  { href: '/recommendations', label: 'Local Picks',     Icon: Star },
+  { href: '/marketplace',     label: 'Buy & Sell',      Icon: ShoppingBag },
+  { href: '/barter',          label: 'Barter & Trade',  Icon: ArrowLeftRight },
+  { href: '/newsletter',      label: 'Newsletter',      Icon: Mail },
+] as const;
+
 // ── Event category → emoji mapping ───────────────────────────────────────────
 
 export const CATEGORY_EMOJI: Record<string, string> = {

@@ -11,10 +11,11 @@ import MobileDrawer from '@/components/navbar/MobileDrawer';
 import { supabase as supabaseBrowser } from '@/lib/supabase';
 import { usePollingWhenVisible } from '@/lib/hooks/usePollingWhenVisible';
 import {
-  Calendar, Newspaper, BookOpen, Ship, Map, Utensils, Carrot,
-  Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
+  Calendar, Newspaper, BookOpen, Ship,
+  ShoppingBag,
   Plus, Search, User, Bell, LogOut,
 } from 'lucide-react';
+import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS } from '@/lib/constants';
 
 const mainLinks = [
   { href: '/events',  label: "What's On",   Icon: Calendar },
@@ -23,22 +24,8 @@ const mainLinks = [
   { href: '/ferry',   label: 'Ferry',        Icon: Ship },
 ];
 
-const visitLinks = [
-  { href: '/visit',                 label: 'Visitor Guide',  Icon: Map },
-  { href: '/visit/this-weekend',    label: 'This Weekend',   Icon: Calendar },
-  { href: '/visit/restaurants',     label: 'Restaurants',     Icon: Utensils },
-  { href: '/visit/farmers-markets', label: 'Farmers Markets', Icon: Carrot },
-  { href: '/visit/ferry-guide',     label: 'Getting Here',   Icon: Ship },
-];
-
-const communityLinks = [
-  { href: '/tides',           label: 'Tides',           Icon: Waves },
-  { href: '/forum',           label: 'Ask the Island',  Icon: MessageCircle },
-  { href: '/recommendations', label: 'Local Picks',     Icon: Star },
-  { href: '/marketplace',     label: 'Buy & Sell',      Icon: ShoppingBag },
-  { href: '/barter',          label: 'Barter & Trade',  Icon: ArrowLeftRight },
-  { href: '/newsletter',      label: 'Newsletter',      Icon: Mail },
-];
+const visitLinks = NAV_VISIT_LINKS;
+const communityLinks = NAV_COMMUNITY_LINKS;
 
 export default function Navbar() {
   const pathname = usePathname();

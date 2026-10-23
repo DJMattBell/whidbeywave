@@ -63,6 +63,8 @@ html.text-large span:not(.text-xs):not(.badge) {
   font-size: 1.05rem;
   line-height: 1.75;
 }
+html.text-large .text-sm { font-size: var(--ww-text-sm); }
+html.text-large .text-xs { font-size: var(--ww-text-xs); }
 html.text-large h1 { font-size: 2.4rem; }
 html.text-large h2 { font-size: 1.9rem; }
 html.text-large h3 { font-size: 1.4rem; }

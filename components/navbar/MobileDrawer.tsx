@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import {
-  Calendar, Ship, Map, Utensils, Carrot,
-  Waves, MessageCircle, Star, ShoppingBag, ArrowLeftRight, Mail,
+  Calendar, ShoppingBag,
   Search, User, Bell, LogOut,
 } from 'lucide-react';
+import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS } from '@/lib/constants';
 
 const mobileMainLinks = [
   { href: '/',        label: 'Home' },
@@ -18,22 +18,8 @@ const mobileMainLinks = [
   { href: '/ferry',   label: 'Ferry' },
 ];
 
-const visitLinks = [
-  { href: '/visit',                 label: 'Visitor Guide',  Icon: Map },
-  { href: '/visit/this-weekend',    label: 'This Weekend',   Icon: Calendar },
-  { href: '/visit/restaurants',     label: 'Restaurants',     Icon: Utensils },
-  { href: '/visit/farmers-markets', label: 'Farmers Markets', Icon: Carrot },
-  { href: '/visit/ferry-guide',     label: 'Getting Here',   Icon: Ship },
-];
-
-const communityLinks = [
-  { href: '/tides',           label: 'Tides',           Icon: Waves },
-  { href: '/forum',           label: 'Ask the Island',  Icon: MessageCircle },
-  { href: '/recommendations', label: 'Local Picks',     Icon: Star },
-  { href: '/marketplace',     label: 'Buy & Sell',      Icon: ShoppingBag },
-  { href: '/barter',          label: 'Barter & Trade',  Icon: ArrowLeftRight },
-  { href: '/newsletter',      label: 'Newsletter',      Icon: Mail },
-];
+const visitLinks = NAV_VISIT_LINKS;
+const communityLinks = NAV_COMMUNITY_LINKS;
 
 export default function MobileDrawer({
   open,
