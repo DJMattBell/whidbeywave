@@ -16,7 +16,7 @@ import FerryWaitAlert from '@/components/FerryWaitAlert';
 import { Suspense } from 'react';
 import { JsonLd } from '@/components/JsonLd';
 import {
-  Calendar, Newspaper, ShoppingBag,
+  Calendar, Newspaper, ShoppingBag, Search,
   MessageCircle, Tag, Star, MapPinned, MapPin,
 } from 'lucide-react';
 
@@ -160,26 +160,17 @@ export default async function HomePage() {
     newsSectionItems = [...newsSectionItems, ...recommendations.slice(0, remaining).map(r => ({ type: 'pick' as const, data: r }))];
   }
 
-  // Determine heading based on content mix
+  // Stable heading — always "From Around the Island" so the section feels
+  // anchored. Only the "Read more" link changes based on dominant content type.
   const newsTypes = new Set(newsSectionItems.map(i => i.type));
-  let newsHeading = 'From Around the Island';
-  let newsSubtitle = 'What your neighbors are talking about';
+  const newsHeading = 'From Around the Island';
+  const newsSubtitle = 'What your neighbors are talking about';
   let newsLink = '/news';
 
   if (newsSectionItems.length > 0 && !newsTypes.has('news')) {
-    if (newsTypes.size === 1 && newsTypes.has('forum')) {
-      newsHeading = "What the Island's Talking About";
-      newsSubtitle = 'Active conversations from Ask the Island';
-      newsLink = '/forum';
-    } else if (newsTypes.size === 1 && newsTypes.has('listing')) {
-      newsHeading = 'On the Island Marketplace';
-      newsSubtitle = 'Recently listed by neighbors';
-      newsLink = '/marketplace';
-    } else if (newsTypes.size === 1 && newsTypes.has('pick')) {
-      newsHeading = 'What People Are Recommending';
-      newsSubtitle = "From your neighbors' Local Picks";
-      newsLink = '/recommendations';
-    }
+    if (newsTypes.has('forum')) newsLink = '/forum';
+    else if (newsTypes.has('listing')) newsLink = '/marketplace';
+    else if (newsTypes.has('pick')) newsLink = '/recommendations';
   }
 
   const jsonLd = {
@@ -307,11 +298,13 @@ export default async function HomePage() {
           ))}
         </div>
       )}
-      <div className="text-center mt-6 sm:hidden">
-        <Link href="/events" className="text-forest-600 hover:text-forest-800 font-medium text-sm">
-          See all events  →
-        </Link>
-      </div>
+      <Link
+        href="/events"
+        className="mt-6 flex items-center justify-between px-4 py-3 rounded-xl bg-forest-50 border border-forest-100 text-forest-700 hover:bg-forest-100 transition-colors sm:hidden min-h-[44px]"
+      >
+        <span className="font-medium text-sm">See all upcoming events</span>
+        <span className="text-forest-600" aria-hidden="true">→</span>
+      </Link>
     </section>
   );
 
@@ -522,6 +515,16 @@ export default async function HomePage() {
       <Suspense fallback={null}>
         <LeadStoryCard />
       </Suspense>
+      {/* Mobile search — hidden on desktop where Navbar has search */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-0 md:hidden">
+        <Link
+          href="/search?q="
+          className="flex items-center gap-3 px-4 py-3 rounded-lg border border-parchment-200 bg-white text-stone-400 text-sm shadow-warm-sm min-h-[44px]"
+        >
+          <Search size={18} className="shrink-0" aria-hidden="true" />
+          Search events, news, marketplace...
+        </Link>
+      </div>
       {actionCards}
       {eventsSection}
       <Suspense fallback={null}>

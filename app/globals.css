@@ -38,33 +38,30 @@
 }
 
 /* ── Large text accessibility mode ── */
+/* Uses CSS custom properties so component styles inherit the bump
+   without !important. Each component reads --ww-text-* vars. */
+:root {
+  --ww-text-sm: 0.875rem;
+  --ww-text-xs: 0.75rem;
+  --ww-text-input: max(16px, 1em);
+  --ww-text-btn: 1rem;
+  --ww-pad-input: 12px;
+  --ww-pad-btn: 12px;
+}
 html.text-large {
   font-size: 19px;
+  --ww-text-sm: 1rem;
+  --ww-text-xs: 0.85rem;
+  --ww-text-input: 1.1rem;
+  --ww-text-btn: 1.1rem;
+  --ww-pad-input: 14px;
+  --ww-pad-btn: 14px;
 }
 html.text-large p,
 html.text-large li,
 html.text-large span:not(.text-xs):not(.badge) {
   font-size: 1.05rem;
   line-height: 1.75;
-}
-html.text-large .text-sm {
-  font-size: 1rem !important;
-}
-html.text-large .text-xs {
-  font-size: 0.85rem !important;
-}
-html.text-large input,
-html.text-large select,
-html.text-large textarea {
-  font-size: 1.1rem !important;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
-}
-html.text-large .btn-primary,
-html.text-large .btn-secondary {
-  font-size: 1.1rem !important;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
 }
 html.text-large h1 { font-size: 2.4rem; }
 html.text-large h2 { font-size: 1.9rem; }
@@ -73,20 +70,26 @@ html.text-large h3 { font-size: 1.4rem; }
 @layer components {
   /* ── Buttons ── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+    @apply inline-flex items-center justify-center gap-2 px-6 text-base
            bg-forest-600 hover:bg-forest-700
            text-parchment-50 font-semibold rounded-lg
            transition-all duration-200
            shadow-warm hover:shadow-warm-md hover:-translate-y-0.5 active:translate-y-0;
     min-height: 44px;
+    font-size: var(--ww-text-btn);
+    padding-top: var(--ww-pad-btn);
+    padding-bottom: var(--ww-pad-btn);
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+    @apply inline-flex items-center justify-center gap-2 px-6 text-base
            bg-transparent hover:bg-forest-50
            text-forest-600 font-semibold rounded-lg
            border border-forest-600
            transition-all duration-200;
     min-height: 44px;
+    font-size: var(--ww-text-btn);
+    padding-top: var(--ww-pad-btn);
+    padding-bottom: var(--ww-pad-btn);
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-base
@@ -166,13 +169,15 @@ html.text-large h3 { font-size: 1.4rem; }
 
   /* ── Form inputs ── */
   .input-base {
-    @apply w-full px-4 py-3 text-base
+    @apply w-full px-4 text-base
            bg-white border border-parchment-200 rounded-lg
            text-stone-800 placeholder-stone-400
            transition-all duration-200
            focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 focus:border-forest-600;
     min-height: 44px;
-    font-size: max(16px, 1em);
+    font-size: var(--ww-text-input);
+    padding-top: var(--ww-pad-input);
+    padding-bottom: var(--ww-pad-input);
   }
   .input-error {
     @apply border-terra-600 focus:ring-terra-600 focus:border-terra-600;
