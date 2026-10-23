@@ -143,3 +143,17 @@ When shipping a phase that touches database + API + components + pages + docs:
 6. Documentation
 
 Each chunk: `npm run build` -> commit -> push -> wait for Vercel READY -> verify on live site -> only then proceed.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on this repo (`DJMattBell/whidbeywave`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-label vocabulary. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout (`GLOSSARY.md` + `docs/adr/` at root). See `docs/agents/domain.md`.
