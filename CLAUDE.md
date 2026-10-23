@@ -106,7 +106,7 @@ After Phase 14: every scraper writes a row to `scrape_log` on every run (success
 
 ## Deployment Discipline (added May 2026 after broken-deploy recovery)
 
-**Current live deploy**: `dpl_HY2CkPDLerTnj9PQQejauMnyAG5g` (commit 6e5b0ac)
+**Current live deploy**: `dpl_J1BAndW4x28pEhfdiohkQfa6bGnB` (commit ea9c54d)
 
 After a two-month period of failed deploys went undetected, the following practices became mandatory:
 
