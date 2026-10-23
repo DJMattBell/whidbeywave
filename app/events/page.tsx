@@ -88,18 +88,16 @@ export default async function EventsPage() {
             What&apos;s Happening on Whidbey
           </h1>
           <p className="text-stone-500 text-sm md:text-base">
-            Events submitted by neighbors{' '}
-            <span className="hidden sm:inline">
-              ·{' '}
-              <Link
-                href="/events/print"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-forest-600 hover:text-forest-800 transition-colors"
-              >
-                Print this week&apos;s calendar →
-              </Link>
-            </span>
+            Events submitted by neighbors
+            {' · '}
+            <Link
+              href="/events/print"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-forest-600 hover:text-forest-800 transition-colors"
+            >
+              Print this week&apos;s calendar →
+            </Link>
           </p>
           <div className="mt-4">
             <Link href="/submit-event" className="btn-primary">

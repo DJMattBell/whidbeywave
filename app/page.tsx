@@ -22,6 +22,21 @@ import {
 
 export const revalidate = 300; // 5 minutes
 
+// Category → stripe color for event cards (design-system palette)
+const categoryStripeColors: Record<string, string> = {
+  'Nature & Wildlife':     'bg-forest-600',
+  'Arts & Culture':        'bg-sound-600',
+  'Farmers Market':        'bg-amber-500',
+  'Music & Performance':   'bg-sound-500',
+  'Outdoors & Recreation': 'bg-forest-500',
+  'Film & Media':          'bg-sound-400',
+  'Community & Social':    'bg-forest-400',
+  'Classes & Workshops':   'bg-sound-600',
+  'Food & Drink':          'bg-amber-600',
+  'Sports & Fitness':      'bg-forest-600',
+  Other:                   'bg-stone-400',
+};
+
 export default async function HomePage() {
   const supabase = createServerClient();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
@@ -227,10 +242,12 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm-sm hover:shadow-warm transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center min-h-[88px] justify-center"
+            className="flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm hover:shadow-warm-md transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center min-h-[100px] justify-center"
           >
-            <Icon size={24} className="text-forest-600" aria-hidden="true" />
-            <span className="font-semibold text-xs md:text-sm">{label}</span>
+            <span className="w-10 h-10 rounded-full bg-forest-50 flex items-center justify-center">
+              <Icon size={22} className="text-forest-600" aria-hidden="true" />
+            </span>
+            <span className="font-semibold text-sm">{label}</span>
             <span className="text-[10px] md:text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
           </Link>
         ))}
@@ -254,7 +271,7 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
             <Link key={event.id} href={`/events/${event.id}`} className="card-pressable group flex flex-col min-h-[280px]">
-              <div className="h-1 bg-forest-600" />
+              <div className={`h-1 ${categoryStripeColors[event.category] ?? 'bg-forest-600'}`} />
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>
@@ -410,23 +427,23 @@ export default async function HomePage() {
           Browse the marketplace →
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {marketplaceListings.map((listing) => (
-          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group min-h-[200px]">
-            <div className="relative bg-parchment-100 h-28 flex items-center justify-center overflow-hidden rounded-t-xl">
+          <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group min-h-[180px] sm:min-h-[200px]">
+            <div className="relative bg-parchment-100 h-24 sm:h-28 flex items-center justify-center overflow-hidden rounded-t-xl">
               {listing.images?.[0]
                 ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
-                : <span className="text-4xl">{listing.emoji}</span>
+                : <span className="text-3xl sm:text-4xl">{listing.emoji}</span>
               }
             </div>
-            <div className="p-3">
-              <h3 className="text-sm font-semibold text-stone-800 line-clamp-1 group-hover:text-forest-600 transition-colors mb-1">
+            <div className="p-2.5 sm:p-3">
+              <h3 className="text-xs sm:text-sm font-semibold text-stone-800 line-clamp-1 group-hover:text-forest-600 transition-colors mb-1">
                 {listing.title}
               </h3>
-              <p className={`text-sm font-bold mb-0.5 ${listing.is_free ? 'text-forest-600' : 'text-stone-800'}`}>
+              <p className={`text-xs sm:text-sm font-bold mb-0.5 ${listing.is_free ? 'text-forest-600' : 'text-stone-800'}`}>
                 {formatPrice(listing.price, listing.is_free)}
               </p>
-              <p className="text-xs text-stone-500 truncate">{listing.location}</p>
+              <p className="text-[10px] sm:text-xs text-stone-500 truncate">{listing.location}</p>
             </div>
           </Link>
         ))}
