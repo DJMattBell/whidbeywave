@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { formatShortDate, categoryColors } from '@/lib/data';
+import { formatShortDate, categoryColors, stripHtml } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import AddToCalendar from '@/components/AddToCalendar';
 import { Calendar, MapPin } from 'lucide-react';
@@ -48,7 +48,7 @@ export default function EventCard({ event }: { event: EventCardEvent }) {
           <time dateTime={event.date}>{formatShortDate(event.date)}</time> · {event.time}
         </p>
         <p className="text-sm text-stone-600 mb-4"><MapPin size={14} className="inline -mt-0.5 mr-0.5 text-stone-400" aria-hidden="true" />{event.town}</p>
-        <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description}</p>
+        <p className="text-base text-stone-600 line-clamp-2 mb-4">{event.description ? stripHtml(event.description) : null}</p>
         <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-parchment-200">
           <AddToCalendar
             event={{

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { createServerClient, isConfigured } from '@/lib/supabase';
-import { events as fallbackEvents } from '@/lib/data';
+import { events as fallbackEvents, stripHtml } from '@/lib/data';
 import { CATEGORY_EMOJI } from '@/lib/constants';
 import PrintTrigger from './PrintTrigger';
 
@@ -155,9 +155,7 @@ export default async function PrintPage() {
                       </p>
                       {event.description && (
                         <p className="text-stone-500 text-sm mt-1 leading-relaxed">
-                          {event.description.length > 100
-                            ? event.description.slice(0, 100).trimEnd() + '…'
-                            : event.description}
+                          {(() => { const d = stripHtml(event.description); return d.length > 100 ? d.slice(0, 100).trimEnd() + '…' : d; })()}
                         </p>
                       )}
                     </div>

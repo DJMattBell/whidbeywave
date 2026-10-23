@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createServerClient, isConfigured } from '@/lib/supabase';
 import { CATEGORY_EMOJI } from '@/lib/constants';
+import { stripHtml } from '@/lib/data';
 import AddToCalendar from '@/components/AddToCalendar';
 import ShareButton from '@/components/ShareButton';
 import RecurringSeries from '@/components/RecurringSeries';
@@ -68,7 +69,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const title = `${event.title} — WhidbeyWave`;
   const description = event.description
-    ? event.description.slice(0, 155)
+    ? stripHtml(event.description).slice(0, 155)
     : `${event.title} on Whidbey Island. ${event.date} · ${event.location}`;
 
   return {
@@ -147,7 +148,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 <h2 className="text-lg font-semibold text-stone-800 mb-2">
                   About This Event
                 </h2>
-                <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>
+                <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{stripHtml(event.description)}</p>
               </div>
             )}
 

@@ -290,6 +290,20 @@ export function formatShortDate(dateStr: string) {
   });
 }
 
+/** Strip HTML tags and decode common entities from user-submitted text. */
+export function stripHtml(text: string): string {
+  return text
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export const categoryColors: Record<string, string> = {
   // Short names used by static fallback data
   Nature:         'bg-green-100 text-green-800',
