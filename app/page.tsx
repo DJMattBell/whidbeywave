@@ -242,7 +242,7 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl text-sm bg-parchment-100 text-stone-700 hover:bg-parchment-200 shadow-warm hover:shadow-warm-md transition-all duration-200 hover:-translate-y-0.5 border border-parchment-200 text-center min-h-[100px] justify-center"
+            className="action-card"
           >
             <span className="w-10 h-10 rounded-full bg-forest-50 flex items-center justify-center">
               <Icon size={22} className="text-forest-600" aria-hidden="true" />
@@ -430,10 +430,10 @@ export default async function HomePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {marketplaceListings.map((listing) => (
           <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group min-h-[180px] sm:min-h-[200px]">
-            <div className="relative bg-parchment-100 h-24 sm:h-28 flex items-center justify-center overflow-hidden rounded-t-xl">
+            <div className={`relative h-24 sm:h-28 flex items-center justify-center overflow-hidden rounded-t-xl ${listing.images?.[0] ? '' : 'bg-gradient-to-br from-parchment-100 to-parchment-200'}`}>
               {listing.images?.[0]
                 ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
-                : <span className="text-3xl sm:text-4xl">{listing.emoji}</span>
+                : <span className="text-3xl sm:text-4xl drop-shadow-sm">{listing.emoji}</span>
               }
             </div>
             <div className="p-2.5 sm:p-3">

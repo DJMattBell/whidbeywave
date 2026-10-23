@@ -124,6 +124,16 @@ html.text-large h3 { font-size: 1.4rem; }
     transform: scale(0.98);
   }
 
+  /* ── Action cards (homepage navigation tiles) ── */
+  .action-card {
+    @apply flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl text-sm
+           bg-parchment-100 text-stone-700 hover:bg-parchment-200
+           shadow-warm hover:shadow-warm-md
+           transition-all duration-200 hover:-translate-y-0.5
+           border border-parchment-200 text-center justify-center;
+    min-height: 100px;
+  }
+
   /* ── Section headings ── */
   .section-title {
     @apply text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2;
