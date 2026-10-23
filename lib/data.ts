@@ -290,16 +290,19 @@ export function formatShortDate(dateStr: string) {
   });
 }
 
-/** Strip HTML tags and decode common entities from user-submitted text. */
+/** Strip HTML tags and decode common entities from user-submitted text.
+ *  Decodes entities first (so &lt;p&gt; becomes <p>), then strips tags. */
 export function stripHtml(text: string): string {
   return text
-    .replace(/<[^>]*>/g, '')
+    // Decode entities first — scraped data often has &lt;p&gt; not <p>
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
+    // Now strip actual HTML tags (including ones we just decoded)
+    .replace(/<[^>]*>/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }

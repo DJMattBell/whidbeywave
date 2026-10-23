@@ -439,11 +439,11 @@ export default async function HomePage() {
         </Link>
       </div>
       {actionCards}
+      {todayBlock}
       {eventsSection}
       <Suspense fallback={null}>
         <CommunityVoiceCard excludeThreadId={leadStory?.leadForumThreadId} />
       </Suspense>
-      {todayBlock}
       {newsSection}
       {marketplaceSection}
       {closingCta}
