@@ -142,15 +142,15 @@ html.text-large h3 { font-size: 1.4rem; }
   }
   .badge-free {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
-    @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
+    @apply bg-forest-50 text-forest-700 border border-forest-200;
   }
   .badge-now {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold;
-    @apply bg-red-100 text-red-700 border border-red-200;
+    @apply bg-terra-50 text-terra-600 border border-terra-200;
   }
   .badge-now::before {
     content: '';
-    @apply w-2 h-2 rounded-full bg-red-500 inline-block;
+    @apply w-2 h-2 rounded-full bg-terra-600 inline-block;
     animation: pulse-dot 1.5s ease-in-out infinite;
   }
 

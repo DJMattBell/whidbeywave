@@ -66,7 +66,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <section className="bg-parchment-100 border-b border-parchment-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2 font-heading">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2">
             Quick View
           </h1>
           <p className="text-stone-600 text-sm sm:text-base">
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
       {/* Today's Events */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-6">
         <h2
-          className="text-xl font-semibold text-stone-800 mb-4 font-heading"
+          className="text-xl font-semibold text-stone-800 mb-4"
         >
           Happening Today
         </h2>
@@ -164,7 +164,7 @@ export default async function DashboardPage() {
       {weekendList.length > 0 && (
         <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-10">
           <h2
-            className="text-xl font-semibold text-stone-800 mb-4 font-heading"
+            className="text-xl font-semibold text-stone-800 mb-4"
           >
             Coming Up This Week
           </h2>

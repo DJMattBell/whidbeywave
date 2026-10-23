@@ -509,7 +509,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           {dateGroups.map(([date, dayItems]) => (
             <div key={date} id={`date-${date}`}>
               {/* Date heading — sticky on mobile, static on desktop */}
-              <h3 className="sticky top-[120px] md:static z-[5] bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider font-heading">
+              <h3 className="sticky top-[120px] md:static z-[5] bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider">
                 {formatGroupDate(date)}
                 <span className="text-stone-400 font-normal ml-2">
                   — {dayItems.length} event{dayItems.length !== 1 ? 's' : ''}

@@ -37,9 +37,10 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 pb-5">
         <p className="text-sm text-parchment-200 mb-2">{greeting}</p>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3 text-parchment-50">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-1 text-parchment-50">
           Your island, at a glance
         </h1>
+        <p className="text-sm text-parchment-200/80 mb-3">Events, news, and community for Whidbey Island</p>
         <Link
           href="/events"
           className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base

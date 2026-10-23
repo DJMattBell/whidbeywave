@@ -84,7 +84,7 @@ export default async function EventsPage() {
       {/* Page header — slim, warm, functional */}
       <div className="bg-parchment-100 border-b border-parchment-200 py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-2xl md:text-4xl font-bold mb-2 text-stone-900 font-heading">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2 text-stone-900">
             What&apos;s Happening on Whidbey
           </h1>
           <p className="text-stone-500 text-sm md:text-base">
@@ -125,14 +125,9 @@ export default async function EventsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
 
         {/* Upcoming events */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold text-stone-900">
-            Coming Up
-          </h2>
-          <Link href="/submit-event" className="text-sm text-forest-600 hover:text-forest-800 font-medium transition-colors">
-            + Submit an event →
-          </Link>
-        </div>
+        <h2 className="text-2xl font-semibold text-stone-900 mb-6">
+          Coming Up
+        </h2>
 
         {upcoming.length === 0 ? (
           <div className="mb-12">

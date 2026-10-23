@@ -95,7 +95,7 @@ export default async function EventArchivePage() {
         <div className="space-y-10">
           {monthGroups.map(([key, monthEvents]) => (
             <section key={key} id={`month-${key}`}>
-              <h2 className="text-xl font-semibold text-stone-800 mb-3 font-heading sticky top-[64px] bg-white py-2 z-[5] border-b border-parchment-200">
+              <h2 className="text-xl font-semibold text-stone-800 mb-3 sticky top-[64px] bg-white py-2 z-[5] border-b border-parchment-200">
                 {formatMonth(key)}
                 <span className="text-stone-400 font-normal text-sm ml-2">
                   ({monthEvents.length} event{monthEvents.length !== 1 ? 's' : ''})
