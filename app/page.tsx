@@ -129,19 +129,19 @@ export default async function HomePage() {
       {
         '@type': 'WebSite',
         name: 'WhidbeyWave',
-        url: 'https://www.whidbeywave.com',
+        url: 'https://whidbeywave.com',
         description: 'Community hub for Whidbey Island, WA — events, news, marketplace, ferry info, and more.',
         potentialAction: {
           '@type': 'SearchAction',
-          target: 'https://www.whidbeywave.com/search?q={search_term_string}',
+          target: 'https://whidbeywave.com/search?q={search_term_string}',
           'query-input': 'required name=search_term_string',
         },
       },
       {
         '@type': 'LocalBusiness',
         name: 'WhidbeyWave',
-        url: 'https://www.whidbeywave.com',
-        logo: 'https://www.whidbeywave.com/logo.png',
+        url: 'https://whidbeywave.com',
+        logo: 'https://whidbeywave.com/logo.png',
         areaServed: {
           '@type': 'Place',
           name: 'Whidbey Island, Washington, USA',

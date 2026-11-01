@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'WhidbeyWave.com – Whidbey Island Events, News & Marketplace',
-    description: 'Your local guide to Whidbey Island.',
+    description: 'WhidbeyWave is the community hub for Whidbey Island, WA — events in Oak Harbor, Langley, Coupeville & Freeland, local news, ferry schedules, tides, and the island marketplace.',
     url: 'https://whidbeywave.com',
     siteName: 'WhidbeyWave',
     locale: 'en_US',
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WhidbeyWave.com',
-    description: 'Whidbey Island Events, News & Marketplace',
+    title: 'WhidbeyWave.com – Whidbey Island Events, News & Marketplace',
+    description: 'WhidbeyWave is the community hub for Whidbey Island, WA — events in Oak Harbor, Langley, Coupeville & Freeland, local news, ferry schedules, tides, and the island marketplace.',
     images: ['/og-default.png'],
   },
   metadataBase: new URL('https://whidbeywave.com'),
