@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
 
   if (newEvents.length > 0) {
     const rows = newEvents.map(e => ({
-      title:           e.title,
+      title:           e.title.trim(),
       date:            e.date,
       time:            sanitizeTime(e.time ?? ''),
       location:        e.location ?? '',
@@ -176,7 +176,7 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase
       .from('event_submissions')
-      .upsert(rows, { onConflict: 'title,date', ignoreDuplicates: true });
+      .upsert(rows, { onConflict: 'title,date,location', ignoreDuplicates: true });
     if (error) {
       console.error('[scrape] insert error:', error);
       return NextResponse.json(
