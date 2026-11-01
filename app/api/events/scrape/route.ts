@@ -16,6 +16,7 @@ import { scrapeBarringtons } from '@/lib/scrapers/barringtons';
 import { logScrapeRun } from '@/lib/scrapeLog';
 import { sanitizeTime, normalizeLocation } from '@/lib/scrapers/types';
 import type { ScrapedEvent } from '@/lib/scrapers/types';
+import { stripHtml } from '@/lib/data';
 
 const resend = getResend();
 
@@ -165,7 +166,7 @@ export async function GET(request: NextRequest) {
       location:        e.location ?? '',
       town:            e.town,
       category:        e.category,
-      description:     e.description,
+      description:     e.description ? stripHtml(e.description) : null,
       tags:            [] as string[],
       source:          e.source,
       submitter_name:  'Event Scraper',

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 import { useAdmin } from '@/lib/useAdmin';
+import { stripHtml } from '@/lib/data';
 import AuthModal from '@/components/AuthModal';
 import EmptyState from '@/components/EmptyState';
 import { supabase } from '@/lib/supabase';
@@ -318,7 +319,7 @@ export default function AdminEventsPage() {
                       <div>
                         <p className="text-xs text-stone-400 mb-1">Description</p>
                         <p className="text-sm text-stone-700 leading-relaxed bg-white rounded-xl border border-parchment-200 p-3">
-                          {sub.description}
+                          {stripHtml(sub.description)}
                         </p>
                       </div>
                     )}

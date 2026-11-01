@@ -233,9 +233,18 @@ export async function scrapeLangleyLibrary(): Promise<ScrapedEvent[]> {
 
         const time = buildTimeRange(ts, endTs);
 
-        // Strip HTML tags from description if present
+        // Strip HTML tags and entities from description
         const cleanDescription = description
-          ? description.replace(/<[^>]*>/g, '').trim() || null
+          ? description
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+              .replace(/&nbsp;/g, ' ')
+              .replace(/<[^>]*>/g, '')
+              .replace(/\s+/g, ' ')
+              .trim() || null
           : null;
 
         events.push({

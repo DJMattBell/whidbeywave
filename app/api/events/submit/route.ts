@@ -8,6 +8,7 @@ import {
   ALLOWED_EVENT_CATEGORIES,
   ALLOWED_EVENT_TAGS,
 } from '@/lib/validate';
+import { stripHtml } from '@/lib/data';
 
 const resend = getResend();
 
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       .from('event_submissions')
       .insert({
         title, date, time, location, town, category,
-        description: description || null,
+        description: description ? stripHtml(description) : null,
         tags: tags || [],
         submitter_name: submitter_name?.trim() || 'Anonymous',
         submitter_email,
