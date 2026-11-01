@@ -104,9 +104,25 @@ Never copy-paste selectors from one scraper to another — always inspect the ac
 
 After Phase 14: every scraper writes a row to `scrape_log` on every run (success or failure) so `/admin/scrapers` reflects health.
 
+### Sno-Isle BiblioCommons (library scrapers)
+Both Langley and Coupeville scrapers share `lib/scrapers/sno-isle-common.ts`. Lessons learned (Nov 2026):
+
+- **Off-island event leaks**: `?location=langley` returns events from other Sno-Isle branches (Mukilteo, Lynnwood, Edmonds, Mountlake Terrace, Camano). The scraper must filter by branch name and reject known off-island keywords. This was caught after ~23 off-island events were approved and shown on the live site.
+- **Timezone-less timestamps**: BiblioCommons embeds times like `2026-11-03T10:30:00` (no `Z` or offset). On Vercel (UTC), `new Date()` treats these as UTC, producing wrong Pacific conversions (10:30 AM → 2:30 AM). Fix: when no timezone suffix is present, extract time directly from the string — BiblioCommons renders times in the library's local (Pacific) timezone.
+- **Boilerplate in descriptions**: Every event appends "Contact us with questions Programs & Events FAQs To request a sign language interpreter..." — must be stripped at scrape time.
+- **Unique constraint**: `event_submissions` uses `UNIQUE (title, date, location)` (not just title+date), because "Family Storytime" occurs at both Langley and Coupeville on the same day. The scrape route's `onConflict` must match: `'title,date,location'`.
+
+### Data hygiene rules (added Nov 2026)
+All of these were violated and caused dirty data on the live site:
+
+- **Strip HTML at ingest, not just at render.** The scrape route and submit route both call `stripHtml()` before inserting descriptions. Display-side `stripHtml()` is a safety net, not the primary defense.
+- **Trim titles at ingest.** Trailing whitespace on titles bypasses the unique constraint and dedup logic, creating duplicate events.
+- **Never store scraped HTML or boilerplate.** Every scraper should return clean plain text. The scrape route adds a final `stripHtml()` pass as a backstop.
+- **Audit approved events periodically.** Scraper bugs accumulate silently — 1,894 past events, 1,571 HTML-contaminated descriptions, 263 boilerplate descriptions, and 23 off-island events were all approved and live before being caught.
+
 ## Deployment Discipline (added May 2026 after broken-deploy recovery)
 
-**Current live deploy**: `dpl_J1BAndW4x28pEhfdiohkQfa6bGnB` (commit ea9c54d)
+**Current live deploy**: commit ffb002b (pushed 2026-11-01)
 
 After a two-month period of failed deploys went undetected, the following practices became mandatory:
 
