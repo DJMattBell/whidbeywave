@@ -99,6 +99,16 @@ export default async function FerryPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-16">
 
+        {/* ── Section A: Live Status (client component) ───────────────── */}
+        <section>
+          <h2
+            className="text-2xl font-semibold text-stone-800 mb-6"
+          >
+            Live Route Status
+          </h2>
+          <FerryLiveBoard initial={ferry} />
+        </section>
+
         {/* ── Community Wait Reports (Phase 20) ──────────────────────── */}
         <section>
           <div className="flex items-end justify-between mb-6">
@@ -117,16 +127,6 @@ export default async function FerryPage() {
           }>
             <FerryWaitReports />
           </Suspense>
-        </section>
-
-        {/* ── Section A: Live Status (client component) ───────────────── */}
-        <section>
-          <h2
-            className="text-2xl font-semibold text-stone-800 mb-6"
-          >
-            Live Route Status
-          </h2>
-          <FerryLiveBoard initial={ferry} />
         </section>
 
         {/* ── Section B: Terminal Cameras ─────────────────────────────── */}

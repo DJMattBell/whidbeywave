@@ -23,13 +23,31 @@ export default function WelcomeSheet() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   useEffect(() => {
-    // Only show on first visit, after a short delay
+    // Only show on first visit, after the user has engaged (scrolled) or 10s
     const done = localStorage.getItem(STORAGE_KEY);
     const hasPersona = document.cookie.includes('ww-persona=');
     if (done || hasPersona) return;
 
-    const timer = setTimeout(() => setShow(true), 3000);
-    return () => clearTimeout(timer);
+    let shown = false;
+    const reveal = () => {
+      if (shown) return;
+      shown = true;
+      setShow(true);
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(fallback);
+    };
+
+    const onScroll = () => {
+      if (window.scrollY > 200) reveal();
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    const fallback = setTimeout(reveal, 10_000);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(fallback);
+    };
   }, []);
 
   function toggleArea(area: string) {

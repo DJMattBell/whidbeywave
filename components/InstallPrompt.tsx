@@ -19,27 +19,49 @@ export default function InstallPrompt() {
     if (localStorage.getItem('pwa-dismissed') === 'true') return;
     if (window.matchMedia('(display-mode: standalone)').matches) return;
 
+    // Wait for WelcomeSheet to be dismissed before showing install prompt
+    function waitForWelcome(): Promise<void> {
+      if (localStorage.getItem('ww-welcome-done')) return Promise.resolve();
+      return new Promise(resolve => {
+        const interval = setInterval(() => {
+          if (localStorage.getItem('ww-welcome-done')) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 500);
+        // Give up after 90s if welcome sheet was never shown/dismissed
+        setTimeout(() => { clearInterval(interval); resolve(); }, 90_000);
+      });
+    }
+
     const isIOS =
       /iPad|iPhone|iPod/.test(navigator.userAgent) &&
       !(window as unknown as Record<string, unknown>)['MSStream'];
 
-    // iOS — no beforeinstallprompt, instruct manually after 45 s
+    // iOS — no beforeinstallprompt, instruct manually after welcome + 10 s
     if (isIOS) {
-      const t = setTimeout(() => setBanner('ios'), 45_000);
-      return () => clearTimeout(t);
+      let cancelled = false;
+      waitForWelcome().then(() => {
+        if (!cancelled) setTimeout(() => setBanner('ios'), 10_000);
+      });
+      return () => { cancelled = true; };
     }
 
-    // Android / Chrome — capture deferred prompt, show after 30 s
+    // Android / Chrome — capture deferred prompt, show after welcome + 10 s
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let cancelled = false;
 
     const onBIP = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
-      timer = setTimeout(() => setBanner('android'), 30_000);
+      waitForWelcome().then(() => {
+        if (!cancelled) timer = setTimeout(() => setBanner('android'), 10_000);
+      });
     };
 
     window.addEventListener('beforeinstallprompt', onBIP);
     return () => {
+      cancelled = true;
       window.removeEventListener('beforeinstallprompt', onBIP);
       if (timer) clearTimeout(timer);
     };
@@ -78,11 +100,12 @@ export default function InstallPrompt() {
 
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-50 md:hidden"
+      className="fixed bottom-0 inset-x-0 z-[62] md:hidden"
       role="dialog"
       aria-label="Add WhidbeyWave to your home screen"
+      style={{ paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }}
     >
-      <div className="bg-forest-800 text-parchment-50 shadow-[0_-4px_24px_rgba(0,0,0,0.35)] px-5 pt-5 pb-7">
+      <div className="bg-forest-800 text-parchment-50 shadow-[0_-4px_24px_rgba(0,0,0,0.35)] px-5 pt-5 pb-5">
 
         {/* Header row */}
         <div className="flex items-start gap-3 mb-1">
