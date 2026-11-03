@@ -20,7 +20,6 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
   { url: `${BASE}/contact`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   { url: `${BASE}/submit-event`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
   { url: `${BASE}/submit-listing`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
-  { url: `${BASE}/search`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   { url: `${BASE}/how-it-works`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   { url: `${BASE}/visit/ferry-guide`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
   { url: `${BASE}/visit/this-weekend`, lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.6 },
@@ -99,7 +98,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
       for (const article of newsArticles) {
         pages.push({
-          url:             `${BASE}/news#${article.slug}`,
+          url:             `${BASE}/news/${article.slug}`,
           lastModified:    new Date(article.published_at + 'T12:00:00Z'),
           changeFrequency: 'monthly',
           priority:        0.7,
@@ -123,7 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
       for (const guide of guides) {
         pages.push({
-          url:             `${BASE}/guides#${guide.slug}`,
+          url:             `${BASE}/guides/${guide.slug}`,
           lastModified:    new Date(guide.published_at + 'T12:00:00Z'),
           changeFrequency: 'monthly',
           priority:        0.7,
@@ -154,8 +153,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
       }
     }
-  } catch {
-    // Sitemap still works without live data
+  } catch (err) {
+    console.error('[sitemap] failed to fetch dynamic data:', err);
   }
 
   return pages;

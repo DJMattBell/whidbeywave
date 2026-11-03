@@ -298,7 +298,7 @@ export default function AdminNewsPage() {
                 className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 font-mono"
               />
               {form.slug && (
-                <p className="text-[11px] text-stone-400 mt-1">URL: whidbeywave.com/news#{form.slug}</p>
+                <p className="text-[11px] text-stone-400 mt-1">URL: whidbeywave.com/news/{form.slug}</p>
               )}
             </div>
           </div>

@@ -189,7 +189,7 @@ export default async function HomePage() {
               <Icon size={22} className="text-forest-600" aria-hidden="true" />
             </span>
             <span className="font-semibold text-sm">{label}</span>
-            <span className="text-[10px] md:text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
+            <span className="text-xs text-stone-500 font-normal leading-snug">{subtitle}</span>
           </Link>
         ))}
       </div>
@@ -239,7 +239,7 @@ export default async function HomePage() {
           if (item.type === 'news') {
             const post = item.data;
             return (
-              <Link key={`news-${post.id}`} href={`/news#${post.slug}`} className="card-pressable p-6 group min-h-[240px]">
+              <Link key={`news-${post.id}`} href={`/news/${post.slug}`} className="card-pressable p-6 group min-h-[240px]">
                 <div className="flex items-start gap-4">
                   <div className="text-4xl shrink-0">{post.emoji}</div>
                   <div>
@@ -349,7 +349,7 @@ export default async function HomePage() {
               <p className={`text-xs sm:text-sm font-bold mb-0.5 ${listing.is_free ? 'text-forest-600' : 'text-stone-800'}`}>
                 {formatPrice(listing.price, listing.is_free)}
               </p>
-              <p className="text-[10px] sm:text-xs text-stone-500 truncate">{listing.location}</p>
+              <p className="text-xs text-stone-500 truncate">{listing.location}</p>
             </div>
           </Link>
         ))}
@@ -446,8 +446,8 @@ export default async function HomePage() {
       </Suspense>
       {newsSection}
       {marketplaceSection}
-      {closingCta}
       {visitorCta}
+      {closingCta}
     </>
   );
 }

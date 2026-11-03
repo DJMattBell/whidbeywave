@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Search — WhidbeyWave',
   description:
     'Search events, news, marketplace listings, forum posts, and more across WhidbeyWave.',
+  robots: { index: false, follow: true },
   openGraph: {
     title: 'Search — WhidbeyWave',
     description: 'Search events, news, listings, and more on Whidbey Island.',

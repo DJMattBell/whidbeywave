@@ -194,7 +194,7 @@ function SearchBody() {
               </h2>
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.news.filter(p => p.post_type !== 'guide').map(p => (
-                  <Link key={p.id} href={`/news#${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
+                  <Link key={p.id} href={`/news/${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
                     <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji ?? '📰'}</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{p.title}</p>
@@ -213,7 +213,7 @@ function SearchBody() {
               </h2>
               <div className="divide-y divide-parchment-200 bg-parchment-50 rounded-2xl border border-parchment-200 overflow-hidden shadow-warm-sm">
                 {results.news.filter(p => p.post_type === 'guide').map(p => (
-                  <Link key={p.id} href={`/guides#${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
+                  <Link key={p.id} href={`/guides/${p.slug}`} className="flex gap-3 p-4 hover:bg-parchment-100 transition-colors group">
                     <span className="text-2xl shrink-0" aria-hidden="true">{p.emoji ?? '📖'}</span>
                     <div>
                       <p className="font-semibold text-stone-800 group-hover:text-forest-600 transition-colors">{p.title}</p>

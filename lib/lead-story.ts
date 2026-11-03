@@ -154,7 +154,7 @@ export async function getLeadStory(): Promise<LeadStory | null> {
       accent: 'forest',
       title: story.title,
       subtitle: story.excerpt ?? '',
-      href: `/news#${story.slug}`,
+      href: `/news/${story.slug}`,
       category: story.category,
       leadEventId: null,
       leadForumThreadId: null,
