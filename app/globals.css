@@ -318,7 +318,7 @@ layer(base);
   /* #9 Minimum touch target hint — applied via utility, not globally */
 }
 
-@layer utilities {
+@layer base {
   /* Restore Tailwind's default rem base on desktop */
   @media (min-width: 768px) {
     html {
@@ -426,7 +426,7 @@ layer(base);
   @apply border-l-4 border-forest-300 pl-4 italic text-stone-600 my-5;
 }
 .prose-ww code {
-  @apply bg-parchment-200 text-stone-800 px-1.5 py-0.5 rounded-sm text-sm;
+  @apply bg-parchment-200 text-stone-800 px-1.5 py-0.5 rounded text-sm;
 }
 .prose-ww pre {
   @apply bg-stone-800 text-parchment-100 p-4 rounded-xl overflow-x-auto mb-5 text-sm;
