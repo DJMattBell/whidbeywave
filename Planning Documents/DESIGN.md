@@ -22,8 +22,8 @@ Each color has a job. Don't mix.
 | `sound-700` | #1e3a5f | Informational, calm | Secondary actions, utility data (ferry/tides/weather), live indicators |
 | `sound-500` | #3b82f6 | (link state) | Links in body text |
 | `sound-50` | #eff6ff | (light surface) | Info backgrounds, "cached" status backgrounds |
-| `amber-600` | #d97706 | Attention, warmth | Events badges, "cached" status dot, gathering surfaces |
-| `amber-50` | #fffbeb | (light surface) | Warning backgrounds |
+| `warmth-600` | #d97706 | Attention, warmth | Events badges, "cached" status dot, gathering surfaces |
+| `warmth-50` | #fffbeb | (light surface) | Warning backgrounds |
 | `terra-600` | #c2410c | Urgent, grounding | Destructive actions, marketplace accents, "On Island Time" dot, our-own-error |
 | `terra-50` | #fff7ed | (light surface) | Error backgrounds |
 | `parchment-50` | #fefdfb | Paper surface | Page background |

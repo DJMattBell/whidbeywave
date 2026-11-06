@@ -40,8 +40,8 @@ const config: Config = {
           800: '#0e272e',
           900: '#071519',
         },
-        // Golden-hour amber/ochre — highlights
-        amber: {
+        // Golden-hour warmth/ochre — highlights
+        warmth: {
           50:  '#fdf6ec',
           100: '#fae9cc',
           200: '#f4d09a',

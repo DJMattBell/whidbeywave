@@ -33,7 +33,7 @@ function formatDate(dateStr: string) {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  pending:  'bg-amber-100 text-amber-800 border-amber-200',
+  pending:  'bg-warmth-100 text-warmth-800 border-warmth-200',
   approved: 'bg-forest-100 text-forest-800 border-forest-200',
   rejected: 'bg-terra-50 text-terra-700 border-terra-200',
 };
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                       className="block bg-parchment-50 rounded-xl border border-parchment-200 p-4 hover:border-forest-300 hover:shadow-warm transition-all group"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-amber-400 text-sm" aria-label={`${rev.rating} out of 5 stars`}>
+                        <span className="text-warmth-400 text-sm" aria-label={`${rev.rating} out of 5 stars`}>
                           {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
                         </span>
                         <span className="text-xs text-stone-600">{formatDate(rev.created_at)}</span>

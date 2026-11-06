@@ -93,7 +93,7 @@ export default async function ListingDetailPage({
             <ImageGallery photos={photos} alt={listing.title} />
           ) : (
             <div
-              className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-amber-100 flex items-center justify-center text-8xl rounded-xl"
+              className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-warmth-100 flex items-center justify-center text-8xl rounded-xl"
               aria-hidden="true"
             >
               {listing.emoji}

@@ -104,7 +104,7 @@ Use the helpers from `@/lib/email` for consistent styling:
 
 ### Design System
 
-- **Colors:** forest green, parchment cream, slate blue (sound), warm amber, terracotta (terra)
+- **Colors:** forest green, parchment cream, slate blue (sound), golden warmth, terracotta (terra)
 - **Fonts:** Playfair Display (headings), Lora (body)
 - **Tone:** Warm, unhurried, small-town Pacific Northwest
 - **No:** Sharp gradients, glowing effects, startup/SaaS aesthetics

@@ -65,7 +65,7 @@ npm run smoke     — Playwright smoke tests (added in Phase 14)
 ## Design Rules
 
 - Color palette per `Planning Documents/design/DESIGN.md`
-- Color encodes meaning: forest=brand, sound=utility, amber=events/warmth, terra=marketplace/urgent
+- Color encodes meaning: forest=brand, sound=utility, warmth=events/warmth, terra=marketplace/urgent
 - Fonts: Playfair Display headings, Lora body
 - Tone: warm, unhurried, small-town neighbor
 - Never use sharp gradients, glowing effects, or anything that reads "SaaS" or "startup"

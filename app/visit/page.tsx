@@ -58,8 +58,8 @@ export default function VisitPage() {
                 emoji:   '🍽️',
                 title:   'Restaurants & Cafes',
                 desc:    'Neighbor-recommended places to eat across the island — from Penn Cove mussels to the best slice of pie on Whidbey.',
-                bg:      'bg-amber-50 border-amber-200',
-                accent:  'text-amber-700',
+                bg:      'bg-warmth-50 border-warmth-200',
+                accent:  'text-warmth-700',
               },
               {
                 href:    '/visit/farmers-markets',
@@ -155,7 +155,7 @@ export default function VisitPage() {
 
             {/* Bridge card */}
             <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-amber-400" />
+              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-warmth-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-1">
@@ -193,7 +193,7 @@ export default function VisitPage() {
           <h2 className="text-2xl font-semibold text-stone-800 mb-5">The Island at a Glance</h2>
 
           <div className="bg-parchment-50 border border-parchment-200 rounded-xl overflow-hidden">
-            <div className="h-1.5 bg-gradient-to-r from-amber-400 to-terra-400" />
+            <div className="h-1.5 bg-gradient-to-r from-warmth-400 to-terra-400" />
             <div className="p-6 grid sm:grid-cols-2 gap-x-10 gap-y-4">
               {[
                 { label: 'Length',      value: '55 miles — connected by one main road (Hwy 20/525)' },
@@ -299,8 +299,8 @@ export default function VisitPage() {
                 season: 'Summer',
                 months: 'Jun – Aug',
                 emoji:  '☀️',
-                color:  'bg-amber-50 border-amber-200',
-                label:  'text-amber-700',
+                color:  'bg-warmth-50 border-warmth-200',
+                label:  'text-warmth-700',
                 items:  ['Weekly farmers markets in every town', 'Warm evenings on the waterfront', 'Busiest ferry lines — plan ahead', 'Island festivals and outdoor events'],
               },
               {

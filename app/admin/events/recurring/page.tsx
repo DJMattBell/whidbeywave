@@ -632,7 +632,7 @@ export default function RecurringEventsPage() {
                           <button onClick={() => toggleActive(t)} disabled={acting[t.id]}
                             className={`px-5 py-2 rounded-xl text-sm font-medium border transition-colors disabled:opacity-40 ${
                               t.is_active
-                                ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                                ? 'bg-warmth-50 text-warmth-700 border-warmth-200 hover:bg-warmth-100'
                                 : 'bg-forest-50 text-forest-700 border-forest-200 hover:bg-forest-100'
                             }`}>
                             {acting[t.id] ? 'Saving...' : t.is_active ? 'Pause' : 'Resume'}

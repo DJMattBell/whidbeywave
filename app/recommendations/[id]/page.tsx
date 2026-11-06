@@ -89,7 +89,7 @@ export default async function RecommendationDetailPage({ params }: { params: Pro
             </div>
             {recommendation.review_count > 0 && (
               <div className="text-center shrink-0">
-                <div className="flex items-center gap-1 text-amber-500 mb-0.5">
+                <div className="flex items-center gap-1 text-warmth-500 mb-0.5">
                   <Star size={20} fill="currentColor" />
                   <span className="text-xl font-bold text-stone-800">{recommendation.average_rating.toFixed(1)}</span>
                 </div>
@@ -178,7 +178,7 @@ export default async function RecommendationDetailPage({ params }: { params: Pro
                         <p className="text-xs text-stone-500">{timeAgo(review.created_at)}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-0.5 text-amber-500">
+                    <div className="flex items-center gap-0.5 text-warmth-500">
                       {Array.from({ length: 5 }, (_, i) => (
                         <Star key={i} size={14} fill={i < review.rating ? 'currentColor' : 'none'} />
                       ))}

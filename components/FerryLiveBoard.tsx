@@ -32,7 +32,7 @@ function StatusBadge({ status }: { status: RouteStatus }) {
   }
   if (status === 'delays') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-700">
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-warmth-100 text-warmth-700">
         <span>⚠</span> DELAYS
       </span>
     );
@@ -133,7 +133,7 @@ function RouteCard({
         </div>
 
         {route.alertText && route.status !== 'on-schedule' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5 text-sm text-amber-800 leading-relaxed">
+          <div className="bg-warmth-50 border border-warmth-200 rounded-lg p-3 mb-5 text-sm text-warmth-800 leading-relaxed">
             {route.alertText}
           </div>
         )}
@@ -235,14 +235,14 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
 
       {/* Not configured */}
       {!data.configured && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+        <div className="bg-warmth-50 border border-warmth-200 rounded-xl p-6 text-center">
           <p className="text-2xl mb-3">🔑</p>
-          <p className="font-semibold text-amber-800 mb-1">WSDOT API key not configured</p>
-          <p className="text-amber-700 text-sm">
+          <p className="font-semibold text-warmth-800 mb-1">WSDOT API key not configured</p>
+          <p className="text-warmth-700 text-sm">
             Add your key from{' '}
-            <span className="font-mono bg-amber-100 px-1 rounded">wsdot.wa.gov/traffic/api/</span>{' '}
-            to <span className="font-mono bg-amber-100 px-1 rounded">.env.local</span> as{' '}
-            <span className="font-mono bg-amber-100 px-1 rounded">WSDOT_API_KEY</span>.
+            <span className="font-mono bg-warmth-100 px-1 rounded">wsdot.wa.gov/traffic/api/</span>{' '}
+            to <span className="font-mono bg-warmth-100 px-1 rounded">.env.local</span> as{' '}
+            <span className="font-mono bg-warmth-100 px-1 rounded">WSDOT_API_KEY</span>.
           </p>
         </div>
       )}
@@ -297,7 +297,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
               emoji="⛴"
               mainlandLabel="From Port Townsend →"
               whidbeyLabel="From Coupeville →"
-              accentGradient="bg-gradient-to-r from-terra-400 to-amber-500"
+              accentGradient="bg-gradient-to-r from-terra-400 to-warmth-500"
               now={now}
               extra={
                 <a

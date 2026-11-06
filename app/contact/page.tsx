@@ -61,7 +61,7 @@ export default function ContactPage() {
       </div>
 
       {/* Mobile phone callout — above the form, phones only */}
-      <div className="md:hidden bg-amber-50 border-b border-amber-200 px-4 py-5">
+      <div className="md:hidden bg-warmth-50 border-b border-warmth-200 px-4 py-5">
         <div className="flex items-start gap-3">
           <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">📞</span>
           <div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                   </div>
 
                   {preferPhone ? (
-                    <div className="rounded-xl bg-amber-50 border border-amber-200 px-5 py-5 text-stone-700 text-base leading-relaxed">
+                    <div className="rounded-xl bg-warmth-50 border border-warmth-200 px-5 py-5 text-stone-700 text-base leading-relaxed">
                       No problem! Give Matthew a call or text at{' '}
                       <a
                         href={PHONE_TEL}
@@ -298,7 +298,7 @@ export default function ContactPage() {
                 emoji: '🛒',
                 title: 'List on the Marketplace',
                 desc: "Tell us about your item and we'll add it to the marketplace.",
-                color: 'bg-amber-50 border-amber-200',
+                color: 'bg-warmth-50 border-warmth-200',
               },
               {
                 emoji: '📣',

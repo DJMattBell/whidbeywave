@@ -121,7 +121,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <span className="text-3xl" aria-hidden="true">{emoji}</span>
             <span className="text-sm font-medium text-forest-300 uppercase tracking-wide">{event.category}</span>
             {event.recurring_event_id && (
-              <span className="text-xs font-medium bg-amber-400/20 text-amber-200 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-medium bg-warmth-400/20 text-warmth-200 border border-warmth-400/30 px-2.5 py-0.5 rounded-full">
                 Recurring Event
               </span>
             )}

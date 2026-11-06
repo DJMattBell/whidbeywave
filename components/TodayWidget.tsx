@@ -129,13 +129,13 @@ export default async function TodayWidget() {
         {hasFerry && (
           <div className="flex items-center gap-1.5 text-sm shrink-0 flex-wrap">
             {ferryHasAlert ? (
-              <AlertTriangle size={14} className="text-amber-500 shrink-0" aria-hidden="true" />
+              <AlertTriangle size={14} className="text-warmth-500 shrink-0" aria-hidden="true" />
             ) : (
               <span className="shrink-0" aria-hidden="true">⛴</span>
             )}
             <Link
               href="/ferry"
-              className={`font-semibold hover:underline ${ferryHasAlert ? 'text-amber-700' : 'text-stone-700'}`}
+              className={`font-semibold hover:underline ${ferryHasAlert ? 'text-warmth-700' : 'text-stone-700'}`}
             >
               {ferrySummary}
             </Link>

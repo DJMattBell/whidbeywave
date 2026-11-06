@@ -10,7 +10,7 @@ function Stars({ rating }: { rating: number }) {
   return (
     <span className="text-sm" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map(n => (
-        <span key={n} className={n <= Math.round(rating) ? 'text-amber-400' : 'text-stone-300'}>★</span>
+        <span key={n} className={n <= Math.round(rating) ? 'text-warmth-400' : 'text-stone-300'}>★</span>
       ))}
     </span>
   );

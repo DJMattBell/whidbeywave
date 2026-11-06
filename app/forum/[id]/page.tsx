@@ -94,7 +94,7 @@ export default async function ForumThreadPage({ params }: { params: Promise<{ id
       <article className="card-elevated p-7 mb-8">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {post.is_pinned && (
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-warmth-100 text-warmth-800">
               📌 Pinned
             </span>
           )}

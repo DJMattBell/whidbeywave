@@ -30,7 +30,7 @@ export default function ListingCard({
       onClick={onClick}
     >
       {/* Photo area — square on mobile, 4/3 on sm+ */}
-      <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-amber-100">
+      <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-warmth-100">
         {photo ? (
           <Image
             src={photo}

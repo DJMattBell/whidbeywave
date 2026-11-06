@@ -32,11 +32,11 @@ function statusLabel(s: RouteStatus) {
 }
 function statusColor(s: RouteStatus) {
   return s === 'cancelled' ? 'text-terra-600 font-semibold'
-       : s === 'delays'    ? 'text-amber-600 font-semibold'
+       : s === 'delays'    ? 'text-warmth-600 font-semibold'
        :                     'text-forest-600';
 }
 function dotColor(s: RouteStatus) {
-  return s === 'cancelled' ? 'bg-terra-500' : s === 'delays' ? 'bg-amber-500' : 'bg-forest-500';
+  return s === 'cancelled' ? 'bg-terra-500' : s === 'delays' ? 'bg-warmth-500' : 'bg-forest-500';
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -167,7 +167,7 @@ export default async function FerryGuidePage() {
 
             {/* Deception Pass */}
             <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-amber-400" />
+              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-warmth-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-0.5">

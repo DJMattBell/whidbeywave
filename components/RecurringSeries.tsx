@@ -16,11 +16,11 @@ export default function RecurringSeries({
   currentDate: string;
 }) {
   return (
-    <div className="card bg-amber-50 border-amber-200 p-5">
-      <h3 className="text-base font-semibold text-amber-900 mb-1">
+    <div className="card bg-warmth-50 border-warmth-200 p-5">
+      <h3 className="text-base font-semibold text-warmth-900 mb-1">
         This event repeats
       </h3>
-      <p className="text-sm text-amber-700 mb-3">
+      <p className="text-sm text-warmth-700 mb-3">
         You&apos;re viewing the {formatShortDate(currentDate)} date. It also happens on:
       </p>
       <div className="flex flex-wrap gap-2">
@@ -28,9 +28,9 @@ export default function RecurringSeries({
           <Link
             key={e.id}
             href={`/events/${e.id}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-amber-200 rounded-full text-sm font-medium text-amber-800 hover:bg-amber-100 hover:border-amber-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-warmth-200 rounded-full text-sm font-medium text-warmth-800 hover:bg-warmth-100 hover:border-warmth-300 transition-colors"
           >
-            <span className="text-amber-500">📅</span>
+            <span className="text-warmth-500">📅</span>
             {formatShortDate(e.date)}
           </Link>
         ))}

@@ -160,7 +160,7 @@ export default async function ForumPage({
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           {post.is_pinned && (
-                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800">
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-warmth-100 text-warmth-800">
                               📌 Pinned
                             </span>
                           )}

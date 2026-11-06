@@ -167,7 +167,7 @@ export default function BottomTabBar() {
                 <button
                   onClick={toggleTextSize}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors min-h-[44px] ${
-                    textLarge ? 'bg-amber-500 text-white' : 'bg-parchment-100 text-stone-600'
+                    textLarge ? 'bg-warmth-500 text-white' : 'bg-parchment-100 text-stone-600'
                   }`}
                 >
                   {textLarge ? 'Large ✓' : 'Default'}

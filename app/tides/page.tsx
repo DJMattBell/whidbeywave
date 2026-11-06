@@ -156,7 +156,7 @@ function TideEntry({
 
       {/* Extreme badges */}
       {isMaxHigh && (
-        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-amber-400 text-amber-900 shadow-sm">
+        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-warmth-400 text-warmth-900 shadow-sm">
           Week High
         </span>
       )}

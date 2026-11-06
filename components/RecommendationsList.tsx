@@ -46,7 +46,7 @@ function Stars({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'lg' }) 
   return (
     <span className={sz} aria-label={`${rating} out of 5 stars`}>
       {[1,2,3,4,5].map(n => (
-        <span key={n} className={n <= Math.round(rating) ? 'text-amber-400' : 'text-stone-300'}>★</span>
+        <span key={n} className={n <= Math.round(rating) ? 'text-warmth-400' : 'text-stone-300'}>★</span>
       ))}
     </span>
   );
@@ -67,7 +67,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
           onClick={() => onChange(n)}
           aria-label={`${n} star${n > 1 ? 's' : ''} — ${STAR_LABELS[n]}`}
           aria-pressed={value === n}
-          className={`text-2xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${n <= (hover || value) ? 'text-amber-400' : 'text-stone-300'}`}
+          className={`text-2xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${n <= (hover || value) ? 'text-warmth-400' : 'text-stone-300'}`}
         >
           <span aria-hidden="true">★</span>
         </button>

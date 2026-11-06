@@ -94,7 +94,7 @@ export default async function DashboardPage() {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { emoji: '🚢', label: 'Full Ferry Status', href: '/ferry', color: 'bg-amber-50 border-amber-300 hover:bg-amber-100' },
+            { emoji: '🚢', label: 'Full Ferry Status', href: '/ferry', color: 'bg-warmth-50 border-warmth-300 hover:bg-warmth-100' },
             { emoji: '🌊', label: 'Tide Charts', href: '/tides', color: 'bg-sound-50 border-sound-300 hover:bg-sound-100' },
             { emoji: '📅', label: 'All Events', href: '/events', color: 'bg-forest-50 border-forest-300 hover:bg-forest-100' },
             { emoji: '🗺️', label: 'Visitor Guide', href: '/visit', color: 'bg-terra-50 border-terra-300 hover:bg-terra-100' },

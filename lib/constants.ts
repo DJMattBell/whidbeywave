@@ -56,13 +56,13 @@ export const CATEGORY_EMOJI: Record<string, string> = {
 export const CATEGORY_STRIPE_COLORS: Record<string, string> = {
   'Nature & Wildlife':     'bg-forest-600',
   'Arts & Culture':        'bg-sound-600',
-  'Farmers Market':        'bg-amber-500',
+  'Farmers Market':        'bg-warmth-500',
   'Music & Performance':   'bg-sound-500',
   'Outdoors & Recreation': 'bg-forest-500',
   'Film & Media':          'bg-sound-400',
   'Community & Social':    'bg-forest-400',
   'Classes & Workshops':   'bg-sound-600',
-  'Food & Drink':          'bg-amber-600',
+  'Food & Drink':          'bg-warmth-600',
   'Sports & Fitness':      'bg-forest-600',
   Other:                   'bg-stone-400',
 };
@@ -80,11 +80,11 @@ export const NAV_MAIN_LINKS = [
 
 export const FORUM_CATEGORY_COLORS: Record<string, string> = {
   General:              'bg-stone-100 text-stone-700',
-  Recommendations:      'bg-amber-100 text-amber-800',
+  Recommendations:      'bg-warmth-100 text-warmth-800',
   'Island Life':        'bg-forest-100 text-forest-800',
   Events:               'bg-sound-100 text-sound-800',
   'Lost & Found':       'bg-terra-100 text-terra-700',
-  'For Sale / Free':    'bg-amber-100 text-amber-900',
+  'For Sale / Free':    'bg-warmth-100 text-warmth-900',
   'Welcome Newcomers':  'bg-forest-50 text-forest-700',
 };
 

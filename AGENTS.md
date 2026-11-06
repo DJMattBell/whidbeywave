@@ -126,7 +126,7 @@ The Tailwind config (`tailwind.config.ts`) defines a Pacific Northwest-themed pa
 
 - **`forest-*`** — Deep green (primary brand)
 - **`sound-*`** — Slate blue (secondary)
-- **`amber-*`** — Golden-hour ochre (highlights)
+- **`warmth-*`** — Golden-hour ochre (highlights)
 - **`terra-*`** — Terracotta (accent)
 - **`parchment-*`** — Warm cream (backgrounds)
 

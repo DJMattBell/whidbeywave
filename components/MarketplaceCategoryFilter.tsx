@@ -31,10 +31,10 @@ export default function MarketplaceCategoryFilter({ current }: { current?: strin
         const isFree     = cat === 'Free Stuff';
         const label      = isFree ? '🎁 Free Stuff' : cat;
         const activecls  = isFree
-          ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+          ? 'bg-warmth-500 text-white border-warmth-500 shadow-sm'
           : 'bg-forest-600 text-parchment-50 border-forest-600 shadow-sm';
         const inactivecls = isFree
-          ? 'bg-amber-50 text-amber-700 border-amber-300 hover:border-amber-400 hover:bg-amber-100'
+          ? 'bg-warmth-50 text-warmth-700 border-warmth-300 hover:border-warmth-400 hover:bg-warmth-100'
           : 'bg-white text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-700';
         return (
           <button

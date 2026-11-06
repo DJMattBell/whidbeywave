@@ -55,7 +55,7 @@ const FEATURED = [
     emoji:   '☕',
     note:    'Fresh Caffe Vita espresso and some of the best scones on the island — six to eight varieties baked daily, from cinnamon swirl to raspberry almond. Marine-blue walls, a Jupiter mural, and a back room with a fireplace.',
     tip:     'The scones sell out early. You can also order frozen take-and-bake scones to bake at home.',
-    bg:      'bg-amber-50 border-amber-200',
+    bg:      'bg-warmth-50 border-warmth-200',
   },
   {
     name:    'Salty Sea Coffee',

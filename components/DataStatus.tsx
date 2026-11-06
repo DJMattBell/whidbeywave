@@ -34,7 +34,7 @@ export default function DataStatus({ state, label, lastUpdated }: DataStatusProp
 
   const dotColor =
     state === 'live' ? 'bg-forest-700' :
-    state === 'cached' ? 'bg-amber-600' :
+    state === 'cached' ? 'bg-warmth-600' :
     'bg-terra-600';
 
   const caption =

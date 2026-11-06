@@ -143,31 +143,31 @@ export default function AdminDashboard() {
               {counts.pendingEvents > 0 && (
                 <Link
                   href="/admin/events"
-                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all hover:-translate-y-0.5 group"
+                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-warmth-300 bg-warmth-50 hover:bg-warmth-100 transition-all hover:-translate-y-0.5 group"
                 >
                   <span className="text-3xl">📅</span>
                   <div>
-                    <p className="text-2xl font-bold text-amber-800">{counts.pendingEvents}</p>
-                    <p className="text-sm text-amber-700 font-medium">
+                    <p className="text-2xl font-bold text-warmth-800">{counts.pendingEvents}</p>
+                    <p className="text-sm text-warmth-700 font-medium">
                       event{counts.pendingEvents !== 1 ? 's' : ''} awaiting review
                     </p>
                   </div>
-                  <span className="ml-auto text-amber-600 group-hover:text-amber-800 transition-colors">→</span>
+                  <span className="ml-auto text-warmth-600 group-hover:text-warmth-800 transition-colors">→</span>
                 </Link>
               )}
               {counts.pendingListings > 0 && (
                 <Link
                   href="/admin/listings"
-                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all hover:-translate-y-0.5 group"
+                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-warmth-300 bg-warmth-50 hover:bg-warmth-100 transition-all hover:-translate-y-0.5 group"
                 >
                   <span className="text-3xl">🏷️</span>
                   <div>
-                    <p className="text-2xl font-bold text-amber-800">{counts.pendingListings}</p>
-                    <p className="text-sm text-amber-700 font-medium">
+                    <p className="text-2xl font-bold text-warmth-800">{counts.pendingListings}</p>
+                    <p className="text-sm text-warmth-700 font-medium">
                       listing{counts.pendingListings !== 1 ? 's' : ''} awaiting review
                     </p>
                   </div>
-                  <span className="ml-auto text-amber-600 group-hover:text-amber-800 transition-colors">→</span>
+                  <span className="ml-auto text-warmth-600 group-hover:text-warmth-800 transition-colors">→</span>
                 </Link>
               )}
             </div>
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
               label="Listings"
               stat={countsLoading ? '…' : `${counts?.totalListings ?? 0} total`}
               badge={counts?.pendingListings ? `${counts.pendingListings} pending` : undefined}
-              color="bg-amber-50 border-amber-200 hover:bg-amber-100"
+              color="bg-warmth-50 border-warmth-200 hover:bg-warmth-100"
             />
             <AdminCard
               href="/admin/news"
@@ -262,7 +262,7 @@ function AdminCard({
       className={`flex flex-col items-center gap-2 p-5 rounded-2xl border-2 ${color} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-warm group relative`}
     >
       {badge && (
-        <span className="absolute top-2 right-2 text-[10px] font-bold bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">
+        <span className="absolute top-2 right-2 text-[10px] font-bold bg-warmth-200 text-warmth-800 px-2 py-0.5 rounded-full">
           {badge}
         </span>
       )}

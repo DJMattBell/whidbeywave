@@ -91,7 +91,7 @@ export default async function ThisWeekendPage() {
               <li className="text-stone-700">This Weekend</li>
             </ol>
           </nav>
-          <p className="text-amber-600 font-medium mb-2 tracking-wide uppercase text-sm">What&apos;s On</p>
+          <p className="text-warmth-600 font-medium mb-2 tracking-wide uppercase text-sm">What&apos;s On</p>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             This Weekend on Whidbey
           </h1>

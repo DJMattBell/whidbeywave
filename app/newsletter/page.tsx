@@ -29,11 +29,11 @@ function ConfirmBanner() {
   if (unsubscribed === 'true') {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-6 py-5 flex items-start gap-4">
+        <div className="bg-warmth-50 border border-warmth-200 rounded-2xl px-6 py-5 flex items-start gap-4">
           <span className="text-3xl shrink-0" aria-hidden="true">👋</span>
           <div>
-            <p className="font-semibold text-amber-800 text-base">You&apos;ve been unsubscribed.</p>
-            <p className="text-amber-700 text-sm mt-0.5">
+            <p className="font-semibold text-warmth-800 text-base">You&apos;ve been unsubscribed.</p>
+            <p className="text-warmth-700 text-sm mt-0.5">
               We&apos;ve removed you from the mailing list. You&apos;re always welcome back if you change your mind.
             </p>
           </div>
@@ -164,7 +164,7 @@ export default function NewsletterPage() {
       {/* Header */}
       <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-700 font-medium mb-2 tracking-wide uppercase text-sm">Weekly Digest</p>
+          <p className="text-warmth-700 font-medium mb-2 tracking-wide uppercase text-sm">Weekly Digest</p>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             The WhidbeyWave Weekly
           </h1>
@@ -216,7 +216,7 @@ export default function NewsletterPage() {
               ) : status === 'unconfirmed' ? (
                 <div className="text-center py-10">
                   <div className="text-6xl mb-4" aria-hidden="true">📧</div>
-                  <h3 className="text-xl font-bold text-amber-700 mb-2">You signed up but haven&apos;t confirmed yet.</h3>
+                  <h3 className="text-xl font-bold text-warmth-700 mb-2">You signed up but haven&apos;t confirmed yet.</h3>
                   <p className="text-stone-500 text-base leading-relaxed mb-4">
                     We sent a confirmation link to <strong>{email}</strong> earlier. Check your inbox (and spam folder).
                   </p>
@@ -269,7 +269,7 @@ export default function NewsletterPage() {
                       aria-describedby={status === 'duplicate' ? 'nl-dup-msg' : status === 'error' ? 'nl-err-msg' : undefined}
                     />
                     {status === 'duplicate' && (
-                      <p id="nl-dup-msg" className="text-amber-700 text-sm mt-1" role="alert">
+                      <p id="nl-dup-msg" className="text-warmth-700 text-sm mt-1" role="alert">
                         You&apos;re already on the list — we&apos;ve got you covered.
                       </p>
                     )}
@@ -346,13 +346,13 @@ export default function NewsletterPage() {
                   </fieldset>
 
                   {/* Weekend digest opt-in */}
-                  <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                  <div className="flex items-start gap-3 p-4 bg-warmth-50 border border-warmth-200 rounded-xl">
                     <input
                       id="nl-weekend"
                       type="checkbox"
                       checked={weekendDigest}
                       onChange={e => setWeekendDigest(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-amber-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
+                      className="mt-0.5 h-4 w-4 rounded border-warmth-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
                     />
                     <label htmlFor="nl-weekend" className="text-sm text-stone-700 leading-snug cursor-pointer select-none">
                       <span className="font-semibold">This Weekend digest</span>

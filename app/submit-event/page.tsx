@@ -154,7 +154,7 @@ export default function SubmitEventPage() {
     <>
       <div className="bg-parchment-100 border-b border-parchment-200 py-8 md:py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-amber-700 font-medium mb-2 tracking-wide uppercase text-sm">Community Calendar</p>
+          <p className="text-warmth-700 font-medium mb-2 tracking-wide uppercase text-sm">Community Calendar</p>
           <h1 className="text-4xl md:text-5xl font-bold mb-3 text-stone-900">
             Submit an Event
           </h1>

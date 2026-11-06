@@ -301,7 +301,7 @@ export default async function HomePage() {
           return (
             <Link key={`pick-${pick.id}`} href={`/recommendations/${pick.id}`} className="card-pressable p-6 group">
               <div className="flex items-start gap-4">
-                <Star size={32} className="text-amber-500 shrink-0 mt-1" aria-hidden="true" />
+                <Star size={32} className="text-warmth-500 shrink-0 mt-1" aria-hidden="true" />
                 <div className="min-w-0">
                   <h3 className="font-semibold text-stone-900 mb-1 group-hover:text-forest-600 transition-colors leading-snug">
                     {pick.name}

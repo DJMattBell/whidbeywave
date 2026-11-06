@@ -6,7 +6,7 @@ import { createServerClient, isConfigured } from '@/lib/supabase';
 export type LeadStory = {
   type: 'event' | 'news' | 'forum';
   typeLabel: string;
-  accent: 'amber' | 'forest' | 'sound';
+  accent: 'warmth' | 'forest' | 'sound';
   title: string;
   subtitle: string;
   href: string;
@@ -97,7 +97,7 @@ export async function getLeadStory(): Promise<LeadStory | null> {
       return {
         type: 'event',
         typeLabel: 'Happening Now',
-        accent: 'amber',
+        accent: 'warmth',
         title: event.title,
         subtitle: `${event.time} · ${event.town}`,
         href: `/events/${event.id}`,
@@ -116,7 +116,7 @@ export async function getLeadStory(): Promise<LeadStory | null> {
       return {
         type: 'event',
         typeLabel: 'Happening Today',
-        accent: 'amber',
+        accent: 'warmth',
         title: event.title,
         subtitle: `${event.time} · ${event.town}`,
         href: `/events/${event.id}`,
@@ -134,7 +134,7 @@ export async function getLeadStory(): Promise<LeadStory | null> {
     return {
       type: 'event',
       typeLabel: 'Tomorrow on Whidbey',
-      accent: 'amber',
+      accent: 'warmth',
       title: event.title,
       subtitle: `${event.time} · ${event.town}`,
       href: `/events/${event.id}`,

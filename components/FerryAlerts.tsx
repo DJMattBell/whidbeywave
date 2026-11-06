@@ -73,7 +73,7 @@ export default async function FerryAlerts() {
     <div className="border-t border-parchment-200 pt-3 mt-3">
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
-        <AlertTriangle size={18} className="text-amber-600 shrink-0" aria-hidden="true" />
+        <AlertTriangle size={18} className="text-warmth-600 shrink-0" aria-hidden="true" />
         <h3 className="text-sm font-bold text-sound-900">Ferry Alerts</h3>
       </div>
 
@@ -87,7 +87,7 @@ export default async function FerryAlerts() {
               key={alert.BulletinID}
               className="flex items-start gap-2 text-sm"
             >
-              <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertTriangle size={14} className="text-warmth-500 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="min-w-0">
                 <span className="text-xs font-semibold text-sound-700">
                   {routes.join(' · ')}

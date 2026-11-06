@@ -184,7 +184,7 @@ export default async function MarketplacePage({
         </div>
 
         {/* Post listing CTA */}
-        <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200 flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-gradient-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200 flex flex-col md:flex-row items-center gap-6">
           <div className="text-5xl" aria-hidden="true">🏷️</div>
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-2xl text-stone-900 mb-1">

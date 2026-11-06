@@ -31,7 +31,7 @@ Every section that depends on live data carries a quiet status indicator. Users 
 | State | Visual | Means |
 |---|---|---|
 | **Live** | small forest-700 dot, "Live" caption | Data is current, from upstream |
-| **Cached** | small amber-600 dot, "Updated HH:MM" caption | Data is from cache, with timestamp |
+| **Cached** | small warmth-600 dot, "Updated HH:MM" caption | Data is from cache, with timestamp |
 | **On Island Time** | small terra-600 dot, "On Island Time" caption | Source is unreachable, no recent cache |
 
 ### Placement
@@ -46,7 +46,7 @@ Tapping the indicator opens a small sheet explaining: what source feeds this dat
 
 ### Why three states, not two
 
-Cached-with-timestamp is different from broken. A commuter offline on the ferry with 30-minute-old tide data is fine. A commuter at the terminal with no data at all is not. The amber/terra distinction matters.
+Cached-with-timestamp is different from broken. A commuter offline on the ferry with 30-minute-old tide data is fine. A commuter at the terminal with no data at all is not. The warmth/terra distinction matters.
 
 ### Implementation
 

@@ -16,7 +16,7 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
   if (images.length === 0) {
     return (
       <div
-        className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-amber-100 flex items-center justify-center text-8xl"
+        className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-warmth-100 flex items-center justify-center text-8xl"
         aria-hidden="true"
       >
         {emoji}
@@ -299,9 +299,9 @@ export default function ListingDetailModal({
 
             {/* Expiry / Renew — owner only, within 7 days */}
             {nearExpiry && renewState !== 'done' && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+              <div className="rounded-xl border border-warmth-200 bg-warmth-50 p-4 space-y-3">
                 <div className="flex items-start gap-2.5">
-                  <span className="text-amber-500 mt-0.5" aria-hidden="true">⏳</span>
+                  <span className="text-warmth-500 mt-0.5" aria-hidden="true">⏳</span>
                   <div>
                     <p className="text-sm font-semibold text-stone-800">
                       {(daysLeft ?? 0) <= 0
@@ -317,7 +317,7 @@ export default function ListingDetailModal({
                 {renewState === 'idle' && (
                   <button
                     onClick={() => setRenewState('confirming')}
-                    className="w-full py-2.5 rounded-xl bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors"
+                    className="w-full py-2.5 rounded-xl bg-warmth-500 text-white text-sm font-semibold hover:bg-warmth-600 transition-colors"
                   >
                     Renew listing
                   </button>
@@ -450,10 +450,10 @@ export default function ListingDetailModal({
 
             {/* ── Barter info ───────────────────────────────── */}
             {listing.barter_open && !sold && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+              <div className="bg-warmth-50 border border-warmth-200 rounded-lg p-3 text-sm text-warmth-800">
                 <p className="font-semibold mb-0.5">Open to barter</p>
                 {listing.barter_seeking && (
-                  <p className="text-amber-700">{listing.barter_seeking}</p>
+                  <p className="text-warmth-700">{listing.barter_seeking}</p>
                 )}
               </div>
             )}

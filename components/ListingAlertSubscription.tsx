@@ -44,7 +44,7 @@ export default function ListingAlertSubscription() {
 
   if (status === 'success') {
     return (
-      <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200 text-center">
+      <div className="bg-gradient-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200 text-center">
         <div className="text-4xl mb-3" aria-hidden="true">✉️</div>
         <h3 className="text-lg text-stone-900 font-semibold mb-1">You&apos;re subscribed!</h3>
         <p className="text-stone-600 text-sm leading-relaxed">
@@ -58,9 +58,9 @@ export default function ListingAlertSubscription() {
     <>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
-      <div className="bg-gradient-to-br from-parchment-100 to-amber-50 rounded-xl p-8 border border-parchment-200">
+      <div className="bg-gradient-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          <Bell className="text-amber-600 shrink-0" size={36} strokeWidth={1.5} />
+          <Bell className="text-warmth-600 shrink-0" size={36} strokeWidth={1.5} />
           <div className="flex-1">
             <h3 className="text-xl text-stone-900 font-semibold mb-1">Get notified of new listings</h3>
             <p className="text-stone-600 text-sm leading-relaxed mb-4">

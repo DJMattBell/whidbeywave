@@ -334,13 +334,13 @@ export const categoryColors: Record<string, string> = {
   'Food & Farm':    'bg-green-100 text-green-800',
   // News post categories
   Community: 'bg-sky-100 text-sky-800',
-  Events:    'bg-amber-100 text-amber-800',
+  Events:    'bg-warmth-100 text-warmth-800',
   Business:  'bg-stone-100 text-stone-700',
   Health:    'bg-rose-100 text-rose-800',
   // Guide categories
   'Getting Around':  'bg-blue-100 text-blue-800',
   'Island Living':   'bg-green-100 text-green-800',
-  'Seasonal':        'bg-amber-100 text-amber-800',
+  'Seasonal':        'bg-warmth-100 text-warmth-800',
   'Food & Farms':    'bg-orange-100 text-orange-800',
   'History & Culture': 'bg-purple-100 text-purple-800',
 };

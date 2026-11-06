@@ -32,8 +32,8 @@ const MARKETS = [
     hours:    '10:00 AM – 2:00 PM',
     body:     'Fresh produce, flowers, baked goods, crafts, and local vendors. One of the most picturesque markets on the island — right in the heart of historic Coupeville, steps from the wharf and Victorian storefronts. A genuine small-town market with a long-running community feel.',
     tip:      'Get there by 10:30 — the good bread sells out fast.',
-    bg:       'bg-amber-50 border-amber-200',
-    accent:   'text-amber-700',
+    bg:       'bg-warmth-50 border-warmth-200',
+    accent:   'text-warmth-700',
   },
   {
     emoji:    '🌿',
@@ -91,7 +91,7 @@ export default function FarmersMarketsPage() {
               <li className="text-stone-700">Farmers Markets</li>
             </ol>
           </nav>
-          <p className="text-amber-600 font-medium mb-2 tracking-wide uppercase text-sm">Fresh & Local</p>
+          <p className="text-warmth-600 font-medium mb-2 tracking-wide uppercase text-sm">Fresh & Local</p>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 text-stone-900">
             Farmers Markets on Whidbey Island
           </h1>

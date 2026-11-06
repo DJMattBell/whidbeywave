@@ -35,7 +35,7 @@ type Listing = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending:  'bg-amber-100 text-amber-800 border border-amber-200',
+  pending:  'bg-warmth-100 text-warmth-800 border border-warmth-200',
   approved: 'bg-forest-100 text-forest-800 border border-forest-200',
   rejected: 'bg-terra-50 text-terra-700 border border-terra-200',
 };

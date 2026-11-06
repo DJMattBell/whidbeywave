@@ -38,7 +38,7 @@ function statusDotColor(entry: ScrapeLogEntry | null): string {
 
   const hoursSince = (Date.now() - new Date(entry.started_at).getTime()) / 3_600_000;
   if (hoursSince < 24) return 'bg-forest-500';
-  if (hoursSince < 168) return 'bg-amber-500'; // 7 days
+  if (hoursSince < 168) return 'bg-warmth-500'; // 7 days
   return 'bg-terra-500';
 }
 
@@ -145,7 +145,7 @@ export default function AdminScrapersPage() {
                         <div key={run.id} className="flex items-center gap-2 text-xs">
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                             run.status === 'success' ? 'bg-forest-500' :
-                            run.status === 'partial' ? 'bg-amber-500' :
+                            run.status === 'partial' ? 'bg-warmth-500' :
                             'bg-terra-500'
                           }`} />
                           <span className="text-stone-600 tabular-nums">
@@ -156,7 +156,7 @@ export default function AdminScrapersPage() {
                           <span className="text-stone-500">{run.event_count} events</span>
                           <span className={`font-medium ${
                             run.status === 'success' ? 'text-forest-600' :
-                            run.status === 'partial' ? 'text-amber-600' :
+                            run.status === 'partial' ? 'text-warmth-600' :
                             'text-terra-600'
                           }`}>{run.status}</span>
                           {run.error && (

@@ -67,7 +67,7 @@ async function fetchTides() {
 
 function FerryStatusText({ status }: { status: RouteStatus }) {
   if (status === 'cancelled') return <span className="font-semibold text-terra-600">CANCELLED</span>;
-  if (status === 'delays')    return <span className="font-semibold text-amber-600">DELAYS</span>;
+  if (status === 'delays')    return <span className="font-semibold text-warmth-600">DELAYS</span>;
   return <span>On Schedule</span>;
 }
 

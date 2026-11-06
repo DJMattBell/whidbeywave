@@ -557,7 +557,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                             {happeningNow && <span className="badge-now text-[10px] px-1.5 py-0.5">Now</span>}
                             {free && !happeningNow && <span className="badge-free text-[10px] px-1.5 py-0.5">Free</span>}
                             {isRecurring && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-warmth-50 text-warmth-700 border border-warmth-200 font-medium">
                                 Recurring
                               </span>
                             )}
@@ -572,7 +572,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                             {event.time} · {event.town}
                           </p>
                           {isRecurring && event.recurrence_summary && (
-                            <p className="text-xs text-amber-600 mt-0.5">
+                            <p className="text-xs text-warmth-600 mt-0.5">
                               {event.recurrence_summary}
                             </p>
                           )}

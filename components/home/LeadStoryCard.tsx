@@ -3,13 +3,13 @@ import { getLeadStory, type LeadStory } from '@/lib/lead-story';
 import { categoryColors } from '@/lib/data';
 
 const ACCENT_CLASSES: Record<LeadStory['accent'], string> = {
-  amber:  'bg-amber-500',
+  warmth:  'bg-warmth-500',
   forest: 'bg-forest-600',
   sound:  'bg-sound-600',
 };
 
 const LABEL_CLASSES: Record<LeadStory['accent'], string> = {
-  amber:  'bg-amber-100 text-amber-800',
+  warmth:  'bg-warmth-100 text-warmth-800',
   forest: 'bg-forest-100 text-forest-800',
   sound:  'bg-sound-100 text-sound-800',
 };
