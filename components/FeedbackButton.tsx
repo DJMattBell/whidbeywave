@@ -7,7 +7,7 @@ export default function FeedbackButton() {
   const [email, setEmail]         = useState('');
   const [status, setStatus]       = useState<'idle' | 'sending' | 'done'>('idle');
   const [currentPage, setCurrentPage] = useState('');
-  const innerTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const innerTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Clean up inner timeout on unmount
   useEffect(() => {

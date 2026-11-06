@@ -164,7 +164,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
   const [now, setNow] = useState(Date.now());
   const [fetchError, setFetchError] = useState(false);
   const [countdown, setCountdown] = useState(POLL_INTERVAL / 1000);
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
+  const pollRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // Tick clock every second for countdowns
   useEffect(() => {

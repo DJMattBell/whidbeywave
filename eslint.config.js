@@ -7,7 +7,7 @@ module.exports = [
         ...config,
         settings: {
           ...config.settings,
-          react: { ...config.settings.react, version: '18' },
+          react: { ...config.settings.react, version: '19' },
         },
       }
     }

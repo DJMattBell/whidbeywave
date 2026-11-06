@@ -9,7 +9,7 @@ export default function FerryAutoRefresh() {
   const router = useRouter();
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(REFRESH_INTERVAL / 1000);
-  const countdownRef = useRef<ReturnType<typeof setInterval>>();
+  const countdownRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   const refresh = useCallback(() => {
     router.refresh();
