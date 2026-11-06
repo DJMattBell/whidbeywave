@@ -52,28 +52,38 @@ export async function GET(request: NextRequest) {
   // Whale Center only runs on the 1st of each month (events don't change often)
   const runWhaleCenter = dayOfMonth === 1;
 
-  // Wrapper to log each scraper run
+  // Wrapper to log each scraper run (1 retry with 3s backoff on failure)
   async function runScraper(name: string, fn: () => Promise<ScrapedEvent[]>): Promise<ScrapedEvent[]> {
     const startedAt = new Date();
-    try {
-      const events = await fn();
-      await logScrapeRun({
-        source: name,
-        startedAt,
-        eventCount: events.length,
-        status: events.length > 0 ? 'success' : 'partial',
-      });
-      return events;
-    } catch (err) {
-      await logScrapeRun({
-        source: name,
-        startedAt,
-        eventCount: 0,
-        status: 'failed',
-        error: err instanceof Error ? err.message : String(err),
-      });
-      return [];
+    let lastErr: unknown;
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const events = await fn();
+        await logScrapeRun({
+          source: name,
+          startedAt,
+          eventCount: events.length,
+          status: events.length > 0 ? 'success' : 'partial',
+        });
+        return events;
+      } catch (err) {
+        lastErr = err;
+        if (attempt === 0) {
+          console.warn(`[scrape] ${name} failed (attempt 1), retrying in 3s…`);
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      }
     }
+
+    await logScrapeRun({
+      source: name,
+      startedAt,
+      eventCount: 0,
+      status: 'failed',
+      error: lastErr instanceof Error ? lastErr.message : String(lastErr),
+    });
+    return [];
   }
 
   // Run all scrapers in parallel — each has its own timeout; failures return []
