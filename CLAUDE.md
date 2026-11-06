@@ -122,7 +122,7 @@ All of these were violated and caused dirty data on the live site:
 
 ## Deployment Discipline (added May 2026 after broken-deploy recovery)
 
-**Current live deploy**: commit e29f227 (pushed 2026-11-06)
+**Current live deploy**: commit ae8d258 (pushed 2026-11-06)
 
 After a two-month period of failed deploys went undetected, the following practices became mandatory:
 
