@@ -161,6 +161,7 @@ const TICK_INTERVAL = 1_000;  // update countdowns every 1 s
 
 export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) {
   const [data, setData] = useState<FerryPageData>(initial);
+  // eslint-disable-next-line react-hooks/purity -- Date.now() initialiser is intentional; we want wall-clock time at mount
   const [now, setNow] = useState(Date.now());
   const [fetchError, setFetchError] = useState(false);
   const [countdown, setCountdown] = useState(POLL_INTERVAL / 1000);

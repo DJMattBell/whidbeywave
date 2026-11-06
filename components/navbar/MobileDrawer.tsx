@@ -37,7 +37,6 @@ export default function MobileDrawer({
 
   // Close on route change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync UI with route change
     onClose();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);

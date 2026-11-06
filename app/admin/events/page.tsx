@@ -88,6 +88,7 @@ export default function AdminEventsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount pattern, setState in async callback
     if (isAdmin) loadSubmissions();
   }, [isAdmin, loadSubmissions]);
 
