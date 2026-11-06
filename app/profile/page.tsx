@@ -224,7 +224,7 @@ export default function ProfilePage() {
                     onChange={e => setNameValue(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleNameSave()}
                     placeholder="Your display name"
-                    className="flex-1 px-4 py-2.5 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                    className="flex-1 px-4 py-2.5 border border-parchment-300 rounded-xl text-base bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                   />
                   <button
                     onClick={handleNameSave}

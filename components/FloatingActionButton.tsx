@@ -30,15 +30,15 @@ export default function FloatingActionButton() {
   if (shouldHide) return null;
 
   return (
-    <div className="md:hidden fixed bottom-[84px] right-4 z-[49]">
+    <div className="md:hidden fixed bottom-[84px] right-4 z-49">
       {/* Speed dial actions */}
       {open && (
         <>
           <div
-            className="fixed inset-0 z-[48]"
+            className="fixed inset-0 z-48"
             onClick={() => setOpen(false)}
           />
-          <div className="flex flex-col gap-2 mb-3 animate-fadeIn">
+          <div className="flex flex-col gap-2 mb-3 animate-fade-in">
             {actions.map(({ href, emoji, label }) => (
               <Link
                 key={href}

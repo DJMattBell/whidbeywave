@@ -280,14 +280,14 @@ export default function RecurringEventsPage() {
               <label className="block text-xs font-medium text-stone-600 mb-1">Title</label>
               <input type="text" required value={form.title}
                 onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                 placeholder="e.g. Bayview Farmers Market" />
             </div>
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">Time</label>
               <input type="text" required value={form.time}
                 onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                 placeholder="e.g. 10:00 AM – 2:00 PM" />
             </div>
           </div>
@@ -298,14 +298,14 @@ export default function RecurringEventsPage() {
               <label className="block text-xs font-medium text-stone-600 mb-1">Location</label>
               <input type="text" required value={form.location}
                 onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                 placeholder="e.g. Bayview Corner, Langley" />
             </div>
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">Town</label>
               <select value={form.town}
                 onChange={e => setForm(f => ({ ...f, town: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800">
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800">
                 {ALLOWED_TOWNS.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
@@ -317,7 +317,7 @@ export default function RecurringEventsPage() {
               <label className="block text-xs font-medium text-stone-600 mb-1">Category</label>
               <select value={form.category}
                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800">
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800">
                 {ALLOWED_EVENT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -325,7 +325,7 @@ export default function RecurringEventsPage() {
               <label className="block text-xs font-medium text-stone-600 mb-1">Description <span className="text-stone-400 font-normal">(optional)</span></label>
               <input type="text" value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                 placeholder="Brief description" />
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function RecurringEventsPage() {
                 <label className="block text-xs text-stone-500 mb-1">Day of month</label>
                 <input type="number" min={1} max={31} value={form.day_of_month}
                   onChange={e => setForm(f => ({ ...f, day_of_month: parseInt(e.target.value) || 1 }))}
-                  className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                  className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
               </div>
             )}
 
@@ -402,7 +402,7 @@ export default function RecurringEventsPage() {
                 <label className="block text-xs text-stone-500 mb-1">Repeat every N days</label>
                 <input type="number" min={1} value={form.custom_interval_days}
                   onChange={e => setForm(f => ({ ...f, custom_interval_days: parseInt(e.target.value) || 1 }))}
-                  className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                  className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
               </div>
             )}
           </div>
@@ -413,18 +413,18 @@ export default function RecurringEventsPage() {
               <label className="block text-xs font-medium text-stone-600 mb-1">Start date</label>
               <input type="date" required value={form.start_date}
                 onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
             </div>
             <div>
               <label className="block text-xs font-medium text-stone-600 mb-1">End date</label>
               <input type="date" value={form.end_date} disabled={form.perpetual}
                 onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 disabled:opacity-40" />
+                className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 disabled:opacity-40" />
             </div>
             <div className="flex items-center gap-2 pb-2">
               <input type="checkbox" id="perpetual" checked={form.perpetual}
                 onChange={e => setForm(f => ({ ...f, perpetual: e.target.checked, end_date: '' }))}
-                className="rounded border-parchment-300 text-forest-500 focus:ring-forest-400" />
+                className="rounded-sm border-parchment-300 text-forest-500 focus:ring-forest-400" />
               <label htmlFor="perpetual" className="text-sm text-stone-600">Perpetual (no end date)</label>
             </div>
           </div>
@@ -496,33 +496,33 @@ export default function RecurringEventsPage() {
                         <div className="grid sm:grid-cols-2 gap-3">
                           <input type="text" required value={editForm.title}
                             onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                             placeholder="Title" />
                           <input type="text" required value={editForm.time}
                             onChange={e => setEditForm(f => ({ ...f, time: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                             placeholder="Time" />
                         </div>
                         <div className="grid sm:grid-cols-2 gap-3">
                           <input type="text" required value={editForm.location}
                             onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                             placeholder="Location" />
                           <select value={editForm.town}
                             onChange={e => setEditForm(f => ({ ...f, town: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800">
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800">
                             {ALLOWED_TOWNS.map(t => <option key={t} value={t}>{t}</option>)}
                           </select>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-3">
                           <select value={editForm.category}
                             onChange={e => setEditForm(f => ({ ...f, category: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800">
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800">
                             {ALLOWED_EVENT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
                           <input type="text" value={editForm.description}
                             onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                             placeholder="Description (optional)" />
                         </div>
                         {/* Tags */}
@@ -574,24 +574,24 @@ export default function RecurringEventsPage() {
                         {editForm.recurrence_type === 'monthly' && (
                           <input type="number" min={1} max={31} value={editForm.day_of_month}
                             onChange={e => setEditForm(f => ({ ...f, day_of_month: parseInt(e.target.value) || 1 }))}
-                            className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                            className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
                         )}
                         {editForm.recurrence_type === 'custom' && (
                           <input type="number" min={1} value={editForm.custom_interval_days}
                             onChange={e => setEditForm(f => ({ ...f, custom_interval_days: parseInt(e.target.value) || 1 }))}
-                            className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                            className="w-20 px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
                         )}
                         <div className="grid sm:grid-cols-3 gap-3 items-end">
                           <input type="date" required value={editForm.start_date}
                             onChange={e => setEditForm(f => ({ ...f, start_date: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800" />
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800" />
                           <input type="date" value={editForm.end_date} disabled={editForm.perpetual}
                             onChange={e => setEditForm(f => ({ ...f, end_date: e.target.value }))}
-                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 disabled:opacity-40" />
+                            className="px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 disabled:opacity-40" />
                           <label className="flex items-center gap-2 text-sm text-stone-600 pb-2">
                             <input type="checkbox" checked={editForm.perpetual}
                               onChange={e => setEditForm(f => ({ ...f, perpetual: e.target.checked, end_date: '' }))}
-                              className="rounded border-parchment-300 text-forest-500 focus:ring-forest-400" />
+                              className="rounded-sm border-parchment-300 text-forest-500 focus:ring-forest-400" />
                             Perpetual
                           </label>
                         </div>

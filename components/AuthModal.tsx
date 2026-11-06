@@ -71,7 +71,7 @@ export default function AuthModal({ onClose }: Props) {
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-stone-900/50 backdrop-blur-xs"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -122,7 +122,7 @@ export default function AuthModal({ onClose }: Props) {
             <button
               onClick={handleGoogleSignIn}
               disabled={googleLoading || status === 'loading'}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-parchment-300 bg-white hover:bg-parchment-50 hover:border-stone-400 transition-colors text-stone-700 font-medium text-base shadow-sm disabled:opacity-60 min-h-[44px]"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-parchment-300 bg-white hover:bg-parchment-50 hover:border-stone-400 transition-colors text-stone-700 font-medium text-base shadow-xs disabled:opacity-60 min-h-[44px]"
             >
               {/* Google "G" logo */}
               <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -156,7 +156,7 @@ export default function AuthModal({ onClose }: Props) {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   autoComplete="email"
-                  className="w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                  className="w-full px-4 py-3 border border-parchment-300 rounded-xl text-base bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
                   aria-describedby={status === 'error' ? 'auth-error' : undefined}
                 />
               </div>

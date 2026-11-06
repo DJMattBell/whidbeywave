@@ -163,7 +163,7 @@ export default function HowItWorksPage() {
         ))}
 
         {/* Section 6 — Help */}
-        <div className="bg-gradient-to-br from-forest-50 to-parchment-100 rounded-2xl border border-forest-200 shadow-warm p-8 md:p-10">
+        <div className="bg-linear-to-br from-forest-50 to-parchment-100 rounded-2xl border border-forest-200 shadow-warm p-8 md:p-10">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-4xl" aria-hidden="true">📞</span>
             <h2

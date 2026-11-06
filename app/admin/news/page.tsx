@@ -284,7 +284,7 @@ export default function AdminNewsPage() {
                 value={form.title}
                 onChange={e => handleTitleChange(e.target.value)}
                 placeholder="Penn Cove Musselfest Returns"
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
               />
             </div>
             <div>
@@ -295,7 +295,7 @@ export default function AdminNewsPage() {
                 value={form.slug}
                 onChange={e => handleSlugChange(e.target.value)}
                 placeholder="penn-cove-musselfest-returns"
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 font-mono"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 font-mono"
               />
               {form.slug && (
                 <p className="text-[11px] text-stone-400 mt-1">URL: whidbeywave.com/news/{form.slug}</p>
@@ -313,7 +313,7 @@ export default function AdminNewsPage() {
                   value={form.emoji}
                   onChange={e => setForm(f => ({ ...f, emoji: e.target.value }))}
                   maxLength={4}
-                  className="w-20 px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                  className="w-20 px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
                 />
                 <span className="text-4xl leading-none select-none" aria-hidden="true">{form.emoji}</span>
               </div>
@@ -323,7 +323,7 @@ export default function AdminNewsPage() {
               <select
                 value={form.category}
                 onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
               >
                 {(form.post_type === 'guide' ? GUIDE_CATEGORIES : NEWS_CATEGORIES).map(c => <option key={c}>{c}</option>)}
               </select>
@@ -336,7 +336,7 @@ export default function AdminNewsPage() {
                 max={30}
                 value={form.read_minutes}
                 onChange={e => setForm(f => ({ ...f, read_minutes: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
               />
               {form.body.trim() && (
                 <p className="text-[11px] text-stone-400 mt-1">Auto: ~{calcReadMinutes(form.body)} min</p>
@@ -353,7 +353,7 @@ export default function AdminNewsPage() {
               value={form.excerpt}
               onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
               placeholder="A short summary shown on the news page and in the newsletter."
-              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
             />
           </div>
 
@@ -370,7 +370,7 @@ export default function AdminNewsPage() {
                 ? "Write your guide here... Use markdown for formatting:\n\n## Getting Started\n\nWhidbey Island has **two ferry routes**...\n\n- Clinton/Mukilteo (south)\n- Coupeville/Port Townsend (central)"
                 : "Write the full article here..."
               }
-              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-y font-mono"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-y font-mono"
             />
           </div>
 
@@ -384,7 +384,7 @@ export default function AdminNewsPage() {
               value={form.image_url}
               onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
               placeholder="https://example.com/photo.jpg"
-              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
             />
             {form.image_url && (
               <div className="mt-2 rounded-xl overflow-hidden border border-parchment-200 max-h-40">
@@ -403,7 +403,7 @@ export default function AdminNewsPage() {
               value={form.tags}
               onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
               placeholder="ferries, housing, south whidbey"
-              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
+              className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400"
             />
           </div>
 
@@ -415,7 +415,7 @@ export default function AdminNewsPage() {
                 type="text"
                 value={form.author}
                 onChange={e => setForm(f => ({ ...f, author: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
               />
             </div>
             <div>
@@ -424,7 +424,7 @@ export default function AdminNewsPage() {
                 type="date"
                 value={form.published_at}
                 onChange={e => setForm(f => ({ ...f, published_at: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800"
+                className="w-full px-3 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800"
               />
             </div>
             <div className="flex items-center gap-3 pb-1">
@@ -433,7 +433,7 @@ export default function AdminNewsPage() {
                 type="checkbox"
                 checked={form.published}
                 onChange={e => setForm(f => ({ ...f, published: e.target.checked }))}
-                className="h-4 w-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
+                className="h-4 w-4 rounded-sm border-parchment-300 text-forest-600 focus:ring-forest-400"
               />
               <label htmlFor="news-published" className="text-sm font-medium text-stone-700 cursor-pointer select-none">
                 Publish immediately

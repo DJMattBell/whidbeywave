@@ -343,7 +343,7 @@ export default function AdminEventsPage() {
                           value={notes[sub.id] ?? ''}
                           onChange={e => setNotes(p => ({ ...p, [sub.id]: e.target.value }))}
                           placeholder="e.g. We've added your event to the spring lineup — see you there!"
-                          className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
+                          className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none"
                         />
                       </div>
                       <div className="flex flex-wrap gap-3">

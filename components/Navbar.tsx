@@ -297,7 +297,7 @@ export default function Navbar() {
                 >
                   <span className={`block w-5 h-0.5 bg-current transition-transform duration-200 origin-center ${menuOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
                   <span className={`block w-5 h-0.5 bg-current transition-opacity duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-                  <span className={`block w-5 h-0.5 bg-current transition-transform duration-200 origin-center ${menuOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+                  <span className={`block w-5 h-0.5 bg-current transition-transform duration-200 origin-center ${menuOpen ? 'translate-y-[-7px] -rotate-45' : ''}`} />
                 </button>
               </div>
             </div>

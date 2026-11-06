@@ -67,7 +67,7 @@ export default async function HeroDataStrip() {
   return (
     <a
       href="#today-panel"
-      className="absolute bottom-0 left-0 right-0 z-20 bg-black/20 backdrop-blur-sm border-t border-white/10"
+      className="absolute bottom-0 left-0 right-0 z-20 bg-black/20 backdrop-blur-xs border-t border-white/10"
       aria-label="Jump to today's details"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">

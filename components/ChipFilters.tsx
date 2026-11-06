@@ -99,7 +99,7 @@ export default function ChipFilters({ active }: { active?: FilterChip }) {
                 tabIndex={selected === chip.key ? 0 : -1}
                 className={`shrink-0 snap-start flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 min-h-[44px] select-none ${
                   selected === chip.key
-                    ? 'bg-forest-600 text-parchment-50 shadow-sm scale-[1.02]'
+                    ? 'bg-forest-600 text-parchment-50 shadow-xs scale-[1.02]'
                     : 'bg-parchment-100 text-stone-600 border border-parchment-200 hover:bg-parchment-200'
                 }`}
               >

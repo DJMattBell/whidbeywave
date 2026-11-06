@@ -109,7 +109,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   return (
     <>
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-sound-700 text-parchment-100 py-10 md:py-16">
+      <div className="bg-linear-to-br from-forest-800 to-sound-700 text-parchment-100 py-10 md:py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <Link
             href="/events"

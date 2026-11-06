@@ -55,7 +55,7 @@ export default function ImageGallery({ photos, alt }: Props) {
     <>
       {/* Main image */}
       <div
-        className="relative aspect-[4/3] bg-stone-900 overflow-hidden cursor-zoom-in"
+        className="relative aspect-4/3 bg-stone-900 overflow-hidden cursor-zoom-in"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={() => setLightboxOpen(true)}

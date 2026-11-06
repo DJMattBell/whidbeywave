@@ -113,7 +113,7 @@ export default function MobileDrawer({
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-[60] bg-black/50 md:hidden"
+          className="fixed inset-0 z-60 bg-black/50 md:hidden"
           aria-hidden="true"
           onClick={onClose}
         />
@@ -123,7 +123,7 @@ export default function MobileDrawer({
       <nav
         ref={drawerRef}
         id="mobile-menu"
-        className={`fixed top-0 right-0 h-full w-[280px] bg-white z-[70] shadow-2xl md:hidden
+        className={`fixed top-0 right-0 h-full w-[280px] bg-white z-70 shadow-2xl md:hidden
                    flex flex-col transition-transform duration-300 ease-in-out
                    ${open ? 'translate-x-0' : 'translate-x-full'}`}
         aria-label="Mobile navigation"

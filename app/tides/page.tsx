@@ -156,12 +156,12 @@ function TideEntry({
 
       {/* Extreme badges */}
       {isMaxHigh && (
-        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-warmth-400 text-warmth-900 shadow-sm">
+        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-warmth-400 text-warmth-900 shadow-xs">
           Week High
         </span>
       )}
       {isMinLow && (
-        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-slate-300 text-slate-800 shadow-sm">
+        <span className="absolute -top-2.5 left-3 text-xs font-bold px-2 py-0.5 rounded-full bg-slate-300 text-slate-800 shadow-xs">
           Week Low
         </span>
       )}
@@ -255,7 +255,7 @@ export default async function TidesPage() {
                 <p className="text-stone-600 italic">No tide data for today.</p>
               ) : (
                 <div className="bg-parchment-50 rounded-xl border border-parchment-200 shadow-warm-md">
-                  <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500 rounded-t-2xl" />
+                  <div className="h-1.5 bg-linear-to-r from-sound-400 to-forest-500 rounded-t-2xl" />
                   <div className="p-6">
                     <div className={`grid gap-4 pt-4 ${
                       todayTides.length === 4 ? 'grid-cols-2 lg:grid-cols-4' :

@@ -302,7 +302,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search events…"
-            className="w-full pl-8 pr-3 py-2.5 rounded-lg border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-forest-400"
+            className="w-full pl-8 pr-3 py-2.5 rounded-lg border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-forest-400"
             aria-label="Search events by title or description"
           />
           <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -397,7 +397,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   return (
     <div>
       {/* ── Sticky filter bar ──────────────────────── */}
-      <div className="sticky top-[64px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 shadow-sm border-b border-parchment-200">
+      <div className="sticky top-[64px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 shadow-xs border-b border-parchment-200">
         <div className="flex items-center gap-2">
           <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none flex items-center gap-2">
             <TimeWindowFilter active={timeWindow} onChange={setTimeWindow} counts={windowCounts} />
@@ -407,7 +407,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search events…"
-                className="w-40 md:w-52 pl-8 pr-3 py-2 rounded-full border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-forest-400 focus:border-forest-400"
+                className="w-40 md:w-52 pl-8 pr-3 py-2 rounded-full border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-forest-400 focus:border-forest-400"
                 aria-label="Search events by title or description"
               />
               <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -509,7 +509,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           {dateGroups.map(([date, dayItems]) => (
             <div key={date} id={`date-${date}`}>
               {/* Date heading — sticky on mobile, static on desktop */}
-              <h3 className="sticky top-[120px] md:static z-[5] bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider">
+              <h3 className="sticky top-[120px] md:static z-5 bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider">
                 {formatGroupDate(date)}
                 <span className="text-stone-400 font-normal ml-2">
                   — {dayItems.length} event{dayItems.length !== 1 ? 's' : ''}

@@ -133,7 +133,7 @@ export default async function NewsPage() {
                   />
                 </div>
               ) : (
-                <div className="bg-gradient-to-br from-parchment-200 to-sound-100 h-40 md:h-56 flex items-center justify-center text-8xl" aria-hidden="true">
+                <div className="bg-linear-to-br from-parchment-200 to-sound-100 h-40 md:h-56 flex items-center justify-center text-8xl" aria-hidden="true">
                   {featured.emoji}
                 </div>
               )}
@@ -169,7 +169,7 @@ export default async function NewsPage() {
                         </div>
                       ) : (
                         <div
-                          className="bg-gradient-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
+                          className="bg-linear-to-br from-parchment-100 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
                           aria-hidden="true"
                         >
                           {post.emoji}

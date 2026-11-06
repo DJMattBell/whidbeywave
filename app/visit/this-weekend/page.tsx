@@ -132,7 +132,7 @@ export default async function ThisWeekendPage() {
                     className="bg-parchment-50 rounded-xl border border-parchment-200 shadow-warm-sm flex flex-col md:flex-row overflow-hidden"
                   >
                     {/* Date column */}
-                    <div className="md:w-32 bg-gradient-to-br from-forest-600 to-sound-600 text-parchment-100 flex flex-col items-center justify-center py-5 md:py-0 shrink-0">
+                    <div className="md:w-32 bg-linear-to-br from-forest-600 to-sound-600 text-parchment-100 flex flex-col items-center justify-center py-5 md:py-0 shrink-0">
                       <span className="text-xs font-semibold uppercase tracking-widest opacity-80">{dayName}</span>
                       <span className="text-4xl font-extrabold leading-none">{eventDate.getDate()}</span>
                       <span className="text-xs opacity-70 mt-1">

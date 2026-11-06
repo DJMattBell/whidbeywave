@@ -195,7 +195,7 @@ export default function NotificationPreferencesPage() {
                                   checked={enabled}
                                   onChange={() => togglePref(type.key, channel)}
                                   disabled={isSaving}
-                                  className="w-5 h-5 rounded border-parchment-300 text-forest-600 focus:ring-forest-600"
+                                  className="w-5 h-5 rounded-sm border-parchment-300 text-forest-600 focus:ring-forest-600"
                                 />
                                 <span className="text-sm text-stone-600 capitalize">{channel}</span>
                               </label>

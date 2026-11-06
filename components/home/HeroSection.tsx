@@ -30,7 +30,7 @@ export default function HeroSection() {
   const greeting = getGreeting();
 
   return (
-    <section className="relative h-[200px] md:h-[300px] bg-gradient-to-br from-forest-700 via-forest-600 to-sound-600 overflow-hidden">
+    <section className="relative h-[200px] md:h-[300px] bg-linear-to-br from-forest-700 via-forest-600 to-sound-600 overflow-hidden">
       {/* Overlay — becomes a scrim when a photo is added */}
       <div className="absolute inset-0 bg-black/10" />
 

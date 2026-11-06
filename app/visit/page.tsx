@@ -107,7 +107,7 @@ export default function VisitPage() {
 
             {/* Ferry card */}
             <div className="bg-sound-50 border border-sound-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
+              <div className="h-1.5 bg-linear-to-r from-sound-400 to-forest-500" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">⛴️</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-1">
@@ -155,7 +155,7 @@ export default function VisitPage() {
 
             {/* Bridge card */}
             <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-warmth-400" />
+              <div className="h-1.5 bg-linear-to-r from-forest-400 to-warmth-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-1">
@@ -193,7 +193,7 @@ export default function VisitPage() {
           <h2 className="text-2xl font-semibold text-stone-800 mb-5">The Island at a Glance</h2>
 
           <div className="bg-parchment-50 border border-parchment-200 rounded-xl overflow-hidden">
-            <div className="h-1.5 bg-gradient-to-r from-warmth-400 to-terra-400" />
+            <div className="h-1.5 bg-linear-to-r from-warmth-400 to-terra-400" />
             <div className="p-6 grid sm:grid-cols-2 gap-x-10 gap-y-4">
               {[
                 { label: 'Length',      value: '55 miles — connected by one main road (Hwy 20/525)' },
@@ -201,7 +201,7 @@ export default function VisitPage() {
                 { label: 'Population', value: '~70,000 year-round residents' },
                 { label: 'Fun fact',    value: 'Langley has no traffic lights — it\'s a matter of local pride' },
                 { label: 'Famous for',  value: 'Penn Cove mussels, gray whale migration, historic farmland, art community' },
-                { label: 'Climate',     value: 'Mild and moody — rain shadow keeps it drier than Seattle, fog is free' },
+                { label: 'Climate',     value: 'Mild and moody — rain shadow-sm keeps it drier than Seattle, fog is free' },
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-3">
                   <span className="text-forest-400 mt-0.5 shrink-0">▸</span>
@@ -463,7 +463,7 @@ export default function VisitPage() {
         </section>
 
         {/* ── Explore the Site CTA ──────────────────────────────────────── */}
-        <section className="bg-gradient-to-br from-forest-800 to-sound-800 text-parchment-100 rounded-2xl overflow-hidden">
+        <section className="bg-linear-to-br from-forest-800 to-sound-800 text-parchment-100 rounded-2xl overflow-hidden">
           <div className="p-8 sm:p-10 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold text-parchment-50 mb-3">
               Planning Your Visit?

@@ -16,7 +16,7 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
   if (images.length === 0) {
     return (
       <div
-        className="aspect-[4/3] bg-gradient-to-br from-parchment-200 to-warmth-100 flex items-center justify-center text-8xl"
+        className="aspect-4/3 bg-linear-to-br from-parchment-200 to-warmth-100 flex items-center justify-center text-8xl"
         aria-hidden="true"
       >
         {emoji}
@@ -29,7 +29,7 @@ function PhotoCarousel({ images, title, emoji }: { images: string[]; title: stri
 
   return (
     <div
-      className="relative aspect-[4/3] bg-stone-900 overflow-hidden select-none"
+      className="relative aspect-4/3 bg-stone-900 overflow-hidden select-none"
       onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={e => {
         const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -218,7 +218,7 @@ export default function ListingDetailModal({
       aria-label={listing.title}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Panel */}
       <div className="relative w-full sm:max-w-xl bg-white rounded-t-3xl sm:rounded-2xl overflow-hidden max-h-[92dvh] sm:max-h-[88vh] flex flex-col shadow-2xl">

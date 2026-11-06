@@ -352,7 +352,7 @@ export default function NewsletterPage() {
                       type="checkbox"
                       checked={weekendDigest}
                       onChange={e => setWeekendDigest(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-warmth-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
+                      className="mt-0.5 h-4 w-4 rounded-sm border-warmth-300 text-forest-600 focus:ring-forest-400 shrink-0 cursor-pointer"
                     />
                     <label htmlFor="nl-weekend" className="text-sm text-stone-700 leading-snug cursor-pointer select-none">
                       <span className="font-semibold">This Weekend digest</span>

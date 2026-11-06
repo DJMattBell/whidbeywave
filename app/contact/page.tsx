@@ -248,7 +248,7 @@ export default function ContactPage() {
             </div>
 
             {/* Map placeholder */}
-            <div className="mt-6 bg-gradient-to-br from-forest-50 to-sound-50 rounded-2xl h-40 flex items-center justify-center border border-parchment-300 shadow-warm-sm">
+            <div className="mt-6 bg-linear-to-br from-forest-50 to-sound-50 rounded-2xl h-40 flex items-center justify-center border border-parchment-300 shadow-warm-sm">
               <div className="text-center text-forest-600">
                 <div className="text-4xl mb-2" aria-hidden="true">🗺️</div>
                 <p className="text-base font-medium">Whidbey Island, Washington</p>

@@ -44,7 +44,7 @@ export default function ListingAlertSubscription() {
 
   if (status === 'success') {
     return (
-      <div className="bg-gradient-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200 text-center">
+      <div className="bg-linear-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200 text-center">
         <div className="text-4xl mb-3" aria-hidden="true">✉️</div>
         <h3 className="text-lg text-stone-900 font-semibold mb-1">You&apos;re subscribed!</h3>
         <p className="text-stone-600 text-sm leading-relaxed">
@@ -58,7 +58,7 @@ export default function ListingAlertSubscription() {
     <>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
-      <div className="bg-gradient-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200">
+      <div className="bg-linear-to-br from-parchment-100 to-warmth-50 rounded-xl p-8 border border-parchment-200">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
           <Bell className="text-warmth-600 shrink-0" size={36} strokeWidth={1.5} />
           <div className="flex-1">
@@ -76,7 +76,7 @@ export default function ListingAlertSubscription() {
                 <select
                   value={category}
                   onChange={e => setCategory(e.target.value)}
-                  className="px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 w-full sm:w-auto"
+                  className="px-4 py-2.5 border border-parchment-200 rounded-lg text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 w-full sm:w-auto"
                   aria-label="Category to watch"
                 >
                   {ALERT_CATEGORIES.map(c => (

@@ -30,7 +30,7 @@ export default function ListingCard({
       onClick={onClick}
     >
       {/* Photo area — square on mobile, 4/3 on sm+ */}
-      <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-[4/3] overflow-hidden bg-gradient-to-br from-parchment-200 to-warmth-100">
+      <div className="relative w-28 h-28 shrink-0 sm:w-full sm:h-auto sm:aspect-4/3 overflow-hidden bg-linear-to-br from-parchment-200 to-warmth-100">
         {photo ? (
           <Image
             src={photo}
@@ -48,7 +48,7 @@ export default function ListingCard({
         {/* SOLD ribbon */}
         {sold && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-stone-900/80 text-white font-bold text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded tracking-[0.15em] uppercase rotate-[-3deg] shadow-lg">
+            <span className="bg-stone-900/80 text-white font-bold text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded-sm tracking-[0.15em] uppercase -rotate-3 shadow-lg">
               SOLD
             </span>
           </div>

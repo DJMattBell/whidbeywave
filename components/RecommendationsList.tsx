@@ -245,7 +245,7 @@ export default function RecommendationsList({ initialRecs }: { initialRecs: Reco
               type="search" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, town, or keyword…"
               aria-label="Search recommendations"
-              className="w-full pl-10 pr-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700 placeholder:text-stone-400"
+              className="w-full pl-10 pr-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-700 placeholder:text-stone-400"
             />
           </div>
           <button
@@ -316,12 +316,12 @@ export default function RecommendationsList({ initialRecs }: { initialRecs: Reco
                   <label htmlFor="rec-name" className="block text-sm font-medium text-stone-700 mb-1.5">Name <span className="text-terra-600">*</span></label>
                   <input id="rec-name" type="text" required value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
                     placeholder="Toby's Tavern"
-                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
+                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div>
                   <label htmlFor="rec-category" className="block text-sm font-medium text-stone-700 mb-1.5">Category <span className="text-terra-600">*</span></label>
                   <select id="rec-category" value={addForm.category} onChange={e => setAddForm(p => ({ ...p, category: e.target.value }))}
-                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-700">
+                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-700">
                     {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
@@ -329,19 +329,19 @@ export default function RecommendationsList({ initialRecs }: { initialRecs: Reco
                   <label htmlFor="rec-town" className="block text-sm font-medium text-stone-700 mb-1.5">Town</label>
                   <input id="rec-town" type="text" value={addForm.town} onChange={e => setAddForm(p => ({ ...p, town: e.target.value }))}
                     placeholder="Coupeville"
-                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
+                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div>
                   <label htmlFor="rec-website" className="block text-sm font-medium text-stone-700 mb-1.5">Website</label>
                   <input id="rec-website" type="url" value={addForm.website} onChange={e => setAddForm(p => ({ ...p, website: e.target.value }))}
                     placeholder="https://…"
-                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
+                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400" />
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="rec-description" className="block text-sm font-medium text-stone-700 mb-1.5">Description</label>
                   <textarea id="rec-description" rows={3} value={addForm.description} onChange={e => setAddForm(p => ({ ...p, description: e.target.value }))}
                     placeholder="What makes this place worth knowing about?"
-                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
+                    className="w-full px-4 py-2.5 border border-parchment-300 rounded-xl text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
                 </div>
                 {addStatus === 'error' && <p className="sm:col-span-2 text-terra-600 text-xs">Something went wrong — please try again.</p>}
                 <div className="sm:col-span-2">
@@ -476,11 +476,11 @@ export default function RecommendationsList({ initialRecs }: { initialRecs: Reco
                           </div>
                           <textarea rows={3} required value={rf.body} onChange={e => updateReviewForm(rec.id, { body: e.target.value })}
                             placeholder="Share your experience…"
-                            className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
+                            className="w-full px-3 py-2 border border-parchment-300 rounded-xl text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 resize-none" />
                           <div>
                             <input type="text" required value={rf.zip} onChange={e => updateReviewForm(rec.id, { zip: e.target.value, zipError: '' })}
                               placeholder="Your Whidbey Island zip code *" maxLength={10}
-                              className={`w-full px-3 py-2 border rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 ${rf.zipError ? 'border-terra-600' : 'border-parchment-300'}`} />
+                              className={`w-full px-3 py-2 border rounded-xl text-xs bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-stone-800 placeholder:text-stone-400 ${rf.zipError ? 'border-terra-600' : 'border-parchment-300'}`} />
                             {rf.zipError ? (
                               <p className="text-terra-600 text-xs mt-1">{rf.zipError}</p>
                             ) : (

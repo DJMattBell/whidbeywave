@@ -205,7 +205,7 @@ export default async function GuideDetailPage(
                     <Image src={r.imageUrl} alt={r.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
                   </div>
                 ) : (
-                  <div className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-5xl rounded-t-xl" aria-hidden="true">
+                  <div className="bg-linear-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-5xl rounded-t-xl" aria-hidden="true">
                     {r.emoji}
                   </div>
                 )}

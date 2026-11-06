@@ -31,8 +31,8 @@ export default function MarketplaceCategoryFilter({ current }: { current?: strin
         const isFree     = cat === 'Free Stuff';
         const label      = isFree ? '🎁 Free Stuff' : cat;
         const activecls  = isFree
-          ? 'bg-warmth-500 text-white border-warmth-500 shadow-sm'
-          : 'bg-forest-600 text-parchment-50 border-forest-600 shadow-sm';
+          ? 'bg-warmth-500 text-white border-warmth-500 shadow-xs'
+          : 'bg-forest-600 text-parchment-50 border-forest-600 shadow-xs';
         const inactivecls = isFree
           ? 'bg-warmth-50 text-warmth-700 border-warmth-300 hover:border-warmth-400 hover:bg-warmth-100'
           : 'bg-white text-stone-600 border-parchment-300 hover:border-forest-400 hover:text-forest-700';

@@ -180,7 +180,7 @@ export default async function FerryPage() {
             href="https://wsdot.com/ferries/vesselwatch/"
             target="_blank"
             rel="noopener noreferrer"
-            className="group block bg-gradient-to-br from-sound-800 to-forest-800 rounded-xl p-8 hover:from-sound-700 hover:to-forest-700 transition-all shadow-warm-md"
+            className="group block bg-linear-to-br from-sound-800 to-forest-800 rounded-xl p-8 hover:from-sound-700 hover:to-forest-700 transition-all shadow-warm-md"
           >
             <div className="flex items-start justify-between gap-6">
               <div>

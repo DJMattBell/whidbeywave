@@ -121,7 +121,7 @@ export default async function FerryGuidePage() {
 
             {/* Mukilteo ferry */}
             <div className="bg-sound-50 border border-sound-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-sound-400 to-forest-500" />
+              <div className="h-1.5 bg-linear-to-r from-sound-400 to-forest-500" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">⛴️</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-0.5">
@@ -167,7 +167,7 @@ export default async function FerryGuidePage() {
 
             {/* Deception Pass */}
             <div className="bg-forest-50 border border-forest-200 rounded-xl overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-forest-400 to-warmth-400" />
+              <div className="h-1.5 bg-linear-to-r from-forest-400 to-warmth-400" />
               <div className="p-6">
                 <p className="text-2xl mb-3" aria-hidden="true">🌉</p>
                 <h3 className="text-lg font-bold text-stone-800 mb-0.5">

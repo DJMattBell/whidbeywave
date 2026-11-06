@@ -323,7 +323,7 @@ export default function SubmitListingPage() {
                         </button>
                       </div>
                       {i === 0 && (
-                        <span className="absolute bottom-1 left-1 bg-forest-600/80 text-white text-xs font-semibold px-1.5 py-0.5 rounded">
+                        <span className="absolute bottom-1 left-1 bg-forest-600/80 text-white text-xs font-semibold px-1.5 py-0.5 rounded-sm">
                           Cover
                         </span>
                       )}
@@ -398,7 +398,7 @@ export default function SubmitListingPage() {
                     type="checkbox"
                     checked={form.is_free}
                     onChange={e => set('is_free', e.target.checked)}
-                    className="w-4 h-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
+                    className="w-4 h-4 rounded-sm border-parchment-300 text-forest-600 focus:ring-forest-400"
                   />
                   <span className="text-sm font-medium text-forest-700">This item is free</span>
                 </label>
@@ -437,7 +437,7 @@ export default function SubmitListingPage() {
                         type="checkbox"
                         checked={form.barter_open}
                         onChange={e => set('barter_open', e.target.checked)}
-                        className="w-4 h-4 rounded border-parchment-300 text-forest-600 focus:ring-forest-400"
+                        className="w-4 h-4 rounded-sm border-parchment-300 text-forest-600 focus:ring-forest-400"
                       />
                       <span className="text-sm font-medium text-stone-700">Open to barter</span>
                     </label>

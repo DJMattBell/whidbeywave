@@ -158,7 +158,7 @@ export default async function HomePage() {
     <section key="today" id="today-panel" className="bg-sound-50 border-y border-sound-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
         <Suspense fallback={
-          <div className="animate-pulse h-5 bg-sound-100 rounded w-60" />
+          <div className="animate-pulse h-5 bg-sound-100 rounded-sm w-60" />
         }>
           <TodayWidget />
         </Suspense>
@@ -336,10 +336,10 @@ export default async function HomePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {marketplaceListings.map((listing) => (
           <Link key={listing.id} href={`/marketplace/${listing.id}`} className="card-pressable group min-h-[180px] sm:min-h-[200px]">
-            <div className={`relative h-24 sm:h-28 flex items-center justify-center overflow-hidden rounded-t-xl ${listing.images?.[0] ? '' : 'bg-gradient-to-br from-parchment-100 to-parchment-200'}`}>
+            <div className={`relative h-24 sm:h-28 flex items-center justify-center overflow-hidden rounded-t-xl ${listing.images?.[0] ? '' : 'bg-linear-to-br from-parchment-100 to-parchment-200'}`}>
               {listing.images?.[0]
                 ? <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
-                : <span className="text-3xl sm:text-4xl drop-shadow-sm">{listing.emoji}</span>
+                : <span className="text-3xl sm:text-4xl drop-shadow-xs">{listing.emoji}</span>
               }
             </div>
             <div className="p-2.5 sm:p-3">
@@ -385,7 +385,7 @@ export default async function HomePage() {
   );
 
   const closingCta = (
-    <section key="closing" className="bg-gradient-to-br from-forest-700 via-forest-600 to-sound-600 text-parchment-50 py-12 md:py-16">
+    <section key="closing" className="bg-linear-to-br from-forest-700 via-forest-600 to-sound-600 text-parchment-50 py-12 md:py-16">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-parchment-50">
           This is your site as much as ours

@@ -86,7 +86,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
         >
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/50 backdrop-blur-xs"
             onClick={closeModal}
           />
 
@@ -94,7 +94,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
           <div className="relative bg-parchment-50 rounded-xl shadow-xl w-full max-w-md border border-parchment-200 overflow-hidden">
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-forest-700 to-forest-600 text-parchment-50 px-6 py-4 flex items-center justify-between">
+            <div className="bg-linear-to-r from-forest-700 to-forest-600 text-parchment-50 px-6 py-4 flex items-center justify-between">
               <div>
                 <p className="font-semibold text-base">
                   Message Seller
@@ -155,7 +155,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="(360) 555-1234"
-                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
+                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400"
                   />
                 </div>
 
@@ -166,7 +166,7 @@ export default function MarketplaceContactButton({ listingId, listingTitle, sell
                     rows={4}
                     value={message}
                     onChange={e => setMessage(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
+                    className="w-full px-3 py-2 text-sm border border-parchment-200 rounded-lg bg-white focus:outline-hidden focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 text-stone-800 placeholder:text-stone-400 resize-none"
                   />
                 </div>
 

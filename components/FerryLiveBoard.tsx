@@ -240,9 +240,9 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
           <p className="font-semibold text-warmth-800 mb-1">WSDOT API key not configured</p>
           <p className="text-warmth-700 text-sm">
             Add your key from{' '}
-            <span className="font-mono bg-warmth-100 px-1 rounded">wsdot.wa.gov/traffic/api/</span>{' '}
-            to <span className="font-mono bg-warmth-100 px-1 rounded">.env.local</span> as{' '}
-            <span className="font-mono bg-warmth-100 px-1 rounded">WSDOT_API_KEY</span>.
+            <span className="font-mono bg-warmth-100 px-1 rounded-sm">wsdot.wa.gov/traffic/api/</span>{' '}
+            to <span className="font-mono bg-warmth-100 px-1 rounded-sm">.env.local</span> as{' '}
+            <span className="font-mono bg-warmth-100 px-1 rounded-sm">WSDOT_API_KEY</span>.
           </p>
         </div>
       )}
@@ -276,7 +276,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
               emoji="🚢"
               mainlandLabel="From Mukilteo →"
               whidbeyLabel="From Clinton →"
-              accentGradient="bg-gradient-to-r from-sound-400 to-forest-500"
+              accentGradient="bg-linear-to-r from-sound-400 to-forest-500"
               now={now}
               extra={
                 <a
@@ -297,7 +297,7 @@ export default function FerryLiveBoard({ initial }: { initial: FerryPageData }) 
               emoji="⛴"
               mainlandLabel="From Port Townsend →"
               whidbeyLabel="From Coupeville →"
-              accentGradient="bg-gradient-to-r from-terra-400 to-warmth-500"
+              accentGradient="bg-linear-to-r from-terra-400 to-warmth-500"
               now={now}
               extra={
                 <a

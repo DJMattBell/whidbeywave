@@ -1,8 +1,296 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-forest-50: #edf4f0;
+  --color-forest-100: #ccddd5;
+  --color-forest-200: #9cbdac;
+  --color-forest-300: #6a9c82;
+  --color-forest-400: #3d7a5d;
+  --color-forest-500: #255c42;
+  --color-forest-600: #1a4a33;
+  --color-forest-700: #123825;
+  --color-forest-800: #0b2618;
+  --color-forest-900: #05150d;
+
+  --color-sound-50: #eef3f6;
+  --color-sound-100: #d0dde5;
+  --color-sound-200: #a2bcca;
+  --color-sound-300: #7299ae;
+  --color-sound-400: #4a7991;
+  --color-sound-500: #2f5d72;
+  --color-sound-600: #234b5c;
+  --color-sound-700: #183945;
+  --color-sound-800: #0e272e;
+  --color-sound-900: #071519;
+
+  --color-warmth-50: #fdf6ec;
+  --color-warmth-100: #fae9cc;
+  --color-warmth-200: #f4d09a;
+  --color-warmth-300: #ebb162;
+  --color-warmth-400: #dc8e30;
+  --color-warmth-500: #c07018;
+  --color-warmth-600: #9c5410;
+  --color-warmth-700: #783c0c;
+  --color-warmth-800: #542808;
+  --color-warmth-900: #361604;
+
+  --color-terra-50: #f9eeed;
+  --color-terra-100: #f0d3ce;
+  --color-terra-200: #e0a89e;
+  --color-terra-300: #ce7565;
+  --color-terra-400: #b04a3a;
+  --color-terra-500: #943228;
+  --color-terra-600: #782018;
+  --color-terra-700: #5c1410;
+  --color-terra-800: #400c08;
+  --color-terra-900: #280604;
+
+  --color-parchment-50: #fdfaf3;
+  --color-parchment-100: #f7f0e2;
+  --color-parchment-200: #ede4cf;
+  --color-parchment-300: #ddd0ac;
+  --color-parchment-400: #c8b888;
+  --color-parchment-500: #b09a60;
+
+  --font-sans: Lora, Georgia, serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+
+  --shadow-warm-sm:
+    0 1px 3px rgba(101, 65, 20, 0.09), 0 1px 2px rgba(101, 65, 20, 0.06);
+  --shadow-warm:
+    0 2px 8px rgba(101, 65, 20, 0.1), 0 1px 3px rgba(101, 65, 20, 0.06);
+  --shadow-warm-md:
+    0 4px 16px rgba(101, 65, 20, 0.11), 0 2px 4px rgba(101, 65, 20, 0.07);
+  --shadow-warm-lg:
+    0 10px 32px rgba(101, 65, 20, 0.14), 0 4px 10px rgba(101, 65, 20, 0.08);
+
+  --animate-scroll-left: scroll-left 25s linear infinite;
+  --animate-fade-in: fadeIn 200ms ease-out;
+  --animate-slide-up: slideUp 300ms ease-out;
+  --animate-slide-down: slideDown 300ms ease-out;
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility btn-primary {
+  /* ── Buttons ── */
+  @apply inline-flex items-center justify-center gap-2 px-6 text-base
+           bg-forest-600 hover:bg-forest-700
+           text-parchment-50 font-semibold rounded-lg
+           transition-all duration-200
+           shadow-warm hover:shadow-warm-md hover:-translate-y-0.5 active:translate-y-0;
+  min-height: 44px;
+  font-size: var(--ww-text-btn);
+  padding-top: var(--ww-pad-btn);
+  padding-bottom: var(--ww-pad-btn);
+}
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-6 text-base
+           bg-transparent hover:bg-forest-50
+           text-forest-600 font-semibold rounded-lg
+           border border-forest-600
+           transition-all duration-200;
+  min-height: 44px;
+  font-size: var(--ww-text-btn);
+  padding-top: var(--ww-pad-btn);
+  padding-bottom: var(--ww-pad-btn);
+}
+
+@utility btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-base
+           bg-transparent hover:bg-parchment-100
+           text-forest-600 font-medium rounded-lg
+           transition-all duration-200;
+  min-height: 44px;
+}
+
+@utility btn-destructive {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
+           bg-terra-600 hover:bg-terra-700
+           text-white font-semibold rounded-lg
+           transition-all duration-200;
+  min-height: 44px;
+}
+
+@utility card {
+  /* ── Cards ── */
+  @apply bg-parchment-50 rounded-xl border border-parchment-200
+           shadow-warm hover:shadow-warm-md
+           transition-shadow duration-300 overflow-hidden;
+}
+
+@utility card-elevated {
+  @apply bg-parchment-50 rounded-xl border border-parchment-200
+           shadow-warm-md hover:shadow-warm-lg
+           transition-shadow duration-300 overflow-hidden;
+}
+
+@utility card-pressable {
+  /* Card press feedback — subtle scale on active state */
+  @apply card cursor-pointer;
+  transition:
+    transform 150ms ease,
+    box-shadow 300ms ease;
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@utility action-card {
+  /* ── Action cards (homepage navigation tiles) ── */
+  @apply flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl text-sm
+           bg-parchment-100 text-stone-700 hover:bg-parchment-200
+           shadow-warm hover:shadow-warm-md
+           transition-all duration-200 hover:-translate-y-0.5
+           border border-parchment-200 text-center justify-center;
+  min-height: 100px;
+}
+
+@utility section-title {
+  /* ── Section headings ── */
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2;
+  font-family: var(--font-heading);
+}
+
+@utility section-subtitle {
+  @apply text-lg text-stone-500 mb-10;
+}
+
+@utility section-header {
+  @apply mb-8 md:mb-12;
+}
+
+@utility badge {
+  /* ── Badges ── */
+  @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+}
+
+@utility badge-free {
+  @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
+  @apply bg-forest-50 text-forest-700 border border-forest-200;
+}
+
+@utility badge-now {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold;
+  @apply bg-terra-50 text-terra-600 border border-terra-200;
+  &::before {
+    content: '';
+    @apply w-2 h-2 rounded-full bg-terra-600 inline-block;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+}
+
+@utility input-base {
+  /* ── Form inputs ── */
+  @apply w-full px-4 text-base
+           bg-white border border-parchment-200 rounded-lg
+           text-stone-800 placeholder-stone-400
+           transition-all duration-200
+           focus:outline-hidden focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 focus:border-forest-600;
+  min-height: 44px;
+  font-size: var(--ww-text-input);
+  padding-top: var(--ww-pad-input);
+  padding-bottom: var(--ww-pad-input);
+}
+
+@utility input-error {
+  @apply border-terra-600 focus:ring-terra-600 focus:border-terra-600;
+}
+
+@utility error-banner {
+  /* ── Feedback patterns ── */
+  @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-terra-50 border-l-[3px] border-terra-600
+           text-stone-700 text-sm;
+}
+
+@utility success-banner {
+  @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-forest-50 border-l-[3px] border-forest-600
+           text-stone-700 text-sm;
+}
+
+@utility info-banner {
+  @apply flex items-start gap-3 px-4 py-3 rounded-lg
+           bg-sound-50 border-l-[3px] border-sound-600
+           text-stone-700 text-sm;
+}
+
+@utility empty-state {
+  /* ── Empty state ── */
+  @apply flex flex-col items-center justify-center text-center
+           max-w-sm mx-auto py-16 px-4;
+}
+
+@utility empty-state-icon {
+  @apply text-parchment-300 mb-4;
+}
+
+@utility empty-state-title {
+  @apply text-lg font-semibold text-stone-700 mb-2;
+  font-family: var(--font-heading);
+}
+
+@utility empty-state-text {
+  @apply text-sm text-stone-500 mb-6;
+}
 
 @layer base {
   html {
@@ -19,7 +307,7 @@
 
   /* All headings use Playfair Display */
   h1, h2, h3, h4, h5, h6 {
-    font-family: theme('fontFamily.heading');
+    font-family: var(--font-heading);
   }
 
   /* Prevent iOS auto-zoom on focus — inputs must be ≥16px */
@@ -30,192 +318,54 @@
   /* #9 Minimum touch target hint — applied via utility, not globally */
 }
 
-/* Restore Tailwind's default rem base on desktop */
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
+@layer utilities {
+  /* Restore Tailwind's default rem base on desktop */
+  @media (min-width: 768px) {
+    html {
+      font-size: 16px;
+    }
   }
-}
 
-/* ── Large text accessibility mode ── */
-/* Uses CSS custom properties so component styles inherit the bump
+  /* ── Large text accessibility mode ── */
+  /* Uses CSS custom properties so component styles inherit the bump
    without !important. Each component reads --ww-text-* vars. */
-:root {
-  --ww-text-sm: 0.875rem;
-  --ww-text-xs: 0.75rem;
-  --ww-text-input: max(16px, 1em);
-  --ww-text-btn: 1rem;
-  --ww-pad-input: 12px;
-  --ww-pad-btn: 12px;
-}
-html.text-large {
-  font-size: 19px;
-  --ww-text-sm: 1rem;
-  --ww-text-xs: 0.85rem;
-  --ww-text-input: 1.1rem;
-  --ww-text-btn: 1.1rem;
-  --ww-pad-input: 14px;
-  --ww-pad-btn: 14px;
-}
-html.text-large p,
-html.text-large li,
-html.text-large span:not(.text-xs):not(.badge) {
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
-html.text-large .text-sm { font-size: var(--ww-text-sm); }
-html.text-large .text-xs { font-size: var(--ww-text-xs); }
-html.text-large h1 { font-size: 2.4rem; }
-html.text-large h2 { font-size: 1.9rem; }
-html.text-large h3 { font-size: 1.4rem; }
-
-@layer components {
-  /* ── Buttons ── */
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 text-base
-           bg-forest-600 hover:bg-forest-700
-           text-parchment-50 font-semibold rounded-lg
-           transition-all duration-200
-           shadow-warm hover:shadow-warm-md hover:-translate-y-0.5 active:translate-y-0;
-    min-height: 44px;
-    font-size: var(--ww-text-btn);
-    padding-top: var(--ww-pad-btn);
-    padding-bottom: var(--ww-pad-btn);
+  :root {
+    --ww-text-sm: 0.875rem;
+    --ww-text-xs: 0.75rem;
+    --ww-text-input: max(16px, 1em);
+    --ww-text-btn: 1rem;
+    --ww-pad-input: 12px;
+    --ww-pad-btn: 12px;
   }
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 text-base
-           bg-transparent hover:bg-forest-50
-           text-forest-600 font-semibold rounded-lg
-           border border-forest-600
-           transition-all duration-200;
-    min-height: 44px;
-    font-size: var(--ww-text-btn);
-    padding-top: var(--ww-pad-btn);
-    padding-bottom: var(--ww-pad-btn);
+  html.text-large {
+    font-size: 19px;
+    --ww-text-sm: 1rem;
+    --ww-text-xs: 0.85rem;
+    --ww-text-input: 1.1rem;
+    --ww-text-btn: 1.1rem;
+    --ww-pad-input: 14px;
+    --ww-pad-btn: 14px;
   }
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-base
-           bg-transparent hover:bg-parchment-100
-           text-forest-600 font-medium rounded-lg
-           transition-all duration-200;
-    min-height: 44px;
+  html.text-large p,
+  html.text-large li,
+  html.text-large span:not(.text-xs):not(.badge) {
+    font-size: 1.05rem;
+    line-height: 1.75;
   }
-  .btn-destructive {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base
-           bg-terra-600 hover:bg-terra-700
-           text-white font-semibold rounded-lg
-           transition-all duration-200;
-    min-height: 44px;
+  html.text-large .text-sm {
+    font-size: var(--ww-text-sm);
   }
-
-  /* ── Cards ── */
-  .card {
-    @apply bg-parchment-50 rounded-xl border border-parchment-200
-           shadow-warm hover:shadow-warm-md
-           transition-shadow duration-300 overflow-hidden;
+  html.text-large .text-xs {
+    font-size: var(--ww-text-xs);
   }
-  .card-elevated {
-    @apply bg-parchment-50 rounded-xl border border-parchment-200
-           shadow-warm-md hover:shadow-warm-lg
-           transition-shadow duration-300 overflow-hidden;
+  html.text-large h1 {
+    font-size: 2.4rem;
   }
-
-  /* Card press feedback — subtle scale on active state */
-  .card-pressable {
-    @apply card cursor-pointer;
-    transition: transform 150ms ease, box-shadow 300ms ease;
+  html.text-large h2 {
+    font-size: 1.9rem;
   }
-  .card-pressable:active {
-    transform: scale(0.98);
-  }
-
-  /* ── Action cards (homepage navigation tiles) ── */
-  .action-card {
-    @apply flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl text-sm
-           bg-parchment-100 text-stone-700 hover:bg-parchment-200
-           shadow-warm hover:shadow-warm-md
-           transition-all duration-200 hover:-translate-y-0.5
-           border border-parchment-200 text-center justify-center;
-    min-height: 100px;
-  }
-
-  /* ── Section headings ── */
-  .section-title {
-    @apply text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 mb-2;
-    font-family: theme('fontFamily.heading');
-  }
-  .section-subtitle {
-    @apply text-lg text-stone-500 mb-10;
-  }
-  .section-header {
-    @apply mb-8 md:mb-12;
-  }
-
-  /* ── Badges ── */
-  .badge {
-    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
-  }
-  .badge-free {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
-    @apply bg-forest-50 text-forest-700 border border-forest-200;
-  }
-  .badge-now {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold;
-    @apply bg-terra-50 text-terra-600 border border-terra-200;
-  }
-  .badge-now::before {
-    content: '';
-    @apply w-2 h-2 rounded-full bg-terra-600 inline-block;
-    animation: pulse-dot 1.5s ease-in-out infinite;
-  }
-
-  /* ── Form inputs ── */
-  .input-base {
-    @apply w-full px-4 text-base
-           bg-white border border-parchment-200 rounded-lg
-           text-stone-800 placeholder-stone-400
-           transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-forest-600 focus:ring-offset-2 focus:border-forest-600;
-    min-height: 44px;
-    font-size: var(--ww-text-input);
-    padding-top: var(--ww-pad-input);
-    padding-bottom: var(--ww-pad-input);
-  }
-  .input-error {
-    @apply border-terra-600 focus:ring-terra-600 focus:border-terra-600;
-  }
-
-  /* ── Feedback patterns ── */
-  .error-banner {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg
-           bg-terra-50 border-l-[3px] border-terra-600
-           text-stone-700 text-sm;
-  }
-  .success-banner {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg
-           bg-forest-50 border-l-[3px] border-forest-600
-           text-stone-700 text-sm;
-  }
-  .info-banner {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg
-           bg-sound-50 border-l-[3px] border-sound-600
-           text-stone-700 text-sm;
-  }
-
-  /* ── Empty state ── */
-  .empty-state {
-    @apply flex flex-col items-center justify-center text-center
-           max-w-sm mx-auto py-16 px-4;
-  }
-  .empty-state-icon {
-    @apply text-parchment-300 mb-4;
-  }
-  .empty-state-title {
-    @apply text-lg font-semibold text-stone-700 mb-2;
-    font-family: theme('fontFamily.heading');
-  }
-  .empty-state-text {
-    @apply text-sm text-stone-500 mb-6;
+  html.text-large h3 {
+    font-size: 1.4rem;
   }
 }
 
@@ -241,15 +391,15 @@ html.text-large h3 { font-size: 1.4rem; }
 }
 .prose-ww h1 {
   @apply text-2xl font-bold text-stone-900 mt-8 mb-4;
-  font-family: theme('fontFamily.heading');
+  font-family: var(--font-heading);
 }
 .prose-ww h2 {
   @apply text-xl font-bold text-stone-900 mt-7 mb-3;
-  font-family: theme('fontFamily.heading');
+  font-family: var(--font-heading);
 }
 .prose-ww h3 {
   @apply text-lg font-semibold text-stone-800 mt-6 mb-2;
-  font-family: theme('fontFamily.heading');
+  font-family: var(--font-heading);
 }
 .prose-ww p {
   @apply mb-5 leading-relaxed;
@@ -276,7 +426,7 @@ html.text-large h3 { font-size: 1.4rem; }
   @apply border-l-4 border-forest-300 pl-4 italic text-stone-600 my-5;
 }
 .prose-ww code {
-  @apply bg-parchment-200 text-stone-800 px-1.5 py-0.5 rounded text-sm;
+  @apply bg-parchment-200 text-stone-800 px-1.5 py-0.5 rounded-sm text-sm;
 }
 .prose-ww pre {
   @apply bg-stone-800 text-parchment-100 p-4 rounded-xl overflow-x-auto mb-5 text-sm;

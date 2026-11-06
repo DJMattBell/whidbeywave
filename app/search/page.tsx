@@ -127,7 +127,7 @@ function SearchBody() {
               onChange={e => setQuery(e.target.value)}
               placeholder="Search events, news, guides, marketplace, forum…"
               autoFocus
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-parchment-300 focus:outline-none focus:ring-2 focus:ring-forest-400 text-base bg-white text-stone-800 placeholder:text-stone-400 shadow-warm-sm"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-parchment-300 focus:outline-hidden focus:ring-2 focus:ring-forest-400 text-base bg-white text-stone-800 placeholder:text-stone-400 shadow-warm-sm"
             />
           </div>
           <button type="submit" className="btn-primary px-6 shrink-0">Search</button>

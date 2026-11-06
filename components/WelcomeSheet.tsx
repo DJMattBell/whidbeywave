@@ -86,12 +86,12 @@ export default function WelcomeSheet() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[70] bg-black/40 animate-fadeIn"
+        className="fixed inset-0 z-70 bg-black/40 animate-fade-in"
         onClick={handleSkip}
       />
 
       {/* Sheet */}
-      <div className="fixed bottom-0 left-0 right-0 z-[71] animate-slideUp">
+      <div className="fixed bottom-0 left-0 right-0 z-71 animate-slide-up">
         <div className="bg-white rounded-t-3xl shadow-2xl max-h-[80vh] overflow-y-auto">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-1">

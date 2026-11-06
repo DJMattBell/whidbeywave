@@ -96,7 +96,7 @@ export default function InstallPrompt() {
 
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-[62] md:hidden"
+      className="fixed bottom-0 inset-x-0 z-62 md:hidden"
       role="dialog"
       aria-label="Add WhidbeyWave to your home screen"
       style={{ paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }}

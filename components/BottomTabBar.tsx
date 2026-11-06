@@ -124,10 +124,10 @@ export default function BottomTabBar() {
       {moreOpen && (
         <>
           <div
-            className="fixed inset-0 z-[59] bg-black/30"
+            className="fixed inset-0 z-59 bg-black/30"
             onClick={() => setMoreOpen(false)}
           />
-          <div className="fixed bottom-[68px] left-0 right-0 z-[60] px-3 pb-2 animate-slideUp">
+          <div className="fixed bottom-[68px] left-0 right-0 z-60 px-3 pb-2 animate-slide-up">
             <div className="bg-white rounded-xl shadow-2xl border border-parchment-200 overflow-hidden max-h-[60vh] overflow-y-auto">
               <div className="px-4 pt-3 pb-1">
                 <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">More</p>
@@ -181,7 +181,7 @@ export default function BottomTabBar() {
       {/* Tab bar */}
       <nav
         aria-label="Main navigation"
-        className={`fixed bottom-0 left-0 right-0 z-[58] bg-white/95 backdrop-blur-md border-t border-parchment-200 transition-transform duration-300 ease-in-out ${
+        className={`fixed bottom-0 left-0 right-0 z-58 bg-white/95 backdrop-blur-md border-t border-parchment-200 transition-transform duration-300 ease-in-out ${
           visible ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}

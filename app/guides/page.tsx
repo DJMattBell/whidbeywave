@@ -67,7 +67,7 @@ function GuidesGrid({ guides, cat }: { guides: ReturnType<typeof normalizePost>[
             </div>
           ) : (
             <div
-              className="bg-gradient-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
+              className="bg-linear-to-br from-forest-50 to-sound-50 h-32 flex items-center justify-center text-6xl rounded-t-xl"
               aria-hidden="true"
             >
               {guide.emoji}
