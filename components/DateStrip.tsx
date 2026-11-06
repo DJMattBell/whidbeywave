@@ -27,7 +27,7 @@ export default function DateStrip({ dates, today, onSelectDate }: DateStripProps
           >
             <span className="uppercase tracking-wide">{day}</span>
             <span className="text-lg font-bold leading-tight">{num}</span>
-            <span className={`text-[10px] ${isToday ? 'text-parchment-200' : 'text-stone-400'}`}>
+            <span className={`text-[11px] ${isToday ? 'text-parchment-200' : 'text-stone-400'}`}>
               {count} evt{count !== 1 ? 's' : ''}
             </span>
           </button>

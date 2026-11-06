@@ -79,7 +79,7 @@ export default function QuickReactions({ postId }: { postId: string }) {
             onClick={() => handleReaction(key)}
             aria-label={`${label}${count > 0 ? ` (${count})` : ''}`}
             aria-pressed={active}
-            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all min-h-[36px] ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all min-h-[44px] ${
               active
                 ? 'bg-forest-100 border-forest-300 text-forest-700 scale-105'
                 : 'bg-parchment-50 border-parchment-200 text-stone-500 hover:bg-parchment-100 hover:border-parchment-300'

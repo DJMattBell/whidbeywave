@@ -63,7 +63,7 @@ export default function ListingCard({
 
         {/* Category badge — hidden on mobile (shown in body instead) */}
         <div className="absolute bottom-2 left-2 hidden sm:block">
-          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
             {listing.category}
           </span>
         </div>
@@ -73,7 +73,7 @@ export default function ListingCard({
       <div className="flex-1 min-w-0 p-3">
         {/* Category badge — mobile only */}
         <div className="sm:hidden mb-1">
-          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryColors[listing.category] ?? 'bg-stone-100 text-stone-700'}`}>
             {listing.category}
           </span>
         </div>
@@ -86,7 +86,7 @@ export default function ListingCard({
           {listing.title}
         </h3>
 
-        <div className="flex items-center justify-between text-[11px] text-stone-400">
+        <div className="flex items-center justify-between text-xs text-stone-400">
           <span className="truncate">{listing.location}</span>
           <time
             dateTime={listing.created_at}

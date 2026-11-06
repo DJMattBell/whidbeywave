@@ -167,7 +167,7 @@ export default function FeedbackButton() {
 
         {/* Footer */}
         <div className="px-5 py-3 border-t border-parchment-200 shrink-0">
-          <p className="text-[11px] text-stone-600 text-center">
+          <p className="text-xs text-stone-600 text-center">
             Feedback goes straight to Matthew · WhidbeyWave.com
           </p>
         </div>

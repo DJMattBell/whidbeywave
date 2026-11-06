@@ -148,7 +148,7 @@ export default function ImageGallery({ photos, alt }: Props) {
         >
           {/* Close button */}
           <button
-            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors text-xl"
+            className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/60 transition-colors text-xl"
             onClick={() => setLightboxOpen(false)}
             aria-label="Close"
           >
@@ -159,14 +159,14 @@ export default function ImageGallery({ photos, alt }: Props) {
           {photos.length > 1 && (
             <>
               <button
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors text-2xl"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/60 transition-colors text-2xl"
                 onClick={e => { e.stopPropagation(); prev(); }}
                 aria-label="Previous photo"
               >
                 ‹
               </button>
               <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors text-2xl"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/60 transition-colors text-2xl"
                 onClick={e => { e.stopPropagation(); next(); }}
                 aria-label="Next photo"
               >

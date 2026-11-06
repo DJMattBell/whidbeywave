@@ -385,7 +385,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           </p>
           <button
             onClick={clearAll}
-            className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1.5 hover:bg-stone-200 transition-colors min-h-[36px]"
+            className="text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300 rounded-full px-3 py-1.5 hover:bg-stone-200 transition-colors min-h-[44px]"
           >
             Clear all
           </button>

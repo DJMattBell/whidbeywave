@@ -151,7 +151,7 @@ export default function BottomTabBar() {
                           }`}
                         >
                           <Icon size={20} />
-                          <span className="text-[11px] font-medium leading-tight">{label}</span>
+                          <span className="text-xs font-medium leading-tight">{label}</span>
                         </Link>
                       ))}
                     </div>
@@ -166,7 +166,7 @@ export default function BottomTabBar() {
                 </div>
                 <button
                   onClick={toggleTextSize}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors min-h-[32px] ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors min-h-[44px] ${
                     textLarge ? 'bg-amber-500 text-white' : 'bg-parchment-100 text-stone-600'
                   }`}
                 >
