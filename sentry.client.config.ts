@@ -8,5 +8,12 @@ if (dsn) {
     tracesSampleRate: 0.2,
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: false,
+      httpBodies: [],
+      urlQueryParams: false,
+    },
   });
 }

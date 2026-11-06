@@ -6,5 +6,12 @@ if (dsn) {
   Sentry.init({
     dsn,
     tracesSampleRate: 0.2,
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: false,
+      httpBodies: [],
+      urlQueryParams: false,
+    },
   });
 }
