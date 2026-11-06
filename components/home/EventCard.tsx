@@ -1,23 +1,8 @@
 import Link from 'next/link';
 import { formatShortDate, categoryColors, stripHtml } from '@/lib/data';
-import { CATEGORY_EMOJI } from '@/lib/constants';
+import { CATEGORY_EMOJI, CATEGORY_STRIPE_COLORS } from '@/lib/constants';
 import AddToCalendar from '@/components/AddToCalendar';
 import { Calendar, MapPin } from 'lucide-react';
-
-// Category → stripe color for event cards (design-system palette)
-const categoryStripeColors: Record<string, string> = {
-  'Nature & Wildlife':     'bg-forest-600',
-  'Arts & Culture':        'bg-sound-600',
-  'Farmers Market':        'bg-amber-500',
-  'Music & Performance':   'bg-sound-500',
-  'Outdoors & Recreation': 'bg-forest-500',
-  'Film & Media':          'bg-sound-400',
-  'Community & Social':    'bg-forest-400',
-  'Classes & Workshops':   'bg-sound-600',
-  'Food & Drink':          'bg-amber-600',
-  'Sports & Fitness':      'bg-forest-600',
-  Other:                   'bg-stone-400',
-};
 
 export type EventCardEvent = {
   id: string;
@@ -32,7 +17,7 @@ export type EventCardEvent = {
 export default function EventCard({ event }: { event: EventCardEvent }) {
   return (
     <Link href={`/events/${event.id}`} className="card-pressable group flex flex-col min-h-[280px]">
-      <div className={`h-1 ${categoryStripeColors[event.category] ?? 'bg-forest-600'}`} />
+      <div className={`h-1 ${CATEGORY_STRIPE_COLORS[event.category] ?? 'bg-forest-600'}`} />
       <div className="p-6 flex flex-col flex-1">
         <div className="flex items-start justify-between mb-3">
           <span className={`badge ${categoryColors[event.category] ?? 'bg-parchment-200 text-stone-700'}`}>

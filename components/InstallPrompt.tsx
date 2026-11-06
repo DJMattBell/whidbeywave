@@ -23,14 +23,10 @@ export default function InstallPrompt() {
     function waitForWelcome(): Promise<void> {
       if (localStorage.getItem('ww-welcome-done')) return Promise.resolve();
       return new Promise(resolve => {
-        const interval = setInterval(() => {
-          if (localStorage.getItem('ww-welcome-done')) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 500);
+        const onDone = () => { window.removeEventListener('ww-welcome-done', onDone); resolve(); };
+        window.addEventListener('ww-welcome-done', onDone);
         // Give up after 90s if welcome sheet was never shown/dismissed
-        setTimeout(() => { clearInterval(interval); resolve(); }, 90_000);
+        setTimeout(() => { window.removeEventListener('ww-welcome-done', onDone); resolve(); }, 90_000);
       });
     }
 

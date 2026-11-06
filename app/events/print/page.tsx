@@ -7,6 +7,11 @@ import PrintTrigger from './PrintTrigger';
 
 export const revalidate = 1800; // 30 minutes
 
+function truncateClean(text: string, max: number): string {
+  const clean = stripHtml(text);
+  return clean.length > max ? clean.slice(0, max).trimEnd() + '\u2026' : clean;
+}
+
 function fmtDayHeading(dateStr: string) {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric',
@@ -155,7 +160,7 @@ export default async function PrintPage() {
                       </p>
                       {event.description && (
                         <p className="text-stone-500 text-sm mt-1 leading-relaxed">
-                          {(() => { const d = stripHtml(event.description); return d.length > 100 ? d.slice(0, 100).trimEnd() + '…' : d; })()}
+                          {truncateClean(event.description, 100)}
                         </p>
                       )}
                     </div>

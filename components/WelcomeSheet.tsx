@@ -64,6 +64,7 @@ export default function WelcomeSheet() {
 
   function handleDone() {
     localStorage.setItem(STORAGE_KEY, 'true');
+    window.dispatchEvent(new CustomEvent('ww-welcome-done'));
     if (selectedAreas.length > 0) {
       localStorage.setItem('ww-areas', JSON.stringify(selectedAreas));
     }
@@ -75,6 +76,7 @@ export default function WelcomeSheet() {
 
   function handleSkip() {
     localStorage.setItem(STORAGE_KEY, 'true');
+    window.dispatchEvent(new CustomEvent('ww-welcome-done'));
     setShow(false);
   }
 

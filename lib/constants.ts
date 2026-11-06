@@ -51,6 +51,31 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   'Outdoors': '🌲',
 };
 
+// ── Event category → stripe color for cards (design-system palette) ──────────
+
+export const CATEGORY_STRIPE_COLORS: Record<string, string> = {
+  'Nature & Wildlife':     'bg-forest-600',
+  'Arts & Culture':        'bg-sound-600',
+  'Farmers Market':        'bg-amber-500',
+  'Music & Performance':   'bg-sound-500',
+  'Outdoors & Recreation': 'bg-forest-500',
+  'Film & Media':          'bg-sound-400',
+  'Community & Social':    'bg-forest-400',
+  'Classes & Workshops':   'bg-sound-600',
+  'Food & Drink':          'bg-amber-600',
+  'Sports & Fitness':      'bg-forest-600',
+  Other:                   'bg-stone-400',
+};
+
+// ── Main navigation links (shared by Navbar desktop + MobileDrawer) ──────────
+
+export const NAV_MAIN_LINKS = [
+  { href: '/events',  label: "What's On" },
+  { href: '/news',    label: 'News' },
+  { href: '/guides',  label: 'Guides' },
+  { href: '/ferry',   label: 'Ferry' },
+] as const;
+
 // ── Forum category → badge color mapping ─────────────────────────────────────
 
 export const FORUM_CATEGORY_COLORS: Record<string, string> = {

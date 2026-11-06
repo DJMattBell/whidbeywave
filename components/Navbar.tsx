@@ -15,14 +15,12 @@ import {
   ShoppingBag,
   Plus, Search, User, Bell, LogOut,
 } from 'lucide-react';
-import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS } from '@/lib/constants';
+import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS, NAV_MAIN_LINKS } from '@/lib/constants';
 
-const mainLinks = [
-  { href: '/events',  label: "What's On",   Icon: Calendar },
-  { href: '/news',    label: 'News',         Icon: Newspaper },
-  { href: '/guides',  label: 'Guides',       Icon: BookOpen },
-  { href: '/ferry',   label: 'Ferry',        Icon: Ship },
-];
+const mainLinkIcons: Record<string, typeof Calendar> = {
+  '/events': Calendar, '/news': Newspaper, '/guides': BookOpen, '/ferry': Ship,
+};
+const mainLinks = NAV_MAIN_LINKS.map(l => ({ ...l, Icon: mainLinkIcons[l.href] }));
 
 const visitLinks = NAV_VISIT_LINKS;
 const communityLinks = NAV_COMMUNITY_LINKS;

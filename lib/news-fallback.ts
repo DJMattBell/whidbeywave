@@ -34,7 +34,7 @@ export function buildNewsFallbackPool(
   picks: Recommendation[],
   count = 3,
 ): NewsItem[] {
-  let items: NewsItem[] = news.map(n => ({ type: 'news', data: n }));
+  let items: NewsItem[] = news.map(n => ({ type: 'news' as const, data: n }));
 
   if (items.length < count) {
     items = [...items, ...forum.slice(0, count - items.length).map(t => ({ type: 'forum' as const, data: t }))];

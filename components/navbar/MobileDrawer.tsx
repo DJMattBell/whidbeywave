@@ -8,14 +8,11 @@ import {
   Calendar, ShoppingBag,
   Search, User, Bell, LogOut,
 } from 'lucide-react';
-import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS } from '@/lib/constants';
+import { NAV_VISIT_LINKS, NAV_COMMUNITY_LINKS, NAV_MAIN_LINKS } from '@/lib/constants';
 
 const mobileMainLinks = [
-  { href: '/',        label: 'Home' },
-  { href: '/events',  label: "What's On" },
-  { href: '/news',    label: 'News' },
-  { href: '/guides',  label: 'Guides' },
-  { href: '/ferry',   label: 'Ferry' },
+  { href: '/', label: 'Home' },
+  ...NAV_MAIN_LINKS,
 ];
 
 const visitLinks = NAV_VISIT_LINKS;
