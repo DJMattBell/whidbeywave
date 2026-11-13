@@ -167,7 +167,7 @@ function buildTimeRange(startIso: string, endIso?: string): string | null {
 /**
  * Clean a description: strip HTML, decode entities, remove boilerplate.
  */
-function cleanDescription(raw: string | null): string | null {
+export function cleanDescription(raw: string | null): string | null {
   if (!raw) return null;
   let text = stripHtml(raw);
   for (const pattern of BOILERPLATE_PATTERNS) {
@@ -179,7 +179,7 @@ function cleanDescription(raw: string | null): string | null {
 /**
  * Check if an event is from an off-island library branch.
  */
-function isOffIsland(title: string, description: string | null, branchName: string | null): boolean {
+export function isOffIsland(title: string, description: string | null, branchName: string | null): boolean {
   // If we have an explicit branch name, check it
   if (branchName) {
     const lower = branchName.toLowerCase();
