@@ -24,7 +24,7 @@ export const KNOWN_EVENT_TYPES = [
   'listing_contact',
 ] as const;
 import { getResend } from './resend';
-import { emailForumReply, emailNewListing, emailMilestone } from './email';
+import { emailForumReply, emailNewListing, emailMilestone, emailApproval, emailListingContact } from './email';
 
 type NotifyPayload = Record<string, string>;
 
@@ -150,6 +150,25 @@ async function sendEmail(userId: string, eventType: string, payload: NotifyPaylo
           recommendationUrl: payload.recommendationUrl ?? `${SITE_URL}/recommendations`,
         });
         break;
+      case 'event_approved':
+        subject = 'Your event is live on WhidbeyWave';
+        html = emailApproval({
+          type: 'event',
+          title: payload.title ?? '',
+          viewUrl: payload.viewUrl ?? `${SITE_URL}/events`,
+        });
+        break;
+      case 'listing_contact':
+        subject = `Someone is interested in "${payload.listingTitle ?? 'your listing'}"`;
+        html = emailListingContact({
+          listingTitle: payload.listingTitle ?? '',
+          buyerName: payload.buyerName ?? '',
+          buyerEmail: payload.buyerEmail ?? '',
+          buyerPhone: payload.buyerPhone,
+          message: payload.message ?? '',
+          listingUrl: payload.listingUrl ?? `${SITE_URL}/marketplace`,
+        });
+        break;
       default:
         await logNotification(userId, eventType, 'email', 'skipped', `No email template for ${eventType}`);
         return;
@@ -236,6 +255,12 @@ export async function notify(
   } else if (eventType === 'business_you_recommended_hit_milestone') {
     payload.pushTitle = `${payload.businessName ?? 'A place you recommended'} hit ${payload.milestone ?? ''} reviews`;
     payload.pushBody = 'Neighbors are loving your recommendation!';
+  } else if (eventType === 'event_approved') {
+    payload.pushTitle = 'Your event is live!';
+    payload.pushBody = payload.title ?? 'Your event has been approved on WhidbeyWave';
+  } else if (eventType === 'listing_contact') {
+    payload.pushTitle = `${payload.buyerName ?? 'Someone'} is interested in your listing`;
+    payload.pushBody = (payload.message ?? '').slice(0, 100);
   }
 
   const promises: Promise<void>[] = [];

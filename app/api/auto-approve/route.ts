@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
 import { getResend } from '@/lib/resend';
 import { verifyCronRequest } from '@/lib/cronAuth';
-import { escapeHtml } from '@/lib/escapeHtml';
+import { emailApprovalBatch } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,7 @@ const resend = getResend();
  * deletes anything they don't want approved before this runs.
  *
  * Duplicate detection:
- *   Events  — same title (case-insensitive) AND same date as an approved event
+ *   Events  — same title + date + location (case-insensitive, matching DB unique constraint)
  *   Listings — same title (case-insensitive) as an active approved listing
  */
 export async function GET(request: NextRequest) {
@@ -69,8 +69,9 @@ export async function GET(request: NextRequest) {
       approvedSet.add(key);
       results.events.approved++;
 
-      // Group by submitter email for batched notifications
-      if (event.submitter_email) {
+      // Group by submitter email for batched notifications.
+      // Skip scraper-submitted events — no real recipient.
+      if (event.submitter_email && event.submitter_email !== 'noreply@whidbeywave.com') {
         const emailKey = event.submitter_email.toLowerCase().trim();
         const group = approvedBySubmitter.get(emailKey) ?? [];
         group.push(event);
@@ -78,55 +79,33 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Send one email per submitter with all their approved events
+    // Send one email per submitter with all their approved events,
+    // using the shared emailApprovalBatch template.
     for (const [, events] of approvedBySubmitter) {
       const first = events[0];
-      const isBatch = events.length > 1;
 
-      const eventRows = events.map(e => {
+      const items = events.map(e => {
         const d = new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', {
           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
         });
-        return `
-          <tr><td style="padding:12px 20px;border-bottom:1px solid #e8dfc8;">
-            <strong style="color:#1c3d2c;">${escapeHtml(e.title)}</strong><br/>
-            <span style="font-size:14px;color:#57534e;">${escapeHtml(d)} · ${escapeHtml(e.time)} · ${escapeHtml(e.location)}, ${escapeHtml(e.town)}</span>
-          </td></tr>`;
-      }).join('');
+        return { title: e.title, detail: `${d} · ${e.time} · ${e.location}, ${e.town}` };
+      });
 
-      const subject = isBatch
+      const subject = events.length > 1
         ? `Your ${events.length} events are live on WhidbeyWave`
         : `Your event "${first.title}" is live on WhidbeyWave`;
-
-      const heading = isBatch ? 'Your events are live!' : 'Your event is live!';
-      const body = isBatch
-        ? `Good news, ${escapeHtml(first.submitter_name)} — your ${events.length} events have been approved and are now showing on the WhidbeyWave events calendar.`
-        : `Good news, ${escapeHtml(first.submitter_name)} — your event has been approved and is now showing on the WhidbeyWave events calendar.`;
 
       try {
         await resend.emails.send({
           from: 'WhidbeyWave <hello@whidbeywave.com>',
           to: first.submitter_email,
           subject,
-          html: `
-            <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
-              <div style="background:#1a4a33;padding:20px 28px;border-radius:12px 12px 0 0;">
-                <span style="font-size:24px;">🌊</span>
-                <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
-              </div>
-              <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-                <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">${heading}</h2>
-                <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">${body}</p>
-                <table width="100%" style="background:#fdfaf3;border-radius:10px;border:1px solid #e8dfc8;margin-bottom:20px;">
-                  ${eventRows}
-                </table>
-                <a href="${siteUrl}/events" style="display:inline-block;background:#255c42;color:#fdfaf3;font-weight:600;font-size:14px;padding:12px 24px;border-radius:10px;text-decoration:none;">
-                  View on WhidbeyWave →
-                </a>
-                <p style="font-size:13px;color:#a8a29e;margin-top:20px;">WhidbeyWave · Whidbey Island, WA</p>
-              </div>
-            </div>
-          `,
+          html: emailApprovalBatch({
+            type: 'event',
+            items,
+            recipientName: first.submitter_name,
+            viewUrl: `${siteUrl}/events`,
+          }),
         });
       } catch (emailErr) {
         console.error('Auto-approve event email failed (non-fatal):', emailErr);
@@ -182,49 +161,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Send one email per seller with all their approved listings
+    // Send one email per seller with all their approved listings,
+    // using the shared emailApprovalBatch template.
     for (const [, listings] of approvedBySeller) {
       const first = listings[0];
-      const isBatch = listings.length > 1;
 
-      const listingRows = listings.map(l => `
-        <tr><td style="padding:12px 20px;border-bottom:1px solid #e8dfc8;">
-          <strong style="color:#1c3d2c;">${escapeHtml(l.title)}</strong>
-        </td></tr>`).join('');
+      const items = listings.map(l => ({ title: l.title }));
 
-      const subject = isBatch
+      const subject = listings.length > 1
         ? `Your ${listings.length} listings are live on WhidbeyWave`
         : `Your listing "${first.title}" is live on WhidbeyWave`;
-
-      const heading = isBatch ? 'Your listings are live!' : 'Your listing is live!';
-      const body = isBatch
-        ? `Great news, ${escapeHtml(first.seller_name)} — your ${listings.length} listings are now on the WhidbeyWave marketplace.`
-        : `Great news, ${escapeHtml(first.seller_name)} — your listing for <strong>${escapeHtml(first.title)}</strong> is now on the WhidbeyWave marketplace.`;
 
       try {
         await resend.emails.send({
           from: 'WhidbeyWave <hello@whidbeywave.com>',
           to: first.contact_email,
           subject,
-          html: `
-            <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:24px;background:#f7f0e2;">
-              <div style="background:#1a4a33;padding:20px 28px;border-radius:12px 12px 0 0;">
-                <span style="font-size:24px;">🌊</span>
-                <span style="color:#fdfaf3;font-size:18px;font-weight:bold;margin-left:10px;">WhidbeyWave</span>
-              </div>
-              <div style="background:#fff;padding:28px;border-radius:0 0 12px 12px;border:1px solid #e8dfc8;border-top:none;">
-                <h2 style="color:#1c3d2c;margin:0 0 12px;font-size:20px;">${heading}</h2>
-                <p style="color:#57534e;font-size:15px;line-height:1.7;margin:0 0 16px;">${body}</p>
-                <table width="100%" style="background:#fdfaf3;border-radius:10px;border:1px solid #e8dfc8;margin-bottom:20px;">
-                  ${listingRows}
-                </table>
-                <a href="${siteUrl}/marketplace" style="display:inline-block;background:#255c42;color:#fdfaf3;font-weight:600;font-size:14px;padding:12px 24px;border-radius:10px;text-decoration:none;">
-                  View the Marketplace →
-                </a>
-                <p style="font-size:13px;color:#a8a29e;margin-top:20px;">WhidbeyWave · Whidbey Island, WA</p>
-              </div>
-            </div>
-          `,
+          html: emailApprovalBatch({
+            type: 'listing',
+            items,
+            recipientName: first.seller_name,
+            viewUrl: `${siteUrl}/marketplace`,
+          }),
         });
       } catch (emailErr) {
         console.error('Auto-approve listing email failed (non-fatal):', emailErr);

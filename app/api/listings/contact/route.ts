@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getResend } from '@/lib/resend';
 import { createServiceClient } from '@/lib/supabase';
-import { escapeHtml } from '@/lib/escapeHtml';
 import { isValidEmail } from '@/lib/validate';
+import { emailListingContact } from '@/lib/email';
 
 const resend = getResend();
 export async function POST(req: NextRequest) {
@@ -32,53 +32,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Listing not found' }, { status: 404 });
     }
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://whidbeywave.com';
+
     await resend.emails.send({
       from: 'WhidbeyWave Marketplace <noreply@whidbeywave.com>',
       to: listing.contact_email,
       replyTo: buyerEmail,
       subject: `Someone is interested in "${listing.title}"`,
-      html: `
-        <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #292524;">
-          <div style="background: #2d5016; color: #fefce8; padding: 28px 32px; border-radius: 16px 16px 0 0;">
-            <p style="margin: 0 0 4px; font-size: 13px; color: #bbf7d0; letter-spacing: 0.05em; text-transform: uppercase;">WhidbeyWave Marketplace</p>
-            <h1 style="margin: 0; font-size: 22px;">You have a new message!</h1>
-          </div>
-
-          <div style="background: #fafaf9; padding: 28px 32px; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 16px 16px;">
-            <p style="margin: 0 0 20px; font-size: 15px; color: #57534e;">
-              Someone on WhidbeyWave is interested in your listing — <strong style="color: #1c1917;">${escapeHtml(listing.title)}</strong>.
-            </p>
-
-            <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px;">
-              <tr style="border-bottom: 1px solid #e7e5e4;">
-                <td style="padding: 8px 0; color: #78716c; width: 110px;">From</td>
-                <td style="padding: 8px 0; color: #1c1917; font-weight: 600;">${escapeHtml(buyerName)}</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #e7e5e4;">
-                <td style="padding: 8px 0; color: #78716c;">Email</td>
-                <td style="padding: 8px 0;"><a href="mailto:${escapeHtml(buyerEmail)}" style="color: #2d5016;">${escapeHtml(buyerEmail)}</a></td>
-              </tr>
-              ${buyerPhone ? `
-              <tr style="border-bottom: 1px solid #e7e5e4;">
-                <td style="padding: 8px 0; color: #78716c;">Phone</td>
-                <td style="padding: 8px 0; color: #1c1917;">${escapeHtml(buyerPhone)}</td>
-              </tr>` : ''}
-            </table>
-
-            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 12px; padding: 16px 18px; margin-bottom: 24px;">
-              <p style="margin: 0 0 6px; font-size: 12px; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.05em;">Their message</p>
-              <p style="margin: 0; font-size: 15px; color: #292524; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</p>
-            </div>
-
-            <p style="margin: 0 0 4px; font-size: 13px; color: #78716c;">
-              To reply, just respond to this email — it will go directly to ${escapeHtml(buyerName)}.
-            </p>
-            <p style="margin: 0; font-size: 13px; color: #a8a29e;">
-              — The WhidbeyWave team
-            </p>
-          </div>
-        </div>
-      `,
+      html: emailListingContact({
+        listingTitle: listing.title,
+        buyerName,
+        buyerEmail,
+        buyerPhone,
+        message,
+        listingUrl: `${siteUrl}/marketplace/${listingId}`,
+      }),
     });
 
     return NextResponse.json({ ok: true });

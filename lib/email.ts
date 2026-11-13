@@ -241,6 +241,92 @@ export function emailNewListing(opts: {
   });
 }
 
+/** Batched approval notification — one email listing all approved items. */
+export function emailApprovalBatch(opts: {
+  type: 'event' | 'listing';
+  items: { title: string; detail?: string }[];
+  recipientName: string;
+  viewUrl: string;
+}): string {
+  const typeLabel = opts.type === 'event' ? 'event' : 'listing';
+  const typeLabelPlural = opts.type === 'event' ? 'events' : 'listings';
+  const isBatch = opts.items.length > 1;
+
+  const heading = isBatch
+    ? `Your ${typeLabelPlural} are live!`
+    : `Your ${typeLabel} is live!`;
+
+  const intro = isBatch
+    ? `Good news, ${escapeHtml(opts.recipientName)} — your ${opts.items.length} ${typeLabelPlural} have been approved and are now live on WhidbeyWave.`
+    : `Good news, ${escapeHtml(opts.recipientName)} — your ${typeLabel} has been approved and is now live on WhidbeyWave.`;
+
+  const rows = opts.items.map(item => `
+    <tr><td style="padding:12px 20px;border-bottom:1px solid #e8dfc8;">
+      <strong style="color:#1c3d2c;">${escapeHtml(item.title)}</strong>
+      ${item.detail ? `<br/><span style="font-size:14px;color:#57534e;">${escapeHtml(item.detail)}</span>` : ''}
+    </td></tr>`).join('');
+
+  return emailLayout({
+    title: isBatch
+      ? `Your ${opts.items.length} ${typeLabelPlural} are live — WhidbeyWave`
+      : `Your ${typeLabel} is live — WhidbeyWave`,
+    headerSubtitle: `${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)} Approved`,
+    body: `
+      <h2 style="margin:0 0 12px;font-size:20px;color:#1c3d2c;">${heading}</h2>
+      <p style="margin:0 0 16px;font-size:15px;color:#57534e;line-height:1.7;">${intro}</p>
+      <table width="100%" style="background:#fdfaf3;border-radius:10px;border:1px solid #e8dfc8;margin-bottom:20px;">
+        ${rows}
+      </table>
+      ${emailButton(opts.viewUrl, 'View on WhidbeyWave')}
+    `,
+  });
+}
+
+/** Listing contact notification — sent to seller when a buyer reaches out. */
+export function emailListingContact(opts: {
+  listingTitle: string;
+  buyerName: string;
+  buyerEmail: string;
+  buyerPhone?: string;
+  message: string;
+  listingUrl: string;
+}): string {
+  return emailLayout({
+    title: `New message about "${escapeHtml(opts.listingTitle)}" — WhidbeyWave`,
+    headerSubtitle: 'Marketplace Contact',
+    body: `
+      <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
+        Someone on WhidbeyWave is interested in your listing — <strong style="color:#1c3d2c;">${escapeHtml(opts.listingTitle)}</strong>.
+      </p>
+      ${emailCard(`
+        <table width="100%" style="border-collapse:collapse;font-size:14px;">
+          <tr style="border-bottom:1px solid #e8dfc8;">
+            <td style="padding:8px 0;color:#78716c;width:110px;">From</td>
+            <td style="padding:8px 0;color:#1c1917;font-weight:600;">${escapeHtml(opts.buyerName)}</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e8dfc8;">
+            <td style="padding:8px 0;color:#78716c;">Email</td>
+            <td style="padding:8px 0;"><a href="mailto:${escapeHtml(opts.buyerEmail)}" style="color:#255c42;">${escapeHtml(opts.buyerEmail)}</a></td>
+          </tr>
+          ${opts.buyerPhone ? `
+          <tr style="border-bottom:1px solid #e8dfc8;">
+            <td style="padding:8px 0;color:#78716c;">Phone</td>
+            <td style="padding:8px 0;color:#1c1917;">${escapeHtml(opts.buyerPhone)}</td>
+          </tr>` : ''}
+        </table>
+      `)}
+      ${emailCard(`
+        <p style="margin:0 0 6px;font-size:12px;color:#a8a29e;text-transform:uppercase;letter-spacing:0.05em;">Their message</p>
+        <p style="margin:0;font-size:15px;color:#292524;line-height:1.6;white-space:pre-wrap;">${escapeHtml(opts.message)}</p>
+      `)}
+      <p style="margin:0 0 16px;font-size:13px;color:#78716c;">
+        To reply, just respond to this email — it will go directly to ${escapeHtml(opts.buyerName)}.
+      </p>
+      ${emailButton(opts.listingUrl, 'View Your Listing')}
+    `,
+  });
+}
+
 /** Recommendation milestone notification — sent when a business hits N reviews. */
 export function emailMilestone(opts: {
   businessName: string;
@@ -252,7 +338,7 @@ export function emailMilestone(opts: {
 }): string {
   const stars = '★'.repeat(opts.rating) + '☆'.repeat(5 - opts.rating);
   return emailLayout({
-    title: `${opts.businessName} hit ${opts.milestone} reviews — WhidbeyWave`,
+    title: `${escapeHtml(opts.businessName)} hit ${opts.milestone} reviews — WhidbeyWave`,
     headerSubtitle: 'Recommendation Milestone',
     body: `
       <p style="margin:0 0 16px;font-size:16px;color:#57534e;line-height:1.7;">
