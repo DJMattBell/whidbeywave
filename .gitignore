@@ -13,8 +13,10 @@ out/
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
 
-# Claude Code workspace
-.claude/
+# Claude Code workspace (track rules + skills, ignore local settings)
+.claude/*
+!.claude/rules/
+!.claude/skills/
 
 # Vercel CLI
 .vercel/

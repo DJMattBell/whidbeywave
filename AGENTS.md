@@ -1,146 +1,102 @@
 # AGENTS.md
 
-This file provides guidance to WARP (warp.dev) when working with code in this repository.
+Architecture reference for WhidbeyWave. Operational rules → CLAUDE.md. Domain-specific guidance → .claude/rules/.
 
 ## Project Overview
 
-WhidbeyWave.com is a community hub for Whidbey Island, WA. It serves events, news, a marketplace, barter board, community forum, local recommendations/reviews, a newsletter, and live ferry status. The site is deployed on Vercel.
+WhidbeyWave.com is a community hub for Whidbey Island, WA. Events, news, marketplace, barter board, community forum, local recommendations/reviews, newsletter, and live ferry status. Deployed on Vercel.
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router) with TypeScript
-- **Styling:** Tailwind CSS 3 with a custom PNW-themed design system (see below)
+- **Styling:** Tailwind CSS 4 with custom PNW-themed design system
 - **Database:** Supabase (Postgres with Row Level Security)
 - **Auth:** Supabase Auth (magic link + Google OAuth)
 - **Email:** Resend (transactional emails and weekly digest)
-- **External API:** WSDOT Ferry Schedule API for live ferry status
-- **Fonts:** Playfair Display (headings) and Lora (body), loaded via Google Fonts
+- **External APIs:** WSDOT Ferry Schedule, NOAA + Open-Meteo (tides + weather)
+- **Fonts:** Playfair Display (headings), Lora (body)
 
-## Commands
+## Routing (App Router)
 
-```bash
-npm run dev       # Start dev server (localhost:3000)
-npm run build     # Production build
-npm run start     # Serve production build locally
-npm run lint      # ESLint via next lint
-```
+All pages under `app/`:
 
-There is no test framework configured in this project.
-
-## Environment Variables
-
-Required in `.env.local`:
-
-- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase project credentials (public)
-- `SUPABASE_SERVICE_ROLE_KEY` — Admin-level Supabase key (server-side only, bypasses RLS)
-- `RESEND_API_KEY` — Resend email service key
-- `WSDOT_API_KEY` — Washington State DOT ferry API key
-- `NEXT_PUBLIC_SITE_URL` — Canonical site URL (used in email links and OAuth redirects)
-- `ADMIN_EMAIL` / `NEXT_PUBLIC_ADMIN_EMAIL` — Admin inbox for notifications
-- `CRON_SECRET` — Bearer token protecting the weekly digest cron endpoint
-
-## Architecture
-
-### Routing (App Router)
-
-All pages live under `app/`. Key routes:
-
-- `/` — Homepage with hero, quick-links, weather widget, and preview cards for events/news/listings
-- `/events` — Community calendar (reads approved events from Supabase `event_submissions` table)
-- `/news` — Blog-style news (currently hardcoded in `lib/data.ts`)
+- `/` — Homepage: hero, quick-links, weather widget, preview cards
+- `/events` — Community calendar (Supabase `event_submissions`)
+- `/news` — Blog-style news (hardcoded in `lib/data.ts`)
 - `/marketplace`, `/barter` — Buy/sell and barter boards
-- `/forum`, `/forum/[id]` — Community forum with categories and threaded replies
+- `/forum`, `/forum/[id]` — Community forum with threaded replies
 - `/recommendations` — Local business/place recommendations with reviews
-- `/newsletter` — Newsletter signup (stores subscribers in Supabase, sends welcome via Resend)
+- `/newsletter` — Newsletter signup
 - `/ferry` — Live ferry schedule/status from WSDOT API
 - `/submit-event`, `/submit-listing` — Public submission forms
-- `/admin/events` — Admin moderation panel for event submissions
+- `/admin/events` — Admin moderation panel
 - `/auth/callback` — OAuth/magic-link callback handler
 - `/profile` — User profile page
 - `/search` — Site-wide search
 - `/feed.xml` — RSS feed (route handler)
 
-### API Routes (`app/api/`)
+## API Routes (`app/api/`)
 
-All API routes are Next.js Route Handlers (POST or GET):
+- `api/events/submit` — Save event, email admin + submitter receipt
+- `api/events/moderate` — Admin approve/reject, email submitter
+- `api/events/scrape` — Cron: scrape event sources
+- `api/events/recurring/generate` — Cron: generate recurring event instances
+- `api/contact` — Contact form → email admin
+- `api/listings/submit` — Marketplace listing submission
+- `api/listings/expire-flash-gives` — Cron: expire old flash gives
+- `api/newsletter` — Newsletter signup
+- `api/newsletter/send-digest` — Cron: Monday digest
+- `api/newsletter/send-weekend` — Cron: Thursday weekend preview
+- `api/forum/reply` — Authenticated reply insertion
+- `api/ferry-status` — WSDOT ferry proxy (cached 5 min)
+- `api/auto-approve` — Cron: auto-approve trusted sources
+- `api/notifications/test` — Admin test endpoint for notification pipeline
 
-- `api/events/submit` — Saves event to Supabase, emails admin + submitter receipt via Resend
-- `api/events/moderate` — Admin approves/rejects events, emails submitter on approval
-- `api/contact` — Contact form → emails admin via Resend
-- `api/listings/submit` — Marketplace listing → emails admin + seller receipt
-- `api/newsletter` — Newsletter signup → sends welcome email
-- `api/newsletter/send-digest` — **Cron-triggered** (Vercel cron, Mondays 9am PT). Fetches confirmed subscribers via service role key, builds personalized HTML digest with upcoming events + news + forum activity, sends in batches of 10
-- `api/forum/reply` — Authenticated reply insertion; notifies original post author via email
-- `api/ferry-status` — Proxies WSDOT ferry data, cached 5 minutes
+## Data Layer
 
-### Data Layer
+- **`lib/supabase.ts`** — Browser singleton + `createServerClient()` factory + auth helpers. `isConfigured` flag for graceful degradation.
+- **`lib/data.ts`** — Hardcoded demo data + `formatDate`, `formatShortDate`, `categoryColors`
+- **`lib/db-types.ts`** — TypeScript types for all Supabase tables
+- **`lib/ferry.ts`** — WSDOT client: `fetchFerryBarStatus()` (hero strip), `fetchFerryPageData()` (full page)
+- **`lib/notifications.ts`** — `notify()` central routing for all per-user notifications
+- **`lib/whidbey-zips.ts`** — Whidbey zip codes + `isWhidbeyLocal()` helper
+- **`lib/scrapers/`** — One file per event source. Shared: `sno-isle-common.ts`
+- **`lib/constants.ts`** — `CATEGORY_EMOJI`, `FORUM_CATEGORY_COLORS`, `FORUM_CATEGORIES`
 
-- **`lib/supabase.ts`** — Exports a browser singleton (`supabase`) for client components and a `createServerClient()` factory for server components. Also exports auth helpers (`signInWithMagicLink`, `signInWithGoogle`, `signOut`, `getUser`). The `isConfigured` flag lets the app gracefully degrade when Supabase credentials are missing.
-- **`lib/data.ts`** — Hardcoded demo data (events, news posts, marketplace listings) plus helper functions (`formatDate`, `formatShortDate`) and the `categoryColors` map. The homepage and news page still read from this file; events page reads from Supabase.
-- **`lib/db-types.ts`** — TypeScript types for all Supabase tables (newsletter, forum, recommendations, reviews, event submissions).
-- **`lib/ferry.ts`** — WSDOT Ferry API client. Exports `fetchFerryBarStatus()` (lightweight, alerts only) for the weather widget status bar and `fetchFerryPageData()` (full schedule + alerts) for the `/ferry` page. Parses .NET JSON date format from WSDOT.
-- **`lib/whidbey-zips.ts`** — Set of valid Whidbey Island zip codes and `isWhidbeyLocal()` helper. Used by forum and recommendations for "local" badges.
+## Database Schema
 
-### Database Schema
+- Authoritative schema: `supabase-schema.sql` (root)
+- Migrations: `supabase/` directory
+- Key tables: `event_submissions`, `newsletter_subscribers`, `forum_categories`, `forum_posts`, `forum_replies`, `recommendations`, `reviews`, `notification_preferences`, `notification_log`, `scrape_log`
+- RLS pattern: public read, authenticated insert for user content, service role for admin ops
 
-Two schema files exist:
-
-- `supabase/schema.sql` — Older/simpler version
-- `supabase-schema.sql` (root) — Current authoritative schema with full RLS policies, triggers, and indexes
-
-Key tables: `event_submissions`, `newsletter_subscribers`, `forum_categories`, `forum_posts`, `forum_replies`, `recommendations`, `reviews`.
-
-RLS pattern: public read for most tables, authenticated insert for forum content, service role for admin operations (digest cron, moderation).
-
-### Auth Flow
-
-Supabase Auth with magic link and Google OAuth. `AuthProvider` (React context in `components/AuthProvider.tsx`) wraps the app, provides `useAuth()` hook (`user`, `loading`, `signOut`). After login, `ZipPrompt` component prompts users to enter their zip code (stored in `user_metadata`). Forum reply API validates auth via Bearer token from the client session.
-
-### Components
+## Components
 
 - **`AuthModal.tsx`** — Login/signup modal (magic link + Google)
-- **`AuthProvider.tsx`** — Auth context provider + `useAuth()` hook
-- **`ZipPrompt.tsx`** — Post-login zip code collection modal
+- **`AuthProvider.tsx`** — Auth context + `useAuth()` hook
+- **`ZipPrompt.tsx`** — Post-login zip code collection
 - **`Navbar.tsx`** / **`Footer.tsx`** — Site-wide layout
-- **`WeatherTideWidget.tsx`** — Displays weather, tide, and ferry status bar on homepage
-- **`EventsFilter.tsx`** — Tag/category filtering for events page
-- **`EventRsvpButton.tsx`** — RSVP interaction for events
-- **`NewsCommentSection.tsx`** — Comments on news articles
+- **`WeatherTideWidget.tsx`** — Weather, tide, ferry status bar
+- **`EventsFilter.tsx`** — Tag/category filtering
+- **`EventRsvpButton.tsx`** — RSVP interaction
+- **`NewsCommentSection.tsx`** — Comments on news
 - **`ShareButton.tsx`** — Social sharing
-- **`LocalBadge.tsx`** — "Local" badge shown when user's zip is a Whidbey zip
-- **`forum/NewPostForm.tsx`** / **`forum/ReplyForm.tsx`** — Forum interaction forms
+- **`LocalBadge.tsx`** — "Local" badge for Whidbey zip users
+- **`forum/NewPostForm.tsx`** / **`forum/ReplyForm.tsx`** — Forum forms
 
-### Notification Routing
+## Environment Variables
 
-All per-user event notifications route through `notify()` from `lib/notifications.ts`. **Never call `resend.emails.send()` directly for per-user event notifications.**
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase (public)
+- `SUPABASE_SERVICE_ROLE_KEY` — Admin Supabase key (server-only, bypasses RLS)
+- `RESEND_API_KEY` — Resend email service
+- `WSDOT_API_KEY` — Ferry API
+- `NEXT_PUBLIC_SITE_URL` — Canonical URL (emails, OAuth redirects)
+- `ADMIN_EMAIL` / `NEXT_PUBLIC_ADMIN_EMAIL` — Admin inbox
+- `CRON_SECRET` — Bearer token for cron endpoints
 
-The `listing_alerts` table is deprecated. New listing alert subscriptions go through `notification_preferences` with `event_type = 'new_listing_in_my_area'`. The old `listing_alerts` table will be dropped 60 days after the transition email is sent (see Phase 19c).
+## Conventions (reference)
 
-### Scheduled Jobs
-
-A Vercel cron (`vercel.json`) hits `GET /api/newsletter/send-digest` every Monday at 9am PT. It is protected by either the `x-vercel-cron` header or a `Bearer` token matching `CRON_SECRET`.
-
-## Design System
-
-The Tailwind config (`tailwind.config.ts`) defines a Pacific Northwest-themed palette:
-
-- **`forest-*`** — Deep green (primary brand)
-- **`sound-*`** — Slate blue (secondary)
-- **`warmth-*`** — Golden-hour ochre (highlights)
-- **`terra-*`** — Terracotta (accent)
-- **`parchment-*`** — Warm cream (backgrounds)
-
-Custom shadow scale: `shadow-warm-sm`, `shadow-warm`, `shadow-warm-md`, `shadow-warm-lg`.
-
-Global CSS (`app/globals.css`) defines reusable component classes: `.btn-primary`, `.btn-secondary`, `.card`, `.section-title`, `.section-subtitle`, `.badge`.
-
-Always use these custom colors and component classes rather than default Tailwind colors. The background is `bg-parchment-50` and body text is `text-stone-800`.
-
-## Key Conventions
-
-- API routes create fresh Supabase clients per request (not the singleton) using `createClient()` directly from `@supabase/supabase-js`
-- Email templates are inline HTML strings within route handlers (no template engine)
-- The `categoryColors` map in `lib/data.ts` must be updated when adding new content categories
-- Ferry route IDs: Mukilteo–Clinton = 7, Port Townsend–Coupeville = 8
-- `trailingSlash: true` is enabled in `next.config.js`
-- Path alias `@/*` maps to project root (e.g., `@/lib/supabase`, `@/components/Navbar`)
+- `trailingSlash: true` in `next.config.js`
+- Path alias `@/*` maps to project root
+- `categoryColors` in `lib/data.ts` — update when adding categories
+- Email templates are inline HTML in route handlers (no template engine)
