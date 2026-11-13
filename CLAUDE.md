@@ -33,7 +33,7 @@ When a prompt references a file in `Planning Documents/phases/`:
 5. One fix attempt on failure, then rollback contract (see WORKFLOW.md)
 
 ## Deployment discipline
-- **Live deploy**: commit ae8d258 (2026-11-06)
+- **Live deploy**: commit ce1d939 (2026-11-13)
 - **Vercel Pro** ($20/mo). Cron limit: 40, currently using 6.
 - **Supabase Free** — no auto-backups. Manual `pg_dump` weekly minimum.
 - Chunked commits: migration SQL → API routes → components → pages → integration → docs. Each chunk: build → commit → push → verify on live.
