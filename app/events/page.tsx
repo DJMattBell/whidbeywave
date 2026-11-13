@@ -23,7 +23,7 @@ async function getApprovedEvents(): Promise<Event[]> {
     .eq('status', 'approved')
     .gte('date', today)
     .order('date', { ascending: true })
-    .limit(500);
+    .limit(200);
 
   if (!data || data.length === 0) return fallbackEvents;
 

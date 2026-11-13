@@ -160,7 +160,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
   // Initialize from URL
   const [timeWindow, setTimeWindow] = useState<TimeWindow>(
-    () => (searchParams.get('window') as TimeWindow) || 'all'
+    () => (searchParams.get('window') as TimeWindow) || '10days'
   );
   const [activeTown, setActiveTown] = useState(
     () => searchParams.get('town') || 'All'
@@ -173,6 +173,8 @@ export default function EventsFilter({ events }: { events: Event[] }) {
   );
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const GROUPS_PER_PAGE = 14;
+  const [visibleGroupCount, setVisibleGroupCount] = useState(GROUPS_PER_PAGE);
 
   // Sync filter state to URL
   const isFirstRender = useRef(true);
@@ -182,7 +184,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       return;
     }
     const params = new URLSearchParams();
-    if (timeWindow !== 'all') params.set('window', timeWindow);
+    if (timeWindow !== '10days') params.set('window', timeWindow);
     if (activeTown !== 'All') params.set('town', activeTown);
     if (activeTags.length > 0) params.set('tags', activeTags.join(','));
     const qs = params.toString();
@@ -197,21 +199,39 @@ export default function EventsFilter({ events }: { events: Event[] }) {
     }
   }, [showFilters]);
 
+  // Wrapped setters that also reset pagination
+  function changeTimeWindow(w: TimeWindow) {
+    setTimeWindow(w);
+    setVisibleGroupCount(GROUPS_PER_PAGE);
+  }
+
+  function changeTown(town: string) {
+    setActiveTown(town);
+    setVisibleGroupCount(GROUPS_PER_PAGE);
+  }
+
   function toggleTag(tag: EventTag) {
     setActiveTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+    setVisibleGroupCount(GROUPS_PER_PAGE);
+  }
+
+  function changeSearch(q: string) {
+    setSearchQuery(q);
+    setVisibleGroupCount(GROUPS_PER_PAGE);
   }
 
   function clearAll() {
     setActiveTags([]);
     setActiveTown('All');
-    setTimeWindow('all');
+    setTimeWindow('10days');
     setSearchQuery('');
     setShowFilters(false);
+    setVisibleGroupCount(GROUPS_PER_PAGE);
   }
 
-  const hasFilters = activeTags.length > 0 || activeTown !== 'All' || timeWindow !== 'all' || searchQuery.trim() !== '';
+  const hasFilters = activeTags.length > 0 || activeTown !== 'All' || timeWindow !== '10days' || searchQuery.trim() !== '';
   const activeFilterCount = (activeTown !== 'All' ? 1 : 0) + activeTags.length;
 
   // Apply time window filter
@@ -224,7 +244,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
 
   // Compute counts for each time window
   const windowCounts: Partial<Record<TimeWindow, number>> = {};
-  (['today', 'tomorrow', 'weekend', 'week', 'all'] as TimeWindow[]).forEach((w) => {
+  (['today', 'tomorrow', 'weekend', 'week', '10days', 'all'] as TimeWindow[]).forEach((w) => {
     const { start: s, end: e } = getTimeWindowDates(w);
     windowCounts[w] = events.filter((ev) => {
       if (ev.date < s) return false;
@@ -300,7 +320,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
           <input
             type="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => changeSearch(e.target.value)}
             placeholder="Search events…"
             className="w-full pl-8 pr-3 py-2.5 rounded-lg border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-forest-400"
             aria-label="Search events by title or description"
@@ -322,7 +342,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
             return (
               <button
                 key={town}
-                onClick={() => setActiveTown(town)}
+                onClick={() => changeTown(town)}
                 disabled={isEmpty}
                 className={`inline-flex items-center gap-1.5 shrink-0 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-150 min-h-[44px] ${
                   active
@@ -400,12 +420,12 @@ export default function EventsFilter({ events }: { events: Event[] }) {
       <div className="sticky top-[64px] z-10 bg-parchment-50 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 shadow-xs border-b border-parchment-200">
         <div className="flex items-center gap-2">
           <div className="flex-1 min-w-0 overflow-x-auto scrollbar-none flex items-center gap-2">
-            <TimeWindowFilter active={timeWindow} onChange={setTimeWindow} counts={windowCounts} />
+            <TimeWindowFilter active={timeWindow} onChange={changeTimeWindow} counts={windowCounts} />
             <div className="relative shrink-0 hidden sm:block">
               <input
                 type="search"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => changeSearch(e.target.value)}
                 placeholder="Search events…"
                 className="w-40 md:w-52 pl-8 pr-3 py-2 rounded-full border border-parchment-300 bg-white text-sm text-stone-800 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-forest-400 focus:border-forest-400"
                 aria-label="Search events by title or description"
@@ -415,7 +435,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
               </svg>
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => changeSearch('')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
                   aria-label="Clear search"
                 >
@@ -506,7 +526,7 @@ export default function EventsFilter({ events }: { events: Event[] }) {
         </div>
       ) : (
         <div className="space-y-2 md:space-y-4">
-          {dateGroups.map(([date, dayItems]) => (
+          {dateGroups.slice(0, visibleGroupCount).map(([date, dayItems]) => (
             <div key={date} id={`date-${date}`}>
               {/* Date heading — sticky on mobile, static on desktop */}
               <h3 className="sticky top-[120px] md:static z-5 bg-parchment-50 py-2 mb-2 md:mb-3 md:py-0 md:mt-4 border-b border-parchment-200 md:border-0 text-sm md:text-base font-semibold text-stone-500 md:text-stone-700 uppercase tracking-wider">
@@ -587,6 +607,21 @@ export default function EventsFilter({ events }: { events: Event[] }) {
               </div>
             </div>
           ))}
+
+          {/* Show more button */}
+          {dateGroups.length > visibleGroupCount && (
+            <div className="pt-4 pb-2 text-center">
+              <button
+                onClick={() => setVisibleGroupCount(prev => prev + GROUPS_PER_PAGE)}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-forest-50 text-forest-700 border border-forest-200 hover:bg-forest-100 hover:border-forest-300 transition-colors text-sm font-medium min-h-[44px]"
+              >
+                Show more events
+                <span className="text-xs text-forest-500">
+                  ({dateGroups.length - visibleGroupCount} more day{dateGroups.length - visibleGroupCount !== 1 ? 's' : ''})
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

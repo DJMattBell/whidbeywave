@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { X } from 'lucide-react';
 
-// #18 First-Visit Welcome Bottom Sheet
+// #18 First-Visit Welcome — non-blocking banner, expands to sheet on tap
 
 const areas = ['South Whidbey', 'Central Whidbey', 'Oak Harbor', 'Coupeville', 'Langley', 'Clinton'];
 const interests = [
@@ -18,12 +19,11 @@ const interests = [
 const STORAGE_KEY = 'ww-welcome-done';
 
 export default function WelcomeSheet() {
-  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState<'hidden' | 'banner' | 'sheet'>('hidden');
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   useEffect(() => {
-    // Only show on first visit, after the user has engaged (scrolled) or 10s
     const done = localStorage.getItem(STORAGE_KEY);
     const hasPersona = document.cookie.includes('ww-persona=');
     if (done || hasPersona) return;
@@ -32,7 +32,7 @@ export default function WelcomeSheet() {
     const reveal = () => {
       if (shown) return;
       shown = true;
-      setShow(true);
+      setMode('banner');
       window.removeEventListener('scroll', onScroll);
       clearTimeout(fallback);
     };
@@ -49,6 +49,14 @@ export default function WelcomeSheet() {
       clearTimeout(fallback);
     };
   }, []);
+
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    if (mode === 'sheet') {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [mode]);
 
   function toggleArea(area: string) {
     setSelectedAreas(prev =>
@@ -71,41 +79,57 @@ export default function WelcomeSheet() {
     if (selectedInterests.length > 0) {
       localStorage.setItem('ww-interests', JSON.stringify(selectedInterests));
     }
-    setShow(false);
+    setMode('hidden');
   }
 
-  function handleSkip() {
+  function handleDismiss() {
     localStorage.setItem(STORAGE_KEY, 'true');
     window.dispatchEvent(new CustomEvent('ww-welcome-done'));
-    setShow(false);
+    setMode('hidden');
   }
 
-  if (!show) return null;
+  if (mode === 'hidden') return null;
 
+  /* ── Non-blocking banner ──────────────────────────── */
+  if (mode === 'banner') {
+    return (
+      <div className="fixed bottom-[60px] left-0 right-0 z-59 md:bottom-0 animate-slide-up">
+        <div className="mx-3 mb-2 md:mx-auto md:max-w-lg md:mb-4 flex items-center gap-3 bg-white rounded-xl shadow-warm-lg border border-parchment-200 px-4 py-3">
+          <Image src="/logo.png" alt="" aria-hidden width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0" />
+          <button
+            onClick={() => setMode('sheet')}
+            className="flex-1 text-left text-sm font-medium text-stone-700 hover:text-forest-600 transition-colors"
+          >
+            Personalize your feed →
+          </button>
+          <button
+            onClick={handleDismiss}
+            className="shrink-0 p-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-parchment-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Dismiss"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Expanded sheet (only when user taps "Personalize") ── */
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-70 bg-black/40 animate-fade-in"
-        onClick={handleSkip}
+        onClick={handleDismiss}
       />
-
-      {/* Sheet */}
       <div className="fixed bottom-0 left-0 right-0 z-71 animate-slide-up">
         <div className="bg-white rounded-t-3xl shadow-2xl max-h-[80vh] overflow-y-auto">
-          {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-10 h-1 bg-parchment-300 rounded-full" />
           </div>
-
           <div className="px-5 pb-6 pt-2">
             <div className="text-center mb-5">
               <Image src="/logo.png" alt="" aria-hidden={true} role="presentation" width={56} height={56} className="w-14 h-14 rounded-full object-cover mx-auto mb-2" />
-              <h2
-                className="text-xl font-bold text-stone-800"
-              >
-                Welcome to WhidbeyWave
-              </h2>
+              <h2 className="text-xl font-bold text-stone-800">Welcome to WhidbeyWave</h2>
               <p className="text-sm text-stone-500 mt-1">Help us show you what matters most</p>
             </div>
 
@@ -154,15 +178,11 @@ export default function WelcomeSheet() {
               </div>
             </div>
 
-            {/* Actions */}
-            <button
-              onClick={handleDone}
-              className="w-full btn-primary justify-center mb-2"
-            >
+            <button onClick={handleDone} className="w-full btn-primary justify-center mb-2">
               Get Started
             </button>
             <button
-              onClick={handleSkip}
+              onClick={handleDismiss}
               className="w-full text-sm text-stone-400 hover:text-stone-600 transition-colors py-2 min-h-[44px]"
             >
               Skip for now

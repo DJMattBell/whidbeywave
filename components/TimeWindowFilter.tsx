@@ -2,13 +2,14 @@
 
 // #7 Time-Window Filters for events
 
-export type TimeWindow = 'today' | 'tomorrow' | 'weekend' | 'week' | 'all';
+export type TimeWindow = 'today' | 'tomorrow' | 'weekend' | 'week' | '10days' | 'all';
 
 const windows: { key: TimeWindow; label: string }[] = [
   { key: 'today',    label: 'Today' },
   { key: 'tomorrow', label: 'Tomorrow' },
   { key: 'weekend',  label: 'This Weekend' },
   { key: 'week',     label: 'This Week' },
+  { key: '10days',   label: 'Next 10 Days' },
   { key: 'all',      label: 'All Upcoming' },
 ];
 
@@ -41,6 +42,11 @@ export function getTimeWindowDates(window: TimeWindow): { start: string; end: st
     case 'week': {
       const end = new Date(pst);
       end.setDate(pst.getDate() + 7);
+      return { start: today, end: end.toLocaleDateString('en-CA') };
+    }
+    case '10days': {
+      const end = new Date(pst);
+      end.setDate(pst.getDate() + 10);
       return { start: today, end: end.toLocaleDateString('en-CA') };
     }
     case 'all':
