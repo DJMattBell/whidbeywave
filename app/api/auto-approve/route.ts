@@ -39,18 +39,18 @@ export async function GET(request: NextRequest) {
     // Get all approved events for duplicate checking
     const { data: approvedEvents } = await supabase
       .from('event_submissions')
-      .select('title, date')
+      .select('title, date, location')
       .eq('status', 'approved');
 
     const approvedSet = new Set(
-      (approvedEvents ?? []).map(e => `${e.title.toLowerCase().trim()}|${e.date}`)
+      (approvedEvents ?? []).map(e => `${e.title.toLowerCase().trim()}|${e.date}|${(e.location ?? '').toLowerCase().trim()}`)
     );
 
     // Collect approved events grouped by submitter email for batched emails
     const approvedBySubmitter = new Map<string, typeof pendingEvents>();
 
     for (const event of pendingEvents) {
-      const key = `${event.title.toLowerCase().trim()}|${event.date}`;
+      const key = `${event.title.toLowerCase().trim()}|${event.date}|${(event.location ?? '').toLowerCase().trim()}`;
       if (approvedSet.has(key)) {
         results.events.skippedDuplicates++;
         continue;

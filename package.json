@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint app/ components/ lib/",
     "test": "npm run smoke",
+    "test:integration": "vitest run tests/integration/",
     "smoke": "npx playwright test",
     "smoke:pages": "npx playwright test tests/smoke/pages.spec.ts",
     "smoke:mobile": "npx playwright test tests/smoke/mobile.spec.ts"
@@ -38,6 +39,7 @@
     "eslint-config-next": "^16.1.6",
     "postcss": "^8",
     "tailwindcss": "^4.3.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.1.0"
   }
 }
