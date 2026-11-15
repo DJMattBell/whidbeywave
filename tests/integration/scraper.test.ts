@@ -19,12 +19,13 @@ let emailsSent: { to: string; subject: string }[] = [];
 vi.mock('@/lib/scrapers/oakharbor', () => ({
   scrapeOakHarbor: () => Promise.resolve(mockScraperResults['Oak Harbor'] ?? []),
 }));
-vi.mock('@/lib/scrapers/langley-library', () => ({
-  scrapeLangleyLibrary: () => Promise.resolve(mockScraperResults['Langley Library'] ?? []),
-}));
-vi.mock('@/lib/scrapers/coupeville-library', () => ({
-  scrapeCoupevilleLibrary: () => Promise.resolve(mockScraperResults['Coupeville Library'] ?? []),
-}));
+vi.mock('@/lib/scrapers/sno-isle-common', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/scrapers/sno-isle-common')>('@/lib/scrapers/sno-isle-common');
+  return {
+    ...actual,
+    scrapeAllSnoIsleWhidbey: () => Promise.resolve(mockScraperResults['Sno-Isle Libraries'] ?? []),
+  };
+});
 vi.mock('@/lib/scrapers/thirsty-crab', () => ({
   scrapeThirstyCrab: () => Promise.resolve(mockScraperResults['Thirsty Crab'] ?? []),
 }));
@@ -139,7 +140,7 @@ describe('scrape route dedup', () => {
     existingEvents = [
       { title: 'Family Storytime', date: '2026-12-10', location: 'Langley Library' },
     ];
-    mockScraperResults['Coupeville Library'] = [
+    mockScraperResults['Sno-Isle Libraries'] = [
       makeEvent({
         title: 'Family Storytime',
         date: '2026-12-10',
@@ -327,83 +328,82 @@ describe('scrape route dedup', () => {
   });
 });
 
-// ── Sno-Isle off-island filter ─────────────────────────────────────────
+// ── Sno-Isle branch ID filter ─────────────────────────────────────────
 
-describe('sno-isle off-island filter', () => {
-  let isOffIsland: typeof import('@/lib/scrapers/sno-isle-common').isOffIsland;
+describe('sno-isle branch ID filter', () => {
+  let getWhidbeyBranch: typeof import('@/lib/scrapers/sno-isle-common').getWhidbeyBranch;
 
   beforeEach(async () => {
     const mod = await import('@/lib/scrapers/sno-isle-common');
-    isOffIsland = mod.isOffIsland;
+    getWhidbeyBranch = mod.getWhidbeyBranch;
   });
 
-  // ── Branch name check ──
+  // ── Whidbey branch IDs ──
 
-  it('accepts events from Langley branch', () => {
-    expect(isOffIsland('Family Storytime', null, 'Langley Library')).toBe(false);
+  it('accepts Clinton Library (ID 10)', () => {
+    const branch = getWhidbeyBranch('10');
+    expect(branch).not.toBeNull();
+    expect(branch!.town).toBe('Clinton');
   });
 
-  it('accepts events from Coupeville branch', () => {
-    expect(isOffIsland('Book Club', null, 'Coupeville Library')).toBe(false);
+  it('accepts Coupeville Library (ID 11)', () => {
+    const branch = getWhidbeyBranch('11');
+    expect(branch).not.toBeNull();
+    expect(branch!.town).toBe('Coupeville');
   });
 
-  it('accepts events from Oak Harbor branch', () => {
-    expect(isOffIsland('STEM Workshop', null, 'Oak Harbor Library')).toBe(false);
+  it('accepts Freeland Library (ID 14)', () => {
+    const branch = getWhidbeyBranch('14');
+    expect(branch).not.toBeNull();
+    expect(branch!.town).toBe('Freeland');
   });
 
-  it('accepts events from Freeland branch', () => {
-    expect(isOffIsland('Knitting Circle', null, 'Freeland Library')).toBe(false);
+  it('accepts Langley Library (ID 17)', () => {
+    const branch = getWhidbeyBranch('17');
+    expect(branch).not.toBeNull();
+    expect(branch!.town).toBe('Langley');
   });
 
-  it('accepts events from Clinton branch', () => {
-    expect(isOffIsland('Story Hour', null, 'Clinton Library')).toBe(false);
+  it('accepts Oak Harbor Library (ID 24)', () => {
+    const branch = getWhidbeyBranch('24');
+    expect(branch).not.toBeNull();
+    expect(branch!.town).toBe('Oak Harbor');
   });
 
-  it('rejects events from Mukilteo branch', () => {
-    expect(isOffIsland('Story Hour', null, 'Mukilteo Library')).toBe(true);
+  // ── Off-island branch IDs ──
+
+  it('rejects Mukilteo Library (ID 23)', () => {
+    expect(getWhidbeyBranch('23')).toBeNull();
   });
 
-  it('rejects events from Lynnwood branch', () => {
-    expect(isOffIsland('Book Club', null, 'Lynnwood Library')).toBe(true);
+  it('rejects Lynnwood Library (ID 18)', () => {
+    expect(getWhidbeyBranch('18')).toBeNull();
   });
 
-  it('rejects events from Edmonds branch', () => {
-    expect(isOffIsland('Craft Night', null, 'Edmonds Library')).toBe(true);
+  it('rejects Mountlake Terrace Library (ID 22)', () => {
+    expect(getWhidbeyBranch('22')).toBeNull();
   });
 
-  it('rejects events from Mountlake Terrace branch', () => {
-    expect(isOffIsland('Yoga Class', null, 'Mountlake Terrace Library')).toBe(true);
+  it('rejects Monroe Library (ID 21)', () => {
+    expect(getWhidbeyBranch('21')).toBeNull();
   });
 
-  it('branch check is case-insensitive', () => {
-    expect(isOffIsland('Event', null, 'LANGLEY LIBRARY')).toBe(false);
-    expect(isOffIsland('Event', null, 'MUKILTEO library')).toBe(true);
+  it('rejects Mariner Library (ID 29)', () => {
+    expect(getWhidbeyBranch('29')).toBeNull();
   });
 
-  // ── Keyword fallback (no branch name) ──
+  // ── Edge cases ──
 
-  it('keyword fallback rejects Mukilteo in title', () => {
-    expect(isOffIsland('Story Hour at Mukilteo Library', null, null)).toBe(true);
+  it('rejects null branch ID', () => {
+    expect(getWhidbeyBranch(null)).toBeNull();
   });
 
-  it('keyword fallback rejects Lynnwood in description', () => {
-    expect(isOffIsland('Story Hour', 'Held at Lynnwood branch', null)).toBe(true);
+  it('rejects unknown branch ID', () => {
+    expect(getWhidbeyBranch('999')).toBeNull();
   });
 
-  it('keyword fallback rejects Camano Island Library', () => {
-    expect(isOffIsland('Book Sale', 'Camano Island Library fundraiser', null)).toBe(true);
-  });
-
-  it('keyword fallback rejects Stanwood', () => {
-    expect(isOffIsland('Stanwood Craft Fair', null, null)).toBe(true);
-  });
-
-  it('keyword fallback allows clean Whidbey events', () => {
-    expect(isOffIsland('Jazz Night', 'A great night of music', null)).toBe(false);
-  });
-
-  it('keyword fallback allows null description', () => {
-    expect(isOffIsland('Jazz Night', null, null)).toBe(false);
+  it('rejects BC_VIRTUAL (online events)', () => {
+    expect(getWhidbeyBranch('BC_VIRTUAL')).toBeNull();
   });
 });
 

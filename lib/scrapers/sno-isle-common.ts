@@ -3,16 +3,17 @@ import type { ScrapedEvent } from './types';
 import { toPacificDateString } from './types';
 import { stripHtml } from '@/lib/data';
 
-/** Sno-Isle library branches on Whidbey Island */
-const WHIDBEY_BRANCHES = ['langley', 'coupeville', 'oak harbor', 'freeland', 'clinton'];
-
-/** Off-island keywords that indicate an event leaked from another branch */
-const OFF_ISLAND_KEYWORDS = [
-  'mukilteo', 'lynnwood', 'edmonds', 'mountlake terrace', 'marysville',
-  'everett', 'arlington', 'stanwood', 'lake stevens', 'snohomish',
-  'camano island library', 'bothell', 'mill creek', 'shoreline',
-  'lake forest park', 'woodinville', 'kenmore', 'brier',
-];
+/**
+ * Whidbey Island branch IDs from the Sno-Isle BiblioCommons locations table.
+ * Maps branchLocationId → { name, town, source }.
+ */
+const WHIDBEY_BRANCHES: Record<string, { name: string; town: string; source: string }> = {
+  '10': { name: 'Clinton Library',    town: 'Clinton',    source: 'Clinton Library' },
+  '11': { name: 'Coupeville Library', town: 'Coupeville', source: 'Coupeville Library' },
+  '14': { name: 'Freeland Library',   town: 'Freeland',   source: 'Freeland Library' },
+  '17': { name: 'Langley Library',    town: 'Langley',    source: 'Langley Library' },
+  '24': { name: 'Oak Harbor Library', town: 'Oak Harbor',  source: 'Oak Harbor Library' },
+};
 
 /** BiblioCommons boilerplate patterns to strip from descriptions.
  *  Uses [\s\S] instead of the `s` flag for ES2017 compat. */
@@ -177,37 +178,25 @@ export function cleanDescription(raw: string | null): string | null {
 }
 
 /**
- * Check if an event is from an off-island library branch.
+ * Check if a branchLocationId belongs to a Whidbey Island library.
+ * Returns the branch info if on-island, null if off-island or unknown.
  */
-export function isOffIsland(title: string, description: string | null, branchName: string | null): boolean {
-  // If we have an explicit branch name, check it
-  if (branchName) {
-    const lower = branchName.toLowerCase();
-    if (WHIDBEY_BRANCHES.some(b => lower.includes(b))) return false;
-    return true; // Branch exists but isn't on Whidbey
-  }
-
-  // Fall back to keyword check on title + description
-  const text = `${title} ${description ?? ''}`.toLowerCase();
-  return OFF_ISLAND_KEYWORDS.some(kw => text.includes(kw));
+export function getWhidbeyBranch(branchLocationId: string | null): { name: string; town: string; source: string } | null {
+  if (!branchLocationId) return null;
+  return WHIDBEY_BRANCHES[branchLocationId] ?? null;
 }
 
-type SnoIsleConfig = {
-  pageUrl: string;
-  location: string;   // e.g. "Langley Library"
-  town: string;       // e.g. "Langley"
-  source: string;     // e.g. "Langley Library"
-  logPrefix: string;  // e.g. "[scrapeLangleyLibrary]"
-};
-
 /**
- * Shared Sno-Isle BiblioCommons scraper. Both Langley and Coupeville
- * use this with different config.
+ * Scrape all Whidbey Island library events from Sno-Isle BiblioCommons.
+ *
+ * Fetches the shared BiblioCommons SPA page once and filters events
+ * by branchLocationId — only events at Whidbey branches are returned,
+ * each attributed to its actual library location and town.
  */
-export async function scrapeSnoIsleLibrary(config: SnoIsleConfig): Promise<ScrapedEvent[]> {
+export async function scrapeAllSnoIsleWhidbey(): Promise<ScrapedEvent[]> {
   try {
-    const res = await fetch(config.pageUrl, {
-      signal: AbortSignal.timeout(6000),
+    const res = await fetch('https://sno-isle.bibliocommons.com/v2/events?location=langley', {
+      signal: AbortSignal.timeout(8000),
       headers: { 'User-Agent': 'WhidbeyWave/1.0 (+https://whidbeywave.com)' },
     });
     if (!res.ok) return [];
@@ -229,16 +218,12 @@ export async function scrapeSnoIsleLibrary(config: SnoIsleConfig): Promise<Scrap
       const title = ((definition?.title as string) ?? '').trim();
       if (!title) continue;
 
+      // Filter by branchLocationId — the only reliable branch indicator
+      const branchLocationId = (definition?.branchLocationId as string) ?? null;
+      const branch = getWhidbeyBranch(branchLocationId);
+      if (!branch) continue; // Off-island or no branch ID → skip
+
       const description = (definition?.description as string) ?? null;
-
-      // Try to get the branch name from the series data
-      const branchName = (definition?.branchName as string)
-        ?? (definition?.locationName as string)
-        ?? (series.branchName as string)
-        ?? null;
-
-      // Skip off-island events
-      if (isOffIsland(title, description, branchName)) continue;
 
       // Extract timestamps
       const timestamps: { start: string; end?: string }[] = [];
@@ -285,18 +270,32 @@ export async function scrapeSnoIsleLibrary(config: SnoIsleConfig): Promise<Scrap
           title,
           date,
           time,
-          location: config.location,
-          town: config.town,
+          location: branch.name,
+          town: branch.town,
           category: 'Classes & Workshops',
           description: cleanDesc,
-          source: config.source,
+          source: branch.source,
         });
       }
     }
 
     return events;
   } catch (err) {
-    console.error(`${config.logPrefix} error:`, err);
+    console.error('[scrapeSnoIsleWhidbey] error:', err);
     return [];
   }
+}
+
+// Legacy wrapper — kept for backward compatibility but delegates to the shared scraper
+type SnoIsleConfig = {
+  pageUrl: string;
+  location: string;
+  town: string;
+  source: string;
+  logPrefix: string;
+};
+
+/** @deprecated Use scrapeAllSnoIsleWhidbey() instead */
+export async function scrapeSnoIsleLibrary(config: SnoIsleConfig): Promise<ScrapedEvent[]> {
+  return scrapeAllSnoIsleWhidbey();
 }

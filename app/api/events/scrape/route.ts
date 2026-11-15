@@ -7,8 +7,7 @@ import { verifyCronRequest } from '@/lib/cronAuth';
 //       Squarespace collection is empty. Needs headless browser to scrape.
 // Wicked Teuton: disabled — site refuses all server-side connections (TLS reset).
 import { scrapeOakHarbor } from '@/lib/scrapers/oakharbor';
-import { scrapeLangleyLibrary } from '@/lib/scrapers/langley-library';
-import { scrapeCoupevilleLibrary } from '@/lib/scrapers/coupeville-library';
+import { scrapeAllSnoIsleWhidbey } from '@/lib/scrapers/sno-isle-common';
 import { scrapeThirstyCrab } from '@/lib/scrapers/thirsty-crab';
 import { scrapeWhidbeyTelecomEvents } from '@/lib/scrapers/whidbey-telecom';
 import { scrapeLangleyWhaleCenter } from '@/lib/scrapers/langley-whale-center';
@@ -89,13 +88,12 @@ export async function GET(request: NextRequest) {
   // Run all scrapers in parallel — each has its own timeout; failures return []
   const [
     oakHarborEvents,
-    langleyLibEvents, coupevilleLibEvents,
+    snoIsleLibEvents,
     thirstyCrabEvents, whidbeyTelEvents, whaleCenterEvents,
     barringtonsEvents,
   ] = await Promise.all([
     runScraper('Oak Harbor', scrapeOakHarbor),
-    runScraper('Langley Library', scrapeLangleyLibrary),
-    runScraper('Coupeville Library', scrapeCoupevilleLibrary),
+    runScraper('Sno-Isle Libraries', scrapeAllSnoIsleWhidbey),
     runScraper('Thirsty Crab', scrapeThirstyCrab),
     runScraper('Whidbey Telecom', scrapeWhidbeyTelecomEvents),
     runWhaleCenter ? runScraper('Langley Whale Center', scrapeLangleyWhaleCenter) : Promise.resolve([]),
@@ -104,14 +102,14 @@ export async function GET(request: NextRequest) {
 
   const candidates = [
     ...oakHarborEvents,
-    ...langleyLibEvents, ...coupevilleLibEvents,
+    ...snoIsleLibEvents,
     ...thirstyCrabEvents, ...whidbeyTelEvents, ...whaleCenterEvents,
     ...barringtonsEvents,
   ];
   console.log(
     `[scrape] found ${candidates.length} candidate events — ` +
     `OakHarbor:${oakHarborEvents.length} ` +
-    `LangleyLib:${langleyLibEvents.length} CoupevilleLib:${coupevilleLibEvents.length} ` +
+    `SnoIsleLib:${snoIsleLibEvents.length} ` +
     `ThirstyCrab:${thirstyCrabEvents.length} WhidbeyTel:${whidbeyTelEvents.length} ` +
     `WhaleCenter:${whaleCenterEvents.length} Barringtons:${barringtonsEvents.length}`
   );
